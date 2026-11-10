@@ -1,0 +1,56 @@
+---
+/**
+ * NextWave Digital wordmark: a wave glyph + "NextWave" with a lighter "Digital".
+ * `compact` hides the "Digital" suffix for tight spaces.
+ */
+interface Props {
+  compact?: boolean;
+  class?: string;
+}
+const { compact = false, class: className = '' } = Astro.props;
+const gid = `nw-grad-${Math.random().toString(36).slice(2, 8)}`;
+---
+
+<span class:list={['logo', className]}>
+  <svg class="logo-mark" viewBox="0 0 32 32" aria-hidden="true">
+    <defs>
+      <linearGradient id={gid} x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color="#60a5fa" />
+        <stop offset="0.5" stop-color="#3b82f6" />
+        <stop offset="1" stop-color="#22d3ee" />
+      </linearGradient>
+    </defs>
+    <rect x="0.5" y="0.5" width="31" height="31" rx="8.5" fill="#0f1527" stroke="rgba(96,165,250,0.35)" />
+    <path
+      d="M6 19c2.75 0 3.75-6 6.75-6S16.5 20 19.5 20s3.75-7 6.5-7"
+      fill="none"
+      stroke={`url(#${gid})`}
+      stroke-width="3"
+      stroke-linecap="round"
+      stroke-linejoin="round"></path>
+  </svg>
+  <span class="logo-text">
+    <span class="logo-name">Next<span class="logo-wave">Wave</span></span>
+    {!compact && <span class="logo-suffix">Digital</span>}
+  </span>
+</span>
+
+<style>
+  .logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-weight: 650;
+    letter-spacing: -0.03em;
+    line-height: 1;
+  }
+  .logo-mark { width: 30px; height: 30px; flex: none; }
+  .logo-text { display: inline-flex; align-items: baseline; gap: 0.35rem; font-size: 1.125rem; }
+  .logo-wave {
+    background: var(--brand-gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .logo-suffix { font-weight: 450; color: var(--text-muted); letter-spacing: -0.01em; }
+</style>

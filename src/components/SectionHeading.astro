@@ -1,0 +1,22 @@
+---
+interface Props {
+  eyebrow: string;
+  title: string;
+  id: string;
+  align?: 'left' | 'center';
+}
+const { eyebrow, title, id, align = 'left' } = Astro.props;
+---
+
+<div class:list={['section-heading', 'reveal', align]}>
+  <p class="eyebrow">{eyebrow}</p>
+  <h2 id={id}>{title}</h2>
+  {Astro.slots.has('default') && <div class="intro"><slot /></div>}
+</div>
+
+<style>
+  .section-heading { display: grid; gap: 1rem; max-width: 720px; }
+  .section-heading.center { margin-inline: auto; text-align: center; justify-items: center; }
+  h2 { font-size: var(--fs-h2); letter-spacing: -0.035em; }
+  .intro { font-size: var(--fs-lg); color: var(--text-muted); max-width: 60ch; }
+</style>

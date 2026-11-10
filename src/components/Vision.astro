@@ -1,0 +1,108 @@
+---
+import Icon from './Icon.astro';
+import type { IconName } from './icon-names';
+
+const pillars: { icon: IconName; title: string; text: string }[] = [
+  {
+    icon: 'target',
+    title: 'Solve real problems',
+    text: 'We start from everyday frustrations — not features — and build only what genuinely helps.',
+  },
+  {
+    icon: 'compass',
+    title: 'Design with care',
+    text: 'Calm, clear interfaces that respect attention, so the tool fades and the result remains.',
+  },
+  {
+    icon: 'layers',
+    title: 'Grow a family of tools',
+    text: 'One trusted brand, a growing set of products — each one held to the same standard.',
+  },
+];
+---
+
+<section id="vision" class="section vision" aria-labelledby="vision-title">
+  <div class="container">
+    <div class="vision-panel reveal">
+      <div class="panel-glow" aria-hidden="true"></div>
+      <p class="eyebrow">Our vision</p>
+      <h2 id="vision-title">
+        Useful software for <span class="gradient-text">every part of everyday life.</span>
+      </h2>
+      <p class="vision-lede">
+        Our ambition is to build a family of digital products people reach for every day because
+        they make life a little easier. Not more apps for the sake of it, but well-made tools that
+        bring clarity to money, wellbeing and time. Our first three products are only the beginning.
+      </p>
+
+      <ul class="pillars">
+        {pillars.map((p, i) => (
+          <li class="reveal" style={`--reveal-delay:${120 + i * 90}ms`}>
+            <Icon name={p.icon} size={22} />
+            <div>
+              <h3>{p.title}</h3>
+              <p>{p.text}</p>
+            </div>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </div>
+</section>
+
+<style>
+  .vision-panel {
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+    padding: clamp(2rem, 1rem + 5vw, 5rem);
+    border-radius: calc(var(--radius-lg) + 8px);
+    border: 1px solid var(--border);
+    background:
+      linear-gradient(180deg, rgba(20, 27, 49, 0.85), rgba(11, 16, 32, 0.9));
+  }
+  .panel-glow {
+    position: absolute;
+    z-index: -1;
+    inset: auto -10% -60% -10%;
+    height: 120%;
+    background:
+      radial-gradient(50% 50% at 30% 50%, rgba(59, 130, 246, 0.22), transparent 70%),
+      radial-gradient(40% 40% at 75% 60%, rgba(34, 211, 238, 0.12), transparent 70%);
+  }
+  .vision-panel::after {
+    content: '';
+    position: absolute;
+    z-index: -1;
+    inset: 0;
+    background-image: radial-gradient(rgba(148, 163, 214, 0.12) 1px, transparent 1px);
+    background-size: 22px 22px;
+    mask-image: linear-gradient(to bottom, transparent, #000 70%);
+    -webkit-mask-image: linear-gradient(to bottom, transparent, #000 70%);
+  }
+  h2 {
+    margin-top: 1rem;
+    font-size: var(--fs-h2);
+    letter-spacing: -0.035em;
+    max-width: 18ch;
+  }
+  .vision-lede {
+    margin-top: 1.5rem;
+    max-width: 62ch;
+    font-size: var(--fs-lg);
+    color: var(--text-muted);
+  }
+  .pillars {
+    margin-top: clamp(2.5rem, 2rem + 2vw, 4rem);
+    display: grid;
+    gap: 1.75rem 2.5rem;
+  }
+  .pillars li { display: flex; gap: 1rem; align-items: flex-start; }
+  .pillars :global(svg) { flex: none; color: var(--accent-bright); margin-top: 2px; }
+  .pillars h3 { font-size: 1.0625rem; margin-bottom: 0.35rem; letter-spacing: -0.015em; }
+  .pillars p { color: var(--text-muted); font-size: var(--fs-sm); }
+
+  @media (min-width: 900px) {
+    .pillars { grid-template-columns: repeat(3, 1fr); }
+  }
+</style>

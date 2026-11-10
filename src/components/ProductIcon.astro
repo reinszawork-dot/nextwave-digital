@@ -1,0 +1,38 @@
+---
+import Icon from './Icon.astro';
+import type { IconName } from './icon-names';
+import { getProduct, type ProductId } from '../data/products';
+
+interface Props {
+  id: ProductId;
+  size?: number;
+}
+const { id, size = 48 } = Astro.props;
+const product = getProduct(id)!;
+const icons: Record<ProductId, IconName> = { wisely: 'wallet', lull: 'moon', kindling: 'flame' };
+---
+
+<span
+  class="product-icon"
+  style={`--size:${size}px;--p-accent:${product.accent};--p-soft:${product.accentSoft}`}
+  aria-hidden="true"
+>
+  <Icon name={icons[id]} size={Math.round(size * 0.5)} />
+</span>
+
+<style>
+  .product-icon {
+    display: inline-grid;
+    place-items: center;
+    flex: none;
+    width: var(--size);
+    height: var(--size);
+    border-radius: calc(var(--size) * 0.3);
+    color: var(--p-accent);
+    background:
+      linear-gradient(160deg, var(--p-soft), transparent 70%),
+      var(--surface-2);
+    border: 1px solid color-mix(in srgb, var(--p-accent) 30%, transparent);
+    box-shadow: 0 6px 20px -8px color-mix(in srgb, var(--p-accent) 50%, transparent);
+  }
+</style>

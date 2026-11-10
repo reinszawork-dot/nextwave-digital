@@ -1,0 +1,88 @@
+---
+/* Illustrative Lull screen: breathing guide + a week of logged sleep. Sample data only. */
+const week = [
+  { d: 'M', h: 6.5 }, { d: 'T', h: 7.2 }, { d: 'W', h: 5.8 }, { d: 'T', h: 7.6 },
+  { d: 'F', h: 6.9 }, { d: 'S', h: 8.1 }, { d: 'S', h: 7.4 },
+];
+---
+
+<div class="pv">
+  <div class="breathe">
+    <div class="orb" aria-hidden="true"><span></span></div>
+    <div>
+      <p class="pv-label">Breathing</p>
+      <p class="cue"><span class="in">Breathe in…</span><span class="out">…and out</span></p>
+      <p class="pv-sub">Box breathing</p>
+    </div>
+  </div>
+  <div>
+    <div class="pv-row"><span class="pv-label">Sleep this week</span><span class="avg">7.1 h avg</span></div>
+    <ul class="bars">
+      {week.map((n, i) => (
+        <li>
+          <span class="b" style={`--h:${(n.h / 9) * 100}%;--d:${i * 70}ms`}></span>
+          <span class="d">{n.d}</span>
+        </li>
+      ))}
+    </ul>
+  </div>
+</div>
+
+<style>
+  .pv { display: grid; gap: 1.25rem; }
+  .breathe { display: flex; align-items: center; gap: 1.1rem; }
+  .orb {
+    position: relative;
+    width: 72px;
+    height: 72px;
+    flex: none;
+    display: grid;
+    place-items: center;
+  }
+  .orb::before,
+  .orb span {
+    content: '';
+    position: absolute;
+    border-radius: 50%;
+  }
+  .orb::before {
+    inset: 0;
+    background: radial-gradient(circle, rgba(167, 139, 250, 0.35), transparent 70%);
+    animation: breathe 14s ease-in-out infinite;
+  }
+  .orb span {
+    width: 42px;
+    height: 42px;
+    background: radial-gradient(circle at 35% 30%, #c4b5fd, #7c3aed);
+    box-shadow: 0 0 30px rgba(167, 139, 250, 0.5);
+    animation: breathe 14s ease-in-out infinite;
+  }
+  @keyframes breathe {
+    0%, 100% { transform: scale(0.72); }
+    28.5%, 57% { transform: scale(1.05); }
+  }
+  .pv-label { font-size: 0.72rem; color: var(--text-faint); text-transform: uppercase; letter-spacing: 0.08em; }
+  .cue { position: relative; height: 1.6rem; font-size: 1.15rem; font-weight: 600; letter-spacing: -0.02em; }
+  .cue span { position: absolute; left: 0; white-space: nowrap; animation: cue 14s ease-in-out infinite; }
+  .cue .out { animation-name: cue-out; }
+  @keyframes cue { 0%, 50% { opacity: 1; } 57%, 96% { opacity: 0; } }
+  @keyframes cue-out { 0%, 52% { opacity: 0; } 60%, 95% { opacity: 1; } 100% { opacity: 0; } }
+  .pv-sub { font-size: 0.75rem; color: #a78bfa; }
+  .pv-row { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 0.6rem; }
+  .avg { font-size: 0.78rem; color: var(--text-muted); font-variant-numeric: tabular-nums; }
+  .bars { display: grid; grid-template-columns: repeat(7, 1fr); gap: 0.45rem; height: 84px; }
+  .bars li { display: grid; grid-template-rows: 1fr auto; gap: 0.35rem; justify-items: center; }
+  .b {
+    align-self: end;
+    width: 100%;
+    max-width: 22px;
+    height: var(--h);
+    border-radius: 6px;
+    background: linear-gradient(to top, rgba(124, 58, 237, 0.55), #a78bfa);
+    transform-origin: bottom;
+    transform: scaleY(0);
+    transition: transform 1s var(--ease-out) var(--d);
+  }
+  :global(.is-visible) .b { transform: scaleY(1); }
+  .d { font-size: 0.68rem; color: var(--text-faint); }
+</style>

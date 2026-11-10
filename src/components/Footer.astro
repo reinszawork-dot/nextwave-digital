@@ -1,0 +1,76 @@
+---
+import Logo from './Logo.astro';
+import { nav, site } from '../data/site';
+import { products } from '../data/products';
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer">
+  <div class="container footer-grid">
+    <div class="footer-brand">
+      <Logo />
+      <p>{site.tagline}</p>
+    </div>
+
+    <nav aria-label="Footer — company">
+      <h2 class="footer-h">Company</h2>
+      <ul>
+        {nav.slice(1).map((item) => <li><a href={item.href}>{item.label}</a></li>)}
+      </ul>
+    </nav>
+
+    <nav aria-label="Footer — products">
+      <h2 class="footer-h">Products</h2>
+      <ul>
+        {products.map((p) => <li><a href={`/products/${p.id}`}>{p.name} <span>· {p.category}</span></a></li>)}
+      </ul>
+    </nav>
+  </div>
+
+  <div class="container footer-bottom">
+    <p>© {year} {site.name}. All rights reserved.</p>
+    <p>Built in {site.location}.</p>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    border-top: 1px solid var(--border);
+    padding-top: 4rem;
+    background: linear-gradient(to bottom, transparent, rgba(15, 21, 39, 0.5));
+  }
+  .footer-grid {
+    display: grid;
+    gap: 2.5rem;
+    grid-template-columns: 1fr 1fr;
+  }
+  .footer-brand { grid-column: 1 / -1; display: grid; gap: 1rem; align-content: start; }
+  .footer-brand p { color: var(--text-muted); font-size: var(--fs-sm); max-width: 30ch; }
+  .footer-h {
+    font-size: var(--fs-xs);
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+    margin-bottom: 1rem;
+  }
+  .footer-grid ul { display: grid; gap: 0.6rem; }
+  .footer-grid a { color: var(--text-muted); font-size: var(--fs-sm); transition: color 0.2s; }
+  .footer-grid a:hover { color: var(--text); }
+  .footer-grid a span { color: var(--text-faint); }
+  .footer-bottom {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 0.5rem 2rem;
+    margin-top: 3.5rem;
+    padding-block: 1.75rem;
+    border-top: 1px solid var(--border);
+    color: var(--text-faint);
+    font-size: var(--fs-xs);
+  }
+  @media (min-width: 768px) {
+    .footer-grid { grid-template-columns: 2fr 1fr 1fr; }
+    .footer-brand { grid-column: auto; }
+  }
+</style>

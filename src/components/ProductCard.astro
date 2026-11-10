@@ -1,0 +1,71 @@
+---
+import Icon from './Icon.astro';
+import ProductIcon from './ProductIcon.astro';
+import ProductPreview from './ProductPreview.astro';
+import type { Product } from '../data/products';
+
+interface Props {
+  product: Product;
+  index?: number;
+}
+const { product, index = 0 } = Astro.props;
+const headingId = `product-${product.id}-title`;
+---
+
+<article
+  class="card reveal"
+  aria-labelledby={headingId}
+  style={`--p-accent:${product.accent};--p-soft:${product.accentSoft};--reveal-delay:${index * 110}ms`}
+>
+  <div class="card-head">
+    <ProductIcon id={product.id} size={48} />
+    <span class="tag">{product.category}</span>
+  </div>
+
+  <h3 id={headingId}>{product.name}</h3>
+  <p class="summary">{product.summary}</p>
+
+  <div class="preview">
+    <ProductPreview id={product.id} />
+  </div>
+
+  <a href={`/products/${product.id}`} class="btn btn-ghost card-btn" aria-label={`Explore ${product.name}, our ${product.category.toLowerCase()} app`}>
+    Explore product
+    <Icon name="arrow-right" size={16} />
+  </a>
+</article>
+
+<style>
+  .card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    padding: 1.75rem;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border);
+    background:
+      radial-gradient(120% 60% at 50% 0%, var(--p-soft), transparent 60%),
+      linear-gradient(180deg, rgba(20, 27, 49, 0.7), rgba(11, 16, 32, 0.7));
+    transition: border-color 0.35s, transform 0.5s var(--ease-out), box-shadow 0.35s;
+  }
+  .card.is-visible:hover {
+    transform: translateY(-4px);
+    border-color: color-mix(in srgb, var(--p-accent) 35%, transparent);
+    box-shadow: 0 24px 60px -30px color-mix(in srgb, var(--p-accent) 45%, transparent);
+  }
+  .card-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; }
+  .tag {
+    font-size: var(--fs-xs);
+    font-weight: 550;
+    padding: 0.3rem 0.7rem;
+    border-radius: 999px;
+    color: var(--p-accent);
+    background: var(--p-soft);
+    border: 1px solid color-mix(in srgb, var(--p-accent) 25%, transparent);
+  }
+  h3 { font-size: 1.6rem; letter-spacing: -0.03em; }
+  .summary { margin-top: 0.6rem; color: var(--text-muted); font-size: var(--fs-sm); }
+  .preview { margin-block: 1.75rem; flex: 1; }
+  .card-btn { align-self: flex-start; }
+  .card-btn:hover { border-color: color-mix(in srgb, var(--p-accent) 50%, transparent); }
+</style>

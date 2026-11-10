@@ -1,0 +1,39 @@
+---
+import SectionHeading from './SectionHeading.astro';
+import ProductCard from './ProductCard.astro';
+import { products } from '../data/products';
+---
+
+<section id="products" class="section products" aria-labelledby="products-title">
+  <div class="container">
+    <SectionHeading eyebrow="Our products" title="Three apps. One goal: an easier everyday." id="products-title" align="center">
+      <p>Each NextWave product tackles one part of daily life — and shares the same care for simplicity, privacy and design.</p>
+    </SectionHeading>
+
+    <div class="cards">
+      {products.map((p, i) => <ProductCard product={p} index={i} />)}
+    </div>
+  </div>
+</section>
+
+<style>
+  .products::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(60% 40% at 50% 20%, rgba(59, 130, 246, 0.08), transparent 70%);
+    pointer-events: none;
+  }
+  .cards {
+    margin-top: clamp(3rem, 2rem + 3vw, 4.5rem);
+    display: grid;
+    gap: 1.25rem;
+  }
+  @media (min-width: 720px) and (max-width: 1079px) {
+    .cards { grid-template-columns: repeat(2, 1fr); }
+    .cards > :global(:last-child) { grid-column: 1 / -1; max-width: calc(50% - 0.625rem); justify-self: center; }
+  }
+  @media (min-width: 1080px) {
+    .cards { grid-template-columns: repeat(3, 1fr); }
+  }
+</style>

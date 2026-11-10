@@ -1,0 +1,212 @@
+---
+import Icon from './Icon.astro';
+import ProductIcon from './ProductIcon.astro';
+import { products } from '../data/products';
+import { site } from '../data/site';
+---
+
+<section id="home" class="hero" aria-labelledby="hero-title">
+  <div class="hero-bg" aria-hidden="true">
+    <div class="grid"></div>
+    <div class="glow glow-a"></div>
+    <div class="glow glow-b"></div>
+    <svg class="waves" viewBox="0 0 1440 320" preserveAspectRatio="none">
+      <defs>
+        <linearGradient id="wave-stroke" x1="0" x2="1">
+          <stop offset="0" stop-color="#3b82f6" stop-opacity="0" />
+          <stop offset="0.35" stop-color="#60a5fa" stop-opacity="0.7" />
+          <stop offset="0.7" stop-color="#22d3ee" stop-opacity="0.5" />
+          <stop offset="1" stop-color="#3b82f6" stop-opacity="0" />
+        </linearGradient>
+      </defs>
+      <path class="wave w1" d="M0 200 C 240 120, 480 280, 720 200 S 1200 120, 1440 200" />
+      <path class="wave w2" d="M0 230 C 260 160, 500 300, 740 220 S 1220 150, 1440 230" />
+      <path class="wave w3" d="M0 170 C 220 90, 460 250, 700 170 S 1180 90, 1440 170" />
+    </svg>
+  </div>
+
+  <div class="container hero-inner">
+    <p class="pill rise">
+      <span class="pill-dot" aria-hidden="true"></span>
+      A software company for everyday life
+    </p>
+
+    <h1 id="hero-title" class="rise" style="--reveal-delay: 80ms">
+      Technology designed to make <span class="gradient-text">everyday life better.</span>
+    </h1>
+
+    <p class="lede rise" style="--reveal-delay: 160ms">
+      {site.name} designs and builds practical apps for the things that fill your days — your money,
+      your rest and your routines. Simple to use, private by design and made to genuinely help.
+    </p>
+
+    <div class="actions rise" style="--reveal-delay: 240ms">
+      <a href="#products" class="btn btn-primary btn-lg">
+        Explore our products
+        <Icon name="arrow-right" size={16} />
+      </a>
+      <a href="#about" class="btn btn-ghost btn-lg">About NextWave</a>
+    </div>
+
+    <ul class="product-strip rise" style="--reveal-delay: 360ms" aria-label="Our products">
+      {products.map((p) => (
+        <li>
+          <a href={`/products/${p.id}`} class="strip-item" style={`--p-accent:${p.accent};--p-soft:${p.accentSoft}`}>
+            <ProductIcon id={p.id} size={40} />
+            <span class="strip-text">
+              <span class="strip-name">{p.name}</span>
+              <span class="strip-cat">{p.category}</span>
+            </span>
+          </a>
+        </li>
+      ))}
+    </ul>
+  </div>
+</section>
+
+<style>
+  .hero {
+    position: relative;
+    isolation: isolate;
+    margin-top: calc(var(--header-h) * -1);
+    padding-top: calc(var(--header-h) + clamp(4rem, 2rem + 9vw, 9rem));
+    padding-bottom: clamp(4rem, 2rem + 6vw, 7rem);
+    overflow: hidden;
+    text-align: center;
+  }
+
+  /* ---- Background ---- */
+  .hero-bg { position: absolute; inset: 0; z-index: -1; pointer-events: none; }
+  .grid {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(to right, rgba(148, 163, 214, 0.07) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(148, 163, 214, 0.07) 1px, transparent 1px);
+    background-size: 64px 64px;
+    mask-image: radial-gradient(ellipse 70% 60% at 50% 30%, #000 30%, transparent 75%);
+    -webkit-mask-image: radial-gradient(ellipse 70% 60% at 50% 30%, #000 30%, transparent 75%);
+  }
+  .glow { position: absolute; border-radius: 50%; filter: blur(80px); }
+  .glow-a {
+    width: min(720px, 90vw);
+    height: 420px;
+    top: -120px;
+    left: 50%;
+    translate: -50% 0;
+    background: radial-gradient(closest-side, rgba(59, 130, 246, 0.45), transparent);
+    animation: drift 14s ease-in-out infinite alternate;
+  }
+  .glow-b {
+    width: 420px;
+    height: 320px;
+    top: 140px;
+    right: -120px;
+    background: radial-gradient(closest-side, rgba(34, 211, 238, 0.18), transparent);
+    animation: drift 18s ease-in-out infinite alternate-reverse;
+  }
+  .waves {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 4%;
+    width: 100%;
+    height: 280px;
+    opacity: 0.55;
+  }
+  .wave {
+    fill: none;
+    stroke: url(#wave-stroke);
+    stroke-width: 1.5;
+    stroke-dasharray: 1600;
+    stroke-dashoffset: 1600;
+    animation: draw 3.2s var(--ease-out) forwards, sway 9s ease-in-out 3.2s infinite alternate;
+  }
+  .w2 { stroke-width: 1; opacity: 0.6; animation-delay: 0.25s, 3.45s; }
+  .w3 { stroke-width: 1; opacity: 0.4; animation-delay: 0.5s, 3.7s; }
+
+  @keyframes draw { to { stroke-dashoffset: 0; } }
+  @keyframes sway { to { transform: translateY(14px); } }
+  @keyframes drift { to { transform: translate(40px, 30px) scale(1.08); } }
+
+  /* ---- Content ---- */
+  .hero-inner { display: flex; flex-direction: column; align-items: center; }
+
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    padding: 0.4rem 0.9rem 0.4rem 0.7rem;
+    border-radius: 999px;
+    border: 1px solid var(--border-strong);
+    background: rgba(15, 21, 39, 0.6);
+    font-size: var(--fs-xs);
+    font-weight: 500;
+    color: var(--text-muted);
+  }
+  .pill-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--accent-bright);
+    box-shadow: 0 0 0 4px rgba(96, 165, 250, 0.18);
+  }
+
+  h1 {
+    margin-top: 1.75rem;
+    font-size: var(--fs-h1);
+    font-weight: 650;
+    letter-spacing: -0.045em;
+    line-height: 1.02;
+    max-width: 15ch;
+  }
+
+  .lede {
+    margin-top: 1.5rem;
+    max-width: 58ch;
+    font-size: var(--fs-lg);
+    color: var(--text-muted);
+  }
+
+  .actions {
+    margin-top: 2.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.75rem;
+  }
+  .btn-lg { min-height: 52px; padding-inline: 1.6rem; font-size: 1rem; }
+
+  .product-strip {
+    margin-top: clamp(3.5rem, 2rem + 5vw, 5.5rem);
+    display: grid;
+    gap: 0.75rem;
+    width: 100%;
+    max-width: 860px;
+  }
+  .strip-item {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+    padding: 0.85rem 1rem;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    background: rgba(15, 21, 39, 0.55);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    text-align: left;
+    transition: border-color 0.3s, transform 0.3s var(--ease-out), background-color 0.3s;
+  }
+  .strip-item:hover {
+    border-color: color-mix(in srgb, var(--p-accent) 45%, transparent);
+    background: rgba(20, 27, 49, 0.75);
+    transform: translateY(-2px);
+  }
+  .strip-text { display: grid; line-height: 1.25; }
+  .strip-name { font-weight: 600; }
+  .strip-cat { font-size: var(--fs-xs); color: var(--text-faint); }
+
+  @media (min-width: 640px) {
+    .product-strip { grid-template-columns: repeat(3, 1fr); }
+  }
+</style>

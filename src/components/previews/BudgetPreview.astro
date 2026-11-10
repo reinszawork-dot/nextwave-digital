@@ -1,0 +1,65 @@
+---
+/* Illustrative Wisely screen: monthly budget with category progress. Sample data only. */
+const cats = [
+  { name: 'Groceries', spent: 3420, limit: 4500, color: '#34d399' },
+  { name: 'Transport', spent: 1680, limit: 2000, color: '#60a5fa' },
+  { name: 'Eating out', spent: 940, limit: 800, color: '#f87171' },
+];
+const fmt = (n: number) => 'R ' + n.toLocaleString('en-ZA').replace(/,/g, ' ');
+---
+
+<div class="pv">
+  <div class="pv-top">
+    <div>
+      <p class="pv-label">Left to spend</p>
+      <p class="pv-big">{fmt(6760)}</p>
+      <p class="pv-sub">12 days to payday</p>
+    </div>
+    <svg class="donut" viewBox="0 0 42 42" aria-hidden="true">
+      <circle cx="21" cy="21" r="15.9" fill="none" stroke="rgba(255,255,255,0.07)" stroke-width="5"></circle>
+      <circle class="seg" cx="21" cy="21" r="15.9" fill="none" stroke="#34d399" stroke-width="5" stroke-dasharray="38 62" stroke-dashoffset="25"></circle>
+      <circle class="seg" cx="21" cy="21" r="15.9" fill="none" stroke="#60a5fa" stroke-width="5" stroke-dasharray="19 81" stroke-dashoffset="-13"></circle>
+      <circle class="seg" cx="21" cy="21" r="15.9" fill="none" stroke="#f87171" stroke-width="5" stroke-dasharray="10 90" stroke-dashoffset="-32"></circle>
+    </svg>
+  </div>
+  <ul class="pv-cats">
+    {cats.map((c, i) => {
+      const pct = Math.min(100, Math.round((c.spent / c.limit) * 100));
+      return (
+        <li>
+          <div class="pv-row">
+            <span>{c.name}</span>
+            <span class:list={['amt', { over: c.spent > c.limit }]}>{fmt(c.spent)} <em>/ {fmt(c.limit)}</em></span>
+          </div>
+          <div class="bar"><span style={`--w:${pct}%;--c:${c.color};--d:${i * 120}ms`}></span></div>
+        </li>
+      );
+    })}
+  </ul>
+</div>
+
+<style>
+  .pv { display: grid; gap: 1.1rem; }
+  .pv-top { display: flex; justify-content: space-between; align-items: center; gap: 1rem; }
+  .pv-label { font-size: 0.72rem; color: var(--text-faint); text-transform: uppercase; letter-spacing: 0.08em; }
+  .pv-big { font-size: 1.6rem; font-weight: 650; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; }
+  .pv-sub { font-size: 0.75rem; color: #34d399; }
+  .donut { width: 72px; height: 72px; transform: rotate(-90deg); }
+  .pv-cats { display: grid; gap: 0.8rem; }
+  .pv-row { display: flex; justify-content: space-between; font-size: 0.78rem; margin-bottom: 0.35rem; gap: 0.5rem; }
+  .amt { font-variant-numeric: tabular-nums; color: var(--text); }
+  .amt em { font-style: normal; color: var(--text-faint); }
+  .amt.over { color: #f87171; }
+  .bar { height: 6px; border-radius: 99px; background: rgba(255, 255, 255, 0.06); overflow: hidden; }
+  .bar span {
+    display: block;
+    height: 100%;
+    width: var(--w);
+    border-radius: inherit;
+    background: var(--c);
+    transform-origin: left;
+    transform: scaleX(0);
+    transition: transform 1.2s var(--ease-out) var(--d);
+  }
+  :global(.is-visible) .bar span { transform: scaleX(1); }
+</style>

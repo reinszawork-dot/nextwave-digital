@@ -1,0 +1,75 @@
+---
+/* Illustrative Kindling screen: habits with a 7-day check-in row and streaks. Sample data only. */
+const habits = [
+  { name: 'Morning walk', streak: 12, days: [1, 1, 1, 1, 1, 1, 0] },
+  { name: 'Read 20 pages', streak: 5, days: [0, 1, 1, 1, 1, 1, 0] },
+  { name: 'Drink water', streak: 21, days: [1, 1, 1, 1, 1, 1, 1] },
+];
+const dayLabels = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
+---
+
+<div class="pv">
+  <div class="pv-head">
+    <p class="pv-label">This week</p>
+    <ol class="days" aria-hidden="true">{dayLabels.map((d) => <li>{d}</li>)}</ol>
+  </div>
+  <ul class="habits">
+    {habits.map((h, hi) => (
+      <li class="habit">
+        <div class="habit-meta">
+          <span class="habit-name">{h.name}</span>
+          <span class="streak">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22c4 0 7-2.7 7-6.8 0-3.6-2.5-6-4.2-8.2-.5 2-1.6 3.2-2.8 3.6.3-3-1-6.2-3.8-8.6.2 3.4-2 5.6-3.4 7.6A9.6 9.6 0 0 0 5 15.2C5 19.3 8 22 12 22Z" fill="currentColor" /></svg>
+            {h.streak}
+          </span>
+        </div>
+        <ol class="dots">
+          {h.days.map((on, di) => (
+            <li class:list={['dot', { on }]} style={`--d:${hi * 90 + di * 45}ms`}></li>
+          ))}
+        </ol>
+      </li>
+    ))}
+  </ul>
+</div>
+
+<style>
+  .pv { display: grid; gap: 0.9rem; }
+  .pv-head { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 1rem; }
+  .pv-label { font-size: 0.72rem; color: var(--text-faint); text-transform: uppercase; letter-spacing: 0.08em; }
+  .days, .dots { display: grid; grid-template-columns: repeat(7, 18px); gap: 6px; padding: 0; margin: 0; list-style: none; }
+  .days li { font-size: 0.66rem; color: var(--text-faint); text-align: center; }
+  .habits { display: grid; gap: 0.7rem; }
+  .habit {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.7rem 0.8rem;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+  }
+  .habit-meta { display: grid; gap: 0.15rem; min-width: 0; }
+  .habit-name { font-size: 0.82rem; font-weight: 550; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .streak { display: inline-flex; align-items: center; gap: 0.25rem; font-size: 0.72rem; color: #fb923c; font-variant-numeric: tabular-nums; }
+  .streak svg { width: 12px; height: 12px; }
+  .dot {
+    width: 18px;
+    height: 18px;
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.06);
+  }
+  .dot.on {
+    background: linear-gradient(135deg, #fdba74, #f97316);
+    box-shadow: 0 0 10px -2px rgba(249, 115, 22, 0.6);
+    transform: scale(0.4);
+    opacity: 0;
+    transition: transform 0.5s var(--ease-out) var(--d), opacity 0.4s var(--d);
+  }
+  :global(.is-visible) .dot.on { transform: none; opacity: 1; }
+  @media (max-width: 360px) {
+    .days, .dots { grid-template-columns: repeat(7, 14px); gap: 4px; }
+    .dot { width: 14px; height: 14px; border-radius: 5px; }
+  }
+</style>

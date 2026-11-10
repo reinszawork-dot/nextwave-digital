@@ -1,0 +1,193 @@
+---
+import Base from '../../layouts/Base.astro';
+import Icon from '../../components/Icon.astro';
+import ProductIcon from '../../components/ProductIcon.astro';
+import ProductPreview from '../../components/ProductPreview.astro';
+import { products, type Product } from '../../data/products';
+
+export function getStaticPaths() {
+  return products.map((product) => ({ params: { slug: product.id }, props: { product } }));
+}
+
+interface Props {
+  product: Product;
+}
+const { product } = Astro.props;
+const others = products.filter((p) => p.id !== product.id);
+---
+
+<Base title={`${product.name} — ${product.category} app`} description={product.summary}>
+  <article style={`--p-accent:${product.accent};--p-soft:${product.accentSoft}`}>
+    <section class="detail-hero">
+      <div class="hero-glow" aria-hidden="true"></div>
+      <div class="container hero-grid">
+        <div class="hero-copy">
+          <a href="/#products" class="back"><Icon name="arrow-left" size={16} /> All products</a>
+          <div class="title-row rise">
+            <ProductIcon id={product.id} size={56} />
+            <span class="tag">{product.category}</span>
+          </div>
+          <h1 class="rise" style="--reveal-delay: 80ms">{product.name}</h1>
+          <p class="pitch rise" style="--reveal-delay: 160ms">{product.pitch}</p>
+
+          <div class="cta rise" style="--reveal-delay: 240ms">
+            {
+              product.appUrl ? (
+                <a href={product.appUrl} class="btn btn-primary" target="_blank" rel="noopener">
+                  Open {product.name}
+                  <Icon name="external" size={16} />
+                </a>
+              ) : (
+                <span class="btn btn-primary" aria-disabled="true">Link coming soon</span>
+              )
+            }
+            <a href="/#contact" class="btn btn-ghost">Get in touch</a>
+          </div>
+        </div>
+
+        <div class="hero-preview reveal" style="--reveal-delay: 200ms">
+          <ProductPreview id={product.id} />
+          <p class="preview-note">Illustrative preview with sample data.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section features" aria-labelledby="features-title">
+      <div class="container">
+        <p class="eyebrow">What it does</p>
+        <h2 id="features-title">Everything {product.name} helps you with</h2>
+        <ul class="feature-grid">
+          {product.features.map((f, i) => (
+            <li class="feature reveal" style={`--reveal-delay:${(i % 3) * 90}ms`}>
+              <span class="check"><Icon name="check" size={18} /></span>
+              <h3>{f.title}</h3>
+              <p>{f.text}</p>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+
+    <section class="section more" aria-labelledby="more-title">
+      <div class="container">
+        <h2 id="more-title" class="more-title">More from NextWave</h2>
+        <ul class="more-grid">
+          {others.map((p) => (
+            <li>
+              <a href={`/products/${p.id}`} class="more-card" style={`--p-accent:${p.accent};--p-soft:${p.accentSoft}`}>
+                <ProductIcon id={p.id} size={44} />
+                <span class="more-text">
+                  <strong>{p.name}</strong>
+                  <span>{p.summary}</span>
+                </span>
+                <Icon name="arrow-right" size={18} class="more-arrow" />
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+  </article>
+</Base>
+
+<style>
+  .detail-hero {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    padding-top: clamp(2.5rem, 1.5rem + 4vw, 5rem);
+    padding-bottom: clamp(4rem, 2rem + 5vw, 7rem);
+  }
+  .hero-glow {
+    position: absolute;
+    z-index: -1;
+    top: -200px;
+    right: -10%;
+    width: 70vw;
+    max-width: 900px;
+    aspect-ratio: 1.4;
+    background: radial-gradient(closest-side, var(--p-soft), transparent);
+    filter: blur(30px);
+  }
+  .hero-grid { display: grid; gap: 3rem; align-items: center; }
+  .back {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: var(--fs-sm);
+    color: var(--text-muted);
+    margin-bottom: 2rem;
+    transition: color 0.2s;
+  }
+  .back:hover { color: var(--text); }
+  .title-row { display: flex; align-items: center; gap: 1rem; }
+  .tag {
+    font-size: var(--fs-xs);
+    font-weight: 550;
+    padding: 0.3rem 0.75rem;
+    border-radius: 999px;
+    color: var(--p-accent);
+    background: var(--p-soft);
+    border: 1px solid color-mix(in srgb, var(--p-accent) 25%, transparent);
+  }
+  h1 {
+    margin-top: 1.5rem;
+    font-size: clamp(2.75rem, 2rem + 4vw, 4.5rem);
+    letter-spacing: -0.045em;
+  }
+  .pitch { margin-top: 1.25rem; font-size: var(--fs-lg); color: var(--text-muted); max-width: 50ch; }
+  .cta { margin-top: 2.25rem; display: flex; flex-wrap: wrap; gap: 0.75rem; }
+  .cta .btn-primary { --btn-bg: color-mix(in srgb, var(--p-accent) 75%, #1e293b); }
+  .hero-preview { max-width: 460px; width: 100%; justify-self: center; }
+  .preview-note { margin-top: 0.75rem; font-size: var(--fs-xs); color: var(--text-faint); text-align: center; }
+
+  .features { padding-top: 0; }
+  .features h2 { margin-top: 0.75rem; font-size: clamp(1.75rem, 1.4rem + 1.5vw, 2.5rem); letter-spacing: -0.03em; max-width: 22ch; }
+  .features .eyebrow { color: var(--p-accent); }
+  .feature-grid { margin-top: 2.5rem; display: grid; gap: 1rem; }
+  .feature {
+    padding: 1.6rem;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border);
+    background: linear-gradient(180deg, rgba(20, 27, 49, 0.6), rgba(15, 21, 39, 0.3));
+  }
+  .check {
+    display: inline-grid;
+    place-items: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+    color: var(--p-accent);
+    background: var(--p-soft);
+    margin-bottom: 1rem;
+  }
+  .feature h3 { font-size: 1.0625rem; letter-spacing: -0.015em; margin-bottom: 0.4rem; }
+  .feature p { color: var(--text-muted); font-size: var(--fs-sm); }
+
+  .more { padding-top: 0; }
+  .more-title { font-size: 1.25rem; letter-spacing: -0.02em; margin-bottom: 1.25rem; }
+  .more-grid { display: grid; gap: 1rem; }
+  .more-card {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.25rem;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    background: var(--surface);
+    transition: border-color 0.3s, transform 0.3s var(--ease-out);
+  }
+  .more-card:hover { border-color: color-mix(in srgb, var(--p-accent) 40%, transparent); transform: translateY(-2px); }
+  .more-text { display: grid; gap: 0.2rem; flex: 1; }
+  .more-text span { font-size: var(--fs-sm); color: var(--text-muted); }
+  .more-card :global(.more-arrow) { color: var(--text-faint); flex: none; }
+
+  @media (min-width: 720px) {
+    .feature-grid { grid-template-columns: repeat(2, 1fr); }
+    .more-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (min-width: 960px) {
+    .hero-grid { grid-template-columns: 1.1fr 1fr; gap: 4rem; }
+    .feature-grid { grid-template-columns: repeat(3, 1fr); }
+  }
+</style>

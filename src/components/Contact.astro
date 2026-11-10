@@ -1,0 +1,92 @@
+---
+import Icon from './Icon.astro';
+import { site } from '../data/site';
+
+const email = site.contactEmail;
+---
+
+<section id="contact" class="section contact" aria-labelledby="contact-title">
+  <div class="container contact-grid">
+    <div class="reveal">
+      <p class="eyebrow">Contact</p>
+      <h2 id="contact-title">Let's talk.</h2>
+      <p class="intro">
+        Questions about our products, feedback, or an idea for working together? We would love to
+        hear from you.
+      </p>
+    </div>
+
+    <div class="contact-card reveal" style="--reveal-delay: 120ms">
+      <span class="contact-icon"><Icon name="mail" size={22} /></span>
+      <div class="contact-body">
+        <p class="label">Email us</p>
+        {
+          email ? (
+            <a class="email" href={`mailto:${email}`}>{email}</a>
+          ) : (
+            <p class="email placeholder">
+              Contact email coming soon
+            </p>
+          )
+        }
+        <p class="note">
+          {email ? 'We aim to reply within two working days.' : 'Our team inbox is being set up. Please check back shortly.'}
+        </p>
+      </div>
+      {
+        email ? (
+          <a class="btn btn-primary" href={`mailto:${email}`}>
+            Send an email
+            <Icon name="arrow-right" size={16} />
+          </a>
+        ) : (
+          <span class="btn btn-ghost" aria-disabled="true">Email coming soon</span>
+        )
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  .contact-grid { display: grid; gap: 2.5rem; align-items: center; }
+  h2 { margin-top: 1rem; font-size: var(--fs-h2); letter-spacing: -0.035em; }
+  .intro { margin-top: 1rem; font-size: var(--fs-lg); color: var(--text-muted); max-width: 44ch; }
+
+  .contact-card {
+    display: grid;
+    gap: 1.5rem;
+    padding: 2rem;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border);
+    background:
+      radial-gradient(100% 80% at 100% 0%, rgba(59, 130, 246, 0.12), transparent 60%),
+      var(--surface);
+  }
+  .contact-icon {
+    display: inline-grid;
+    place-items: center;
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    color: var(--accent-bright);
+    background: var(--accent-soft);
+    border: 1px solid rgba(59, 130, 246, 0.25);
+  }
+  .label { font-size: var(--fs-xs); text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-faint); font-weight: 600; }
+  .email {
+    display: inline-block;
+    margin-top: 0.4rem;
+    font-size: clamp(1.25rem, 1rem + 1vw, 1.6rem);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    word-break: break-word;
+  }
+  a.email:hover { color: var(--accent-bright); }
+  .email.placeholder { color: var(--text-muted); }
+  .note { margin-top: 0.5rem; font-size: var(--fs-sm); color: var(--text-faint); }
+  .contact-card .btn { justify-self: start; }
+
+  @media (min-width: 900px) {
+    .contact-grid { grid-template-columns: 1fr 1.1fr; gap: 4rem; }
+  }
+</style>
