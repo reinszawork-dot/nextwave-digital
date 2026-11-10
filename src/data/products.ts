@@ -5,7 +5,7 @@
  * `appUrl` is the live app link. While it is `null`, the site shows a
  * "Link coming soon" state instead of a dead button.
  */
-export type ProductId = 'wisely' | 'lull' | 'kindling';
+export type ProductId = 'wisely' | 'lull' | 'kindling' | 'studyhub';
 
 export interface Product {
   id: ProductId;
@@ -78,6 +78,26 @@ export const products: Product[] = [
       { title: 'Progress stats', text: '30-day, 20-week and full-year views, plus your best days and per-habit breakdowns.' },
       { title: 'Mood and notes', text: 'Add a mood and a note to your day to see how habits and wellbeing connect.' },
       { title: 'Badges', text: 'Earn badges as milestones are reached.' },
+    ],
+    appUrl: null,
+  },
+  {
+    id: 'studyhub',
+    name: 'StudyHub',
+    category: 'Study & Exams',
+    summary:
+      'A student productivity tool that helps students organise their studies, manage their time and track academic progress.',
+    pitch:
+      'StudyHub keeps everything a student needs in one calm place. Focus with a study timer, plan around exams and deadlines, and watch your hours, marks and streaks improve week by week.',
+    accent: '#2dd4bf',
+    accentSoft: 'rgba(45, 212, 191, 0.14)',
+    features: [
+      { title: 'Study timer', text: 'Pomodoro-style focus sessions with breaks, logged automatically to your study history.' },
+      { title: 'Exams and deadlines', text: 'A study calendar for exams and assignments, with countdowns on your dashboard.' },
+      { title: 'Tasks by subject', text: 'A task manager with due dates, priorities and completion checkboxes, organised by subject.' },
+      { title: 'Notes', text: 'Autosaving notes you can search, pin and file under each subject.' },
+      { title: 'Analytics', text: 'Interactive charts for weekly hours, monthly productivity, subject marks and time split.' },
+      { title: 'Goals and streaks', text: 'Daily and weekly study goals, personal goals, streaks and achievements to keep you going.' },
     ],
     appUrl: null,
   },

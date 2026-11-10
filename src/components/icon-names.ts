@@ -15,4 +15,5 @@ export type IconName =
   | 'external'
   | 'target'
   | 'compass'
-  | 'layers';
+  | 'layers'
+  | 'cap';

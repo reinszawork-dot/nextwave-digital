@@ -1,0 +1,127 @@
+---
+/* Illustrative StudyHub screen: daily goal ring, this week's study hours and the next exam. Sample data only. */
+const pct = 72;
+const R = 26;
+const C = 2 * Math.PI * R;
+const week = [
+  { d: 'M', h: 2.4 },
+  { d: 'T', h: 1.6 },
+  { d: 'W', h: 2.9 },
+  { d: 'T', h: 2.1 },
+  { d: 'F', h: 1.2 },
+  { d: 'S', h: 0.8 },
+  { d: 'S', h: 0 },
+];
+const max = 3;
+---
+
+<div class="pv">
+  <div class="top">
+    <div class="ring-wrap">
+      <svg viewBox="0 0 64 64" class="ring" aria-hidden="true">
+        <defs>
+          <linearGradient id="sh-ring" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#99f6e4" />
+            <stop offset="1" stop-color="#14b8a6" />
+          </linearGradient>
+        </defs>
+        <circle cx="32" cy="32" r={R} class="track" />
+        <circle cx="32" cy="32" r={R} class="fill" stroke="url(#sh-ring)" style={`--c:${C};--o:${C * (1 - pct / 100)}`} stroke-dasharray={C} />
+      </svg>
+      <span class="ring-num">{pct}%</span>
+    </div>
+    <div class="top-text">
+      <p class="pv-label">Daily goal</p>
+      <p class="big">1h 26m <span>of 2h</span></p>
+      <p class="streak">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22c4 0 7-2.7 7-6.8 0-3.6-2.5-6-4.2-8.2-.5 2-1.6 3.2-2.8 3.6.3-3-1-6.2-3.8-8.6.2 3.4-2 5.6-3.4 7.6A9.6 9.6 0 0 0 5 15.2C5 19.3 8 22 12 22Z" fill="currentColor" /></svg>
+        14-day streak
+      </p>
+    </div>
+  </div>
+
+  <div class="panel">
+    <p class="pv-label">This week · 11h</p>
+    <ol class="bars">
+      {week.map((w, i) => (
+        <li>
+          <span class="bar" style={`--h:${(w.h / max) * 100}%;--d:${i * 70}ms`}></span>
+          <span class="day">{w.d}</span>
+        </li>
+      ))}
+    </ol>
+  </div>
+
+  <div class="exam">
+    <span class="badge"><b>19</b>Nov</span>
+    <span class="exam-text"><span class="exam-name">Mathematics Paper 1</span><span class="exam-sub">Exam · 09:00</span></span>
+    <span class="pill">In 9 days</span>
+  </div>
+</div>
+
+<style>
+  .pv { display: grid; gap: 0.8rem; }
+  .pv-label { font-size: 0.72rem; color: var(--text-faint); text-transform: uppercase; letter-spacing: 0.08em; }
+  .top { display: flex; align-items: center; gap: 0.9rem; }
+  .ring-wrap { position: relative; width: 64px; height: 64px; flex: none; }
+  .ring { width: 100%; height: 100%; transform: rotate(-90deg); }
+  .ring circle { fill: none; stroke-width: 7; stroke-linecap: round; }
+  .track { stroke: rgba(255, 255, 255, 0.07); }
+  .fill { stroke-dashoffset: var(--c); transition: stroke-dashoffset 1.2s var(--ease-out); }
+  :global(.is-visible) .fill { stroke-dashoffset: var(--o); }
+  .ring-num { position: absolute; inset: 0; display: grid; place-items: center; font-size: 0.8rem; font-weight: 700; }
+  .top-text { display: grid; gap: 0.1rem; min-width: 0; }
+  .big { font-size: 1.05rem; font-weight: 650; }
+  .big span { font-size: 0.75rem; color: var(--text-faint); font-weight: 500; }
+  .streak { display: inline-flex; align-items: center; gap: 0.3rem; font-size: 0.72rem; color: #fb7185; }
+  .streak svg { width: 12px; height: 12px; }
+  .panel {
+    padding: 0.7rem 0.8rem 0.6rem;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+  }
+  .bars { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; height: 64px; margin: 0.55rem 0 0; padding: 0; list-style: none; }
+  .bars li { display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 4px; }
+  .bar {
+    width: 100%;
+    max-width: 16px;
+    height: 0;
+    min-height: 3px;
+    border-radius: 5px 5px 3px 3px;
+    background: linear-gradient(180deg, #5eead4, #0d9488);
+    transition: height 0.8s var(--ease-out) var(--d);
+  }
+  :global(.is-visible) .bar { height: var(--h); }
+  .day { font-size: 0.62rem; color: var(--text-faint); }
+  .exam {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    padding: 0.6rem 0.7rem;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+  }
+  .badge {
+    display: grid;
+    place-items: center;
+    width: 38px;
+    height: 40px;
+    flex: none;
+    border-radius: 10px;
+    background: rgba(251, 113, 133, 0.14);
+    color: #fb7185;
+    font-size: 0.6rem;
+    text-transform: uppercase;
+    line-height: 1.1;
+  }
+  .badge b { font-size: 0.95rem; }
+  .exam-text { display: grid; min-width: 0; flex: 1; }
+  .exam-name { font-size: 0.8rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .exam-sub { font-size: 0.68rem; color: var(--text-faint); }
+  .pill { font-size: 0.66rem; font-weight: 600; padding: 0.2rem 0.5rem; border-radius: 99px; background: rgba(45, 212, 191, 0.14); color: #5eead4; white-space: nowrap; }
+  @media (prefers-reduced-motion: reduce) {
+    .fill, .bar { transition: none; }
+  }
+</style>

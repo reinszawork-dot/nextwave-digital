@@ -182,7 +182,7 @@ import { site } from '../data/site';
     display: grid;
     gap: 0.75rem;
     width: 100%;
-    max-width: 860px;
+    max-width: 1080px;
   }
   .strip-item {
     display: flex;
@@ -206,7 +206,10 @@ import { site } from '../data/site';
   .strip-name { font-weight: 600; }
   .strip-cat { font-size: var(--fs-xs); color: var(--text-faint); }
 
-  @media (min-width: 640px) {
-    .product-strip { grid-template-columns: repeat(3, 1fr); }
+  @media (min-width: 560px) {
+    .product-strip { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (min-width: 960px) {
+    .product-strip { grid-template-columns: repeat(4, 1fr); }
   }
 </style>

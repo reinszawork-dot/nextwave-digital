@@ -6,7 +6,7 @@ import { products } from '../data/products';
 
 <section id="products" class="section products" aria-labelledby="products-title">
   <div class="container">
-    <SectionHeading eyebrow="Our products" title="Three apps. One goal: an easier everyday." id="products-title" align="center">
+    <SectionHeading eyebrow="Our products" title="Four apps. One goal: an easier everyday." id="products-title" align="center">
       <p>Each NextWave product tackles one part of daily life — and shares the same care for simplicity, privacy and design.</p>
     </SectionHeading>
 
@@ -29,11 +29,10 @@ import { products } from '../data/products';
     display: grid;
     gap: 1.25rem;
   }
-  @media (min-width: 720px) and (max-width: 1079px) {
+  @media (min-width: 720px) {
     .cards { grid-template-columns: repeat(2, 1fr); }
-    .cards > :global(:last-child) { grid-column: 1 / -1; max-width: calc(50% - 0.625rem); justify-self: center; }
   }
   @media (min-width: 1080px) {
-    .cards { grid-template-columns: repeat(3, 1fr); }
+    .cards { gap: 1.5rem; }
   }
 </style>

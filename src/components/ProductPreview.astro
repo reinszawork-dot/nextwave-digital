@@ -2,6 +2,7 @@
 import BudgetPreview from './previews/BudgetPreview.astro';
 import SleepPreview from './previews/SleepPreview.astro';
 import HabitPreview from './previews/HabitPreview.astro';
+import StudyPreview from './previews/StudyPreview.astro';
 import { getProduct, type ProductId } from '../data/products';
 
 interface Props {
@@ -9,7 +10,7 @@ interface Props {
 }
 const { id } = Astro.props;
 const product = getProduct(id)!;
-const Preview = { wisely: BudgetPreview, lull: SleepPreview, kindling: HabitPreview }[id];
+const Preview = { wisely: BudgetPreview, lull: SleepPreview, kindling: HabitPreview, studyhub: StudyPreview }[id];
 ---
 
 <figure class="window" style={`--p-accent:${product.accent};--p-soft:${product.accentSoft}`}>
