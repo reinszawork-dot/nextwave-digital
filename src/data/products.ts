@@ -39,7 +39,7 @@ export const products: Product[] = [
       { title: 'Recurring payments', text: 'Keep regular bills and subscriptions visible so nothing catches you off guard.' },
       { title: 'Reports and charts', text: 'Animated charts show spending by category and over time.' },
     ],
-    appUrl: null,
+    appUrl: 'https://wisely-phi.vercel.app',
   },
   {
     id: 'lull',
@@ -59,7 +59,7 @@ export const products: Product[] = [
       { title: '10-day course', text: 'Short daily lessons on understanding stress and breaking the stress-eating loop.' },
       { title: 'Journey insights', text: 'See how your sleep and your cravings relate to each other over time.' },
     ],
-    appUrl: null,
+    appUrl: 'https://lull-weld.vercel.app',
   },
   {
     id: 'kindling',
@@ -79,7 +79,7 @@ export const products: Product[] = [
       { title: 'Mood and notes', text: 'Add a mood and a note to your day to see how habits and wellbeing connect.' },
       { title: 'Badges', text: 'Earn badges as milestones are reached.' },
     ],
-    appUrl: null,
+    appUrl: 'https://kindling-inky.vercel.app',
   },
   {
     id: 'studyhub',
