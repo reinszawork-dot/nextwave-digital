@@ -99,7 +99,7 @@ export const products: Product[] = [
       { title: 'Analytics', text: 'Interactive charts for weekly hours, monthly productivity, subject marks and time split.' },
       { title: 'Goals and streaks', text: 'Daily and weekly study goals, personal goals, streaks and achievements to keep you going.' },
     ],
-    appUrl: null,
+    appUrl: 'https://studyhub-tau-eight.vercel.app',
   },
 ];
 
