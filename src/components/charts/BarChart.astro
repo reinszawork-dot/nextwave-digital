@@ -1,0 +1,144 @@
+---
+/**
+ * Interactive bar chart. Bars grow in when scrolled into view, reveal their value on
+ * hover/focus, and — when more than one view is given — smoothly morph between views.
+ */
+import { formatValue, niceMax, type Unit } from '../../lib/chart';
+
+interface View {
+  key: string;
+  label: string;
+  values: number[];
+  unit?: Unit;
+}
+interface Props {
+  labels: string[];
+  views: View[];
+  /** One colour for all bars, or one per bar. */
+  color?: string;
+  colors?: string[];
+  height?: number;
+  highlightMax?: boolean;
+  label: string;
+  class?: string;
+}
+
+const { labels, views, color = 'var(--accent)', colors, height = 200, highlightMax = false, label, class: className } = Astro.props;
+const first = views[0];
+const scale = (vals: number[]) => niceMax(Math.max(...vals) * 1.05);
+const max = scale(first.values);
+const maxIdx = first.values.indexOf(Math.max(...first.values));
+const payload = JSON.stringify(
+  views.map((v) => ({ key: v.key, values: v.values, max: scale(v.values), unit: v.unit ?? {} })),
+);
+---
+
+<figure class:list={['bc', className]} data-chart="bar" data-payload={payload} style={`--h:${height}px;--n:${labels.length}`}>
+  {views.length > 1 && (
+    <div class="bc-views" role="group" aria-label="Choose what the chart shows">
+      {views.map((v, i) => (
+        <button type="button" class="bc-view" data-view={i} aria-pressed={i === 0 ? 'true' : 'false'}>{v.label}</button>
+      ))}
+    </div>
+  )}
+  <div class="bc-plot">
+    <div class="bc-grid" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
+    <ol class="bc-bars">
+      {labels.map((l, i) => (
+        <li
+          class:list={['bc-item', { top: highlightMax && i === maxIdx }]}
+          style={`--c:${colors?.[i] ?? color};--v:${(first.values[i] / max) * 100}%;--d:${i * 60}ms`}
+          tabindex="0"
+          aria-label={`${l}: ${formatValue(first.values[i], first.unit)}`}
+        >
+          <span class="bc-bar"><span class="bc-tip num">{formatValue(first.values[i], first.unit)}</span></span>
+        </li>
+      ))}
+    </ol>
+  </div>
+  <ol class="bc-labels" aria-hidden="true">
+    {labels.map((l) => <li>{l}</li>)}
+  </ol>
+  <figcaption class="sr-only">{label}</figcaption>
+</figure>
+
+<style>
+  .bc { margin: 0; display: grid; gap: 0.7rem; }
+  .bc-views {
+    display: inline-flex;
+    justify-self: start;
+    flex-wrap: wrap;
+    gap: 2px;
+    padding: 3px;
+    border-radius: 18px;
+    background: var(--bg-2);
+    border: 1px solid var(--border);
+  }
+  .bc-view {
+    border: 0;
+    background: transparent;
+    padding: 0.38rem 0.85rem;
+    border-radius: 999px;
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: background-color 0.25s, color 0.25s, box-shadow 0.25s;
+  }
+  .bc-view:hover { color: var(--text); }
+  .bc-view[aria-pressed='true'] { background: var(--surface-2); color: var(--text); box-shadow: var(--shadow-sm); }
+
+  .bc-plot { position: relative; height: var(--h); }
+  .bc-grid { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: space-between; }
+  .bc-grid span { height: 1px; background: var(--border); }
+  .bc-grid span:last-child { background: var(--border-strong); }
+
+  .bc-bars, .bc-labels {
+    display: grid;
+    grid-template-columns: repeat(var(--n), minmax(0, 1fr));
+    gap: clamp(6px, 2%, 18px);
+  }
+  .bc-bars { position: absolute; inset: 0; align-items: end; }
+  .bc-item { position: relative; height: 100%; display: flex; align-items: flex-end; justify-content: center; outline: none; cursor: default; }
+  .bc-bar {
+    position: relative;
+    width: 100%;
+    max-width: 44px;
+    height: var(--v);
+    min-height: 2px;
+    border-radius: 8px 8px 3px 3px;
+    background: linear-gradient(180deg, color-mix(in srgb, var(--c) 72%, white), var(--c));
+    opacity: 0.55;
+    transform-origin: bottom;
+    transform: scaleY(0);
+    transition:
+      transform 1s var(--ease-out) var(--d),
+      height 0.7s var(--ease-out),
+      opacity 0.3s;
+  }
+  .bc-item.top .bc-bar { opacity: 0.95; }
+  .bc.is-visible .bc-bar { transform: scaleY(1); }
+  .bc-item:hover .bc-bar,
+  .bc-item:focus-visible .bc-bar { opacity: 1; }
+  .bc-item:focus-visible .bc-bar { outline: 2px solid var(--accent); outline-offset: 3px; }
+  .bc-tip {
+    position: absolute;
+    left: 50%;
+    bottom: calc(100% + 8px);
+    transform: translate(-50%, 4px);
+    padding: 0.25rem 0.5rem;
+    border-radius: 8px;
+    background: rgba(30, 29, 26, 0.92);
+    color: #f6f3ec;
+    font-size: 0.72rem;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s, transform 0.25s var(--ease-out);
+  }
+  .bc-item:hover .bc-tip,
+  .bc-item:focus-visible .bc-tip,
+  .bc-item.top .bc-tip.always { opacity: 1; transform: translate(-50%, 0); }
+
+  .bc-labels { font-family: var(--font-mono); font-size: 0.68rem; color: var(--text-faint); text-align: center; }
+  .bc-labels li { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+</style>

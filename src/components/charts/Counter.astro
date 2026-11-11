@@ -1,0 +1,13 @@
+---
+/** A number that counts up when it scrolls into view. Renders the final value without JS. */
+import { formatValue, type Unit } from '../../lib/chart';
+
+interface Props {
+  value: number;
+  unit?: Unit;
+  class?: string;
+}
+const { value, unit = {}, class: className } = Astro.props;
+---
+
+<span class:list={['num', className]} data-count={value} data-unit={JSON.stringify(unit)}>{formatValue(value, unit)}</span>

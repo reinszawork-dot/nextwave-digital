@@ -1,6 +1,7 @@
 ---
 import Icon from './Icon.astro';
 import { site } from '../data/site';
+import { products } from '../data/products';
 
 const email = site.contactEmail;
 ---
@@ -9,14 +10,26 @@ const email = site.contactEmail;
   <div class="container contact-grid">
     <div class="reveal">
       <p class="eyebrow">Contact</p>
-      <h2 id="contact-title">Let's talk.</h2>
+      <h2 id="contact-title">Let's <span class="em">talk.</span></h2>
       <p class="intro">
         Questions about our products, feedback, or an idea for working together? We would love to
         hear from you.
       </p>
+      <ul class="try">
+        {products.filter((p) => p.appUrl).map((p) => (
+          <li>
+            <a href={p.appUrl!} target="_blank" rel="noopener" style={`--p-accent:${p.accent}`}>
+              <span class="dot" aria-hidden="true"></span>
+              Try {p.name}
+              <Icon name="arrow-up-right" size={14} />
+              <span class="sr-only">(opens in a new tab)</span>
+            </a>
+          </li>
+        ))}
+      </ul>
     </div>
 
-    <div class="contact-card reveal" style="--reveal-delay: 120ms">
+    <div class="contact-card reveal" style="--reveal-delay: 120ms" data-spotlight>
       <span class="contact-icon"><Icon name="mail" size={22} /></span>
       <div class="contact-body">
         <p class="label">Email us</p>
@@ -24,9 +37,7 @@ const email = site.contactEmail;
           email ? (
             <a class="email" href={`mailto:${email}`}>{email}</a>
           ) : (
-            <p class="email placeholder">
-              Contact email coming soon
-            </p>
+            <p class="email placeholder">Contact email coming soon</p>
           )
         }
         <p class="note">
@@ -49,18 +60,41 @@ const email = site.contactEmail;
 
 <style>
   .contact-grid { display: grid; gap: 2.5rem; align-items: center; }
-  h2 { margin-top: 1rem; font-size: var(--fs-h2); letter-spacing: -0.035em; }
+  h2 { margin-top: 1rem; font-size: clamp(2.6rem, 1.8rem + 3.5vw, 4.5rem); font-weight: 400; letter-spacing: -0.035em; }
   .intro { margin-top: 1rem; font-size: var(--fs-lg); color: var(--text-muted); max-width: 44ch; }
+  .try { margin-top: 1.75rem; display: flex; flex-wrap: wrap; gap: 0.5rem; }
+  .try a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.4rem 0.8rem;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    font-size: 0.85rem;
+    transition: border-color 0.25s, background-color 0.25s, transform 0.3s var(--ease-out);
+  }
+  .try a:hover { border-color: color-mix(in srgb, var(--p-accent) 45%, transparent); background: var(--surface-2); transform: translateY(-1px); }
+  .try .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--p-accent); }
+  .try :global(svg) { color: var(--text-faint); }
 
   .contact-card {
+    position: relative;
+    overflow: hidden;
     display: grid;
     gap: 1.5rem;
-    padding: 2rem;
-    border-radius: var(--radius-lg);
+    padding: clamp(1.75rem, 1.25rem + 2vw, 2.75rem);
+    border-radius: var(--radius-xl);
     border: 1px solid var(--border);
-    background:
-      radial-gradient(100% 80% at 100% 0%, rgba(59, 130, 246, 0.12), transparent 60%),
-      var(--surface);
+    background: var(--surface);
+    box-shadow: var(--shadow);
+  }
+  .contact-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(320px circle at var(--mx, 90%) var(--my, 0%), rgba(194, 106, 72, 0.1), transparent 70%);
+    pointer-events: none;
   }
   .contact-icon {
     display: inline-grid;
@@ -68,25 +102,24 @@ const email = site.contactEmail;
     width: 48px;
     height: 48px;
     border-radius: 14px;
-    color: var(--accent-bright);
+    color: var(--accent);
     background: var(--accent-soft);
-    border: 1px solid rgba(59, 130, 246, 0.25);
   }
-  .label { font-size: var(--fs-xs); text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-faint); font-weight: 600; }
+  .label { font-family: var(--font-mono); font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-faint); }
   .email {
     display: inline-block;
-    margin-top: 0.4rem;
-    font-size: clamp(1.25rem, 1rem + 1vw, 1.6rem);
-    font-weight: 600;
+    margin-top: 0.45rem;
+    font-family: var(--font-serif);
+    font-size: clamp(1.5rem, 1.2rem + 1.2vw, 2.1rem);
     letter-spacing: -0.02em;
     word-break: break-word;
   }
-  a.email:hover { color: var(--accent-bright); }
+  a.email:hover { color: var(--accent); }
   .email.placeholder { color: var(--text-muted); }
   .note { margin-top: 0.5rem; font-size: var(--fs-sm); color: var(--text-faint); }
   .contact-card .btn { justify-self: start; }
 
   @media (min-width: 900px) {
-    .contact-grid { grid-template-columns: 1fr 1.1fr; gap: 4rem; }
+    .contact-grid { grid-template-columns: 1fr 1.05fr; gap: 5rem; }
   }
 </style>

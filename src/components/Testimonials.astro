@@ -1,0 +1,53 @@
+---
+/**
+ * Testimonials. Renders nothing until real, permitted quotes are added to
+ * src/data/testimonials.ts — we never show invented reviews.
+ */
+import SectionHeading from './SectionHeading.astro';
+import Icon from './Icon.astro';
+import ProductIcon from './ProductIcon.astro';
+import { testimonials } from '../data/testimonials';
+---
+
+{testimonials.length > 0 && (
+  <section id="testimonials" class="section testimonials" aria-labelledby="testimonials-title">
+    <div class="container">
+      <SectionHeading eyebrow="Testimonials" title="In their words." emphasis="their words." id="testimonials-title" align="center" />
+      <ul class="quotes">
+        {testimonials.map((t, i) => (
+          <li class="quote reveal" style={`--reveal-delay:${(i % 3) * 90}ms`}>
+            <Icon name="quote" size={22} class="q" />
+            <blockquote><p>{t.quote}</p></blockquote>
+            <p class="who">
+              {t.product && <ProductIcon id={t.product} size={28} />}
+              <span><strong>{t.name}</strong>{t.role && <span class="role">{t.role}</span>}</span>
+            </p>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+)}
+
+<style>
+  .quotes { margin-top: clamp(2.5rem, 2rem + 2vw, 3.5rem); display: grid; gap: 1.25rem; }
+  .quote {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    padding: 2rem;
+    border-radius: var(--radius-xl);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-sm);
+  }
+  .quote :global(.q) { color: var(--accent); }
+  blockquote { margin: 0; flex: 1; }
+  blockquote p { font-family: var(--font-serif); font-size: 1.25rem; line-height: 1.45; }
+  .who { display: flex; align-items: center; gap: 0.7rem; font-size: var(--fs-sm); }
+  .who span { display: grid; }
+  .role { color: var(--text-faint); font-size: 0.8rem; }
+  @media (min-width: 900px) {
+    .quotes { grid-template-columns: repeat(3, 1fr); }
+  }
+</style>

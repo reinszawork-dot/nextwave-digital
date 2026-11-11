@@ -25,9 +25,14 @@ const pillars: { icon: IconName; title: string; text: string }[] = [
   <div class="container">
     <div class="vision-panel reveal">
       <div class="panel-glow" aria-hidden="true"></div>
+      <svg class="waves" viewBox="0 0 1200 300" preserveAspectRatio="none" aria-hidden="true">
+        <path d="M0 180 C 200 120, 400 240, 600 180 S 1000 120, 1200 180" />
+        <path d="M0 205 C 220 150, 420 260, 620 200 S 1020 140, 1200 205" />
+        <path d="M0 155 C 180 95, 380 215, 580 155 S 980 95, 1200 155" />
+      </svg>
       <p class="eyebrow">Our vision</p>
       <h2 id="vision-title">
-        Useful software for <span class="gradient-text">every part of everyday life.</span>
+        Useful software for <span class="em">every part of everyday life.</span>
       </h2>
       <p class="vision-lede">
         Our ambition is to build a family of digital products people reach for every day because
@@ -38,7 +43,7 @@ const pillars: { icon: IconName; title: string; text: string }[] = [
       <ul class="pillars">
         {pillars.map((p, i) => (
           <li class="reveal" style={`--reveal-delay:${120 + i * 90}ms`}>
-            <Icon name={p.icon} size={22} />
+            <span class="pillar-icon"><Icon name={p.icon} size={20} /></span>
             <div>
               <h3>{p.title}</h3>
               <p>{p.text}</p>
@@ -55,52 +60,80 @@ const pillars: { icon: IconName; title: string; text: string }[] = [
     position: relative;
     overflow: hidden;
     isolation: isolate;
-    padding: clamp(2rem, 1rem + 5vw, 5rem);
-    border-radius: calc(var(--radius-lg) + 8px);
-    border: 1px solid var(--border);
-    background:
-      linear-gradient(180deg, rgba(20, 27, 49, 0.85), rgba(11, 16, 32, 0.9));
+    padding: clamp(2rem, 1rem + 5vw, 5.5rem);
+    border-radius: var(--radius-xl);
+    background: #1e1d1a;
+    color: #f3efe6;
+    box-shadow: var(--shadow-lg);
   }
   .panel-glow {
     position: absolute;
     z-index: -1;
-    inset: auto -10% -60% -10%;
+    inset: -30% -10% auto 30%;
     height: 120%;
     background:
-      radial-gradient(50% 50% at 30% 50%, rgba(59, 130, 246, 0.22), transparent 70%),
-      radial-gradient(40% 40% at 75% 60%, rgba(34, 211, 238, 0.12), transparent 70%);
+      radial-gradient(45% 45% at 60% 40%, rgba(194, 106, 72, 0.32), transparent 70%),
+      radial-gradient(35% 35% at 90% 70%, rgba(62, 90, 126, 0.35), transparent 70%);
+    animation: glow-drift 18s ease-in-out infinite alternate;
   }
-  .vision-panel::after {
-    content: '';
+  @keyframes glow-drift { to { transform: translate(-8%, 6%) scale(1.08); } }
+  .waves {
     position: absolute;
     z-index: -1;
-    inset: 0;
-    background-image: radial-gradient(rgba(148, 163, 214, 0.12) 1px, transparent 1px);
-    background-size: 22px 22px;
-    mask-image: linear-gradient(to bottom, transparent, #000 70%);
-    -webkit-mask-image: linear-gradient(to bottom, transparent, #000 70%);
+    left: -5%;
+    right: -5%;
+    bottom: -10px;
+    width: 110%;
+    height: 220px;
+    opacity: 0.5;
   }
+  .waves path {
+    fill: none;
+    stroke: rgba(228, 160, 124, 0.45);
+    stroke-width: 1;
+    vector-effect: non-scaling-stroke;
+    animation: wave-sway 10s ease-in-out infinite alternate;
+  }
+  .waves path:nth-child(2) { stroke: rgba(243, 239, 230, 0.18); animation-delay: -3s; }
+  .waves path:nth-child(3) { stroke: rgba(150, 172, 204, 0.3); animation-delay: -6s; }
+  @keyframes wave-sway { to { transform: translate(-3%, 14px); } }
+  .eyebrow { color: #a8a294; }
   h2 {
-    margin-top: 1rem;
+    margin-top: 1.25rem;
     font-size: var(--fs-h2);
-    letter-spacing: -0.035em;
-    max-width: 18ch;
+    font-weight: 400;
+    letter-spacing: -0.03em;
+    max-width: 17ch;
+    color: #f8f5ee;
   }
+  h2 .em { color: #e4a07c; }
   .vision-lede {
     margin-top: 1.5rem;
-    max-width: 62ch;
+    max-width: 60ch;
     font-size: var(--fs-lg);
-    color: var(--text-muted);
+    color: #bdb6a8;
   }
   .pillars {
-    margin-top: clamp(2.5rem, 2rem + 2vw, 4rem);
+    margin-top: clamp(2.5rem, 2rem + 3vw, 4.5rem);
+    padding-top: clamp(2rem, 1.5rem + 2vw, 3rem);
+    border-top: 1px solid rgba(243, 239, 230, 0.12);
     display: grid;
     gap: 1.75rem 2.5rem;
   }
   .pillars li { display: flex; gap: 1rem; align-items: flex-start; }
-  .pillars :global(svg) { flex: none; color: var(--accent-bright); margin-top: 2px; }
-  .pillars h3 { font-size: 1.0625rem; margin-bottom: 0.35rem; letter-spacing: -0.015em; }
-  .pillars p { color: var(--text-muted); font-size: var(--fs-sm); }
+  .pillar-icon {
+    display: inline-grid;
+    place-items: center;
+    flex: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    color: #e4a07c;
+    background: rgba(243, 239, 230, 0.06);
+    border: 1px solid rgba(243, 239, 230, 0.1);
+  }
+  .pillars h3 { font-size: 1.0625rem; font-weight: 500; margin-bottom: 0.35rem; color: #f8f5ee; }
+  .pillars p { color: #a8a294; font-size: var(--fs-sm); }
 
   @media (min-width: 900px) {
     .pillars { grid-template-columns: repeat(3, 1fr); }

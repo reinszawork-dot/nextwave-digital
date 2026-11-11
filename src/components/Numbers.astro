@@ -1,0 +1,144 @@
+---
+/**
+ * "By the numbers" — every figure here is real: counted from products.ts or measured
+ * from each app's source by scripts/collect-stats.mjs (see src/data/stats.json).
+ */
+import SectionHeading from './SectionHeading.astro';
+import Counter from './charts/Counter.astro';
+import BarChart from './charts/BarChart.astro';
+import Ring from './charts/Ring.astro';
+import Icon from './Icon.astro';
+import { products } from '../data/products';
+import stats from '../data/stats.json';
+
+type AppStats = (typeof stats.apps)['wisely'];
+const appStats = products.map((p) => ({ p, s: (stats.apps as Record<string, AppStats>)[p.id] }));
+const live = products.filter((p) => p.appUrl).length;
+const features = products.reduce((n, p) => n + p.features.length, 0);
+const offline = appStats.filter((a) => a.s.offline).length;
+const installable = appStats.filter((a) => a.s.installable).length;
+const lightest = appStats.reduce((a, b) => (a.s.gzipKB < b.s.gzipKB ? a : b));
+const measured = new Date(stats.measuredOn).toLocaleDateString('en-ZA', { day: 'numeric', month: 'long', year: 'numeric' });
+
+const kpis = [
+  { icon: 'layers', value: live, label: 'Live products', note: 'Open in any browser' },
+  { icon: 'activity', value: features, label: 'Core features', note: 'Across the four apps' },
+  { icon: 'no-account', value: 0, label: 'Accounts required', note: 'No sign-up, no passwords' },
+  { icon: 'feather', value: lightest.s.gzipKB, label: `KB — all of ${lightest.p.name}'s code`, note: 'Every file, compressed', decimals: 1 },
+] as const;
+---
+
+<section id="numbers" class="section numbers" aria-labelledby="numbers-title">
+  <div class="container">
+    <SectionHeading eyebrow="By the numbers" title="Small, fast and private by design." emphasis="private by design." id="numbers-title">
+      <p>Real figures from our four live apps — measured straight from their source code.</p>
+    </SectionHeading>
+
+    <ul class="kpi-row">
+      {kpis.map((k, i) => (
+        <li class="kpi reveal" style={`--reveal-delay:${i * 80}ms`}>
+          <span class="kpi-icon"><Icon name={k.icon} size={18} /></span>
+          <Counter value={k.value} unit={{ decimals: 'decimals' in k ? k.decimals : 0 }} class="kpi-value" />
+          <span class="kpi-label">{k.label}</span>
+          <span class="kpi-note">{k.note}</span>
+        </li>
+      ))}
+    </ul>
+
+    <div class="board">
+      <div class="board-card board-bars reveal">
+        <div class="board-head">
+          <h3>App by app</h3>
+          <p>Compare the four apps. Hover or tab through the bars for exact values.</p>
+        </div>
+        <BarChart
+          labels={products.map((p) => p.name)}
+          colors={products.map((p) => p.accent)}
+          views={[
+            { key: 'size', label: 'Code size (KB)', values: appStats.map((a) => a.s.gzipKB), unit: { suffix: ' KB', decimals: 1 } },
+            { key: 'loc', label: 'Lines of code', values: appStats.map((a) => a.s.linesOfCode) },
+            { key: 'features', label: 'Core features', values: products.map((p) => p.features.length) },
+          ]}
+          height={230}
+          label="Comparison of the four NextWave apps by compressed size, lines of code and core features"
+        />
+      </div>
+
+      <div class="board-card board-rings reveal" style="--reveal-delay: 120ms">
+        <div class="board-head">
+          <h3>Built to the same standard</h3>
+          <p>Checked in every app's code.</p>
+        </div>
+        <div class="rings">
+          <Ring value={offline} max={products.length} display={`${offline}/${products.length}`} label="Work offline" sub="Service worker included" color="var(--accent)" size={104} />
+          <Ring value={installable} max={products.length} display={`${installable}/${products.length}`} label="Installable" sub="Add to home screen" color="var(--accent-2)" size={104} />
+          <Ring value={products.length} max={products.length} display={`${products.length}/${products.length}`} label="Data on device" sub="Saved in your browser" color="#4f8a68" size={104} />
+        </div>
+      </div>
+    </div>
+
+    <p class="source num">Source: measured from each app's published code on {measured}. Sizes are gzip-compressed and exclude fonts and libraries loaded from external CDNs.</p>
+  </div>
+</section>
+
+<style>
+  .kpi-row {
+    margin-top: clamp(2.5rem, 2rem + 2vw, 3.5rem);
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    background: var(--surface);
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+  }
+  .kpi {
+    display: grid;
+    gap: 0.3rem;
+    align-content: start;
+    padding: clamp(1.25rem, 1rem + 1vw, 2rem);
+    border-right: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+  .kpi:nth-child(2n) { border-right: 0; }
+  .kpi:nth-child(n + 3) { border-bottom: 0; }
+  .kpi-icon { color: var(--accent); margin-bottom: 0.9rem; }
+  .kpi :global(.kpi-value) {
+    font-family: var(--font-serif);
+    font-size: clamp(2.6rem, 2rem + 2.5vw, 4rem);
+    font-weight: 400;
+    line-height: 1;
+    letter-spacing: -0.03em;
+  }
+  .kpi-label { font-weight: 500; font-size: var(--fs-sm); margin-top: 0.4rem; }
+  .kpi-note { font-size: 0.8rem; color: var(--text-faint); }
+
+  .board { margin-top: 1.25rem; display: grid; gap: 1.25rem; }
+  .board-card {
+    padding: clamp(1.25rem, 1rem + 1vw, 2rem);
+    border-radius: var(--radius-xl);
+    border: 1px solid var(--border);
+    background: var(--surface);
+    box-shadow: var(--shadow-sm);
+    min-width: 0;
+  }
+  .board-head { margin-bottom: 1.5rem; }
+  .board-head h3 { font-size: 1.15rem; font-weight: 500; }
+  .board-head p { font-size: 0.85rem; color: var(--text-faint); margin-top: 0.2rem; }
+  .rings { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+  .source { margin-top: 1.25rem; font-size: 0.72rem; color: var(--text-faint); }
+
+  @media (min-width: 900px) {
+    .kpi-row { grid-template-columns: repeat(4, 1fr); }
+    .kpi { border-bottom: 0; }
+    .kpi:nth-child(2n) { border-right: 1px solid var(--border); }
+    .kpi:last-child { border-right: 0; }
+    .board { grid-template-columns: 1.4fr 1fr; }
+    .rings { grid-template-columns: 1fr 1fr; row-gap: 1.75rem; }
+    .rings :global(figure:last-child) { grid-column: 1 / -1; }
+  }
+  @media (max-width: 420px) {
+    .rings { grid-template-columns: 1fr 1fr; }
+    .rings :global(figure:last-child) { grid-column: 1 / -1; }
+  }
+</style>

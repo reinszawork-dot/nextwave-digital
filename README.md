@@ -1,8 +1,8 @@
 # NextWave Digital — company website
 
-The official website of **NextWave Digital**, home of Wisely (budgeting), Lull (sleep & stress) and Kindling (habits).
+The official website of **NextWave Digital**, home of Wisely (budgeting), Lull (sleep & stress), Kindling (habits) and StudyHub (study).
 
-Built with [Astro](https://astro.build) as a fully static site: no client framework, very little JavaScript, fast to load and easy for search engines to read.
+Built with [Astro](https://astro.build) as a fully static site: no client framework, one small script, fast to load and easy for search engines to read. Icons are [Lucide](https://lucide.dev); charts are hand-built SVG components (no chart library).
 
 ## Run it locally
 
@@ -21,11 +21,16 @@ npm run preview    # serve the production build locally
 | --- | --- |
 | Company name, tagline, **contact email**, nav links | `src/data/site.ts` |
 | Products, descriptions, features, **live app links** | `src/data/products.ts` |
-| Colours, typography, spacing (design tokens) | `src/styles/global.css` |
+| Colours, typography, spacing (design tokens) | `src/styles/global.css` (warm cream / charcoal theme, Newsreader + Geist fonts) |
 | Page shell, SEO / Open Graph tags | `src/layouts/Base.astro` |
-| Home page sections | `src/components/Hero.astro`, `About.astro`, `Products.astro`, `Vision.astro`, `Contact.astro` |
+| Home page sections | `Hero`, `About`, `Products`, `Showcase`, `Numbers`, `Vision`, `Testimonials`, `Contact` in `src/components/` |
+| Charts (line/area, bar with views, ring, counter) | `src/components/charts/*`, helpers in `src/lib/chart.ts` |
+| Interactions (reveals, count-ups, chart hover, tabs, spotlight) | `src/scripts/site.ts` |
+| **Real** figures on "By the numbers" | `src/data/stats.json`: regenerate with `node scripts/collect-stats.mjs` (measures the committed code of the sibling app folders) |
+| **Sample** data for the illustrative dashboards | `src/data/showcase.ts` (always labelled "Sample data" on the site) |
+| Testimonials (section stays hidden while empty) | `src/data/testimonials.ts`: add only real quotes, with permission |
 | Product cards & previews | `src/components/ProductCard.astro`, `ProductPreview.astro`, `previews/*` |
-| Product detail pages | `src/pages/products/[slug].astro` → `/products/wisely`, `/products/lull`, `/products/kindling` |
+| Product detail pages | `src/pages/products/[slug].astro` → `/products/wisely`, `/products/lull`, `/products/kindling`, `/products/studyhub` |
 | Logo / favicon | `src/components/Logo.astro`, `public/favicon.svg` |
 | PNG icons + social share image | `node scripts/make-icons.mjs` regenerates `public/*.png` |
 

@@ -1,0 +1,93 @@
+---
+/** Illustrative analytics dashboard for one product, built from the sample data in showcase.ts. */
+import LineChart from './charts/LineChart.astro';
+import BarChart from './charts/BarChart.astro';
+import Ring from './charts/Ring.astro';
+import Counter from './charts/Counter.astro';
+import { showcase } from '../data/showcase';
+import { getProduct, type ProductId } from '../data/products';
+
+interface Props {
+  id: ProductId;
+}
+const { id } = Astro.props;
+const p = getProduct(id)!;
+const d = showcase[id];
+---
+
+<div class="dash" style={`--p-accent:${p.accent};--p-soft:${p.accentSoft}`}>
+  <ul class="kpis">
+    {d.kpis.map((k) => (
+      <li class="kpi">
+        <span class="kpi-label">{k.label}</span>
+        <Counter value={k.value} unit={k.unit} class="kpi-value" />
+      </li>
+    ))}
+  </ul>
+
+  <div class="tile tile-line">
+    <p class="tile-title">{d.line.title}</p>
+    <LineChart
+      labels={d.line.labels}
+      series={d.line.series.map((s) => ({ ...s, color: s.color ?? p.accent }))}
+      unit={d.line.unit}
+      labelEvery={d.line.labelEvery}
+      height={240}
+      label={`${p.name} sample chart: ${d.line.title}`}
+    />
+  </div>
+
+  <div class="tile tile-bars">
+    <p class="tile-title">{d.bars.title}</p>
+    <BarChart
+      labels={d.bars.labels}
+      views={[{ key: 'main', label: d.bars.title, values: d.bars.values, unit: d.bars.unit }]}
+      color={p.accent}
+      height={170}
+      highlightMax
+      label={`${p.name} sample chart: ${d.bars.title}`}
+    />
+  </div>
+
+  <div class="tile tile-ring">
+    <Ring value={d.ring.value} max={d.ring.max} display={d.ring.display} label={d.ring.label} sub={d.ring.sub} color={p.accent} size={128} />
+  </div>
+</div>
+
+<style>
+  .dash {
+    display: grid;
+    gap: 0.9rem;
+    grid-template-columns: 1fr;
+  }
+  .kpis { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.9rem; }
+  .kpi,
+  .tile {
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-sm);
+  }
+  .kpi { padding: 0.9rem 1rem; display: grid; gap: 0.3rem; min-width: 0; }
+  .kpi-label { font-size: 0.75rem; color: var(--text-faint); line-height: 1.3; }
+  .kpi :global(.kpi-value) { font-size: clamp(1.1rem, 0.9rem + 1vw, 1.55rem); font-weight: 500; color: var(--text); white-space: nowrap; }
+  .tile { padding: 1.15rem 1.2rem 1rem; min-width: 0; }
+  .tile-line { display: flex; flex-direction: column; }
+  .tile-line :global(.lc) { flex: 1; }
+  .tile-title { font-size: 0.82rem; font-weight: 500; color: var(--text-muted); margin-bottom: 0.9rem; }
+  .tile-ring { display: grid; place-items: center; padding-block: 1.5rem; }
+
+  @media (min-width: 600px) and (max-width: 999px) {
+    .dash { grid-template-columns: 1fr 1fr; }
+    .kpis, .tile-line { grid-column: 1 / -1; }
+  }
+  @media (min-width: 1000px) {
+    .dash { grid-template-columns: 1.6fr 1fr; }
+    .kpis { grid-column: 1 / -1; }
+    .tile-line { grid-column: 1; grid-row: 2 / span 2; }
+  }
+  @media (max-width: 420px) {
+    .kpis { grid-template-columns: 1fr 1fr; }
+    .kpis li:last-child { grid-column: 1 / -1; }
+  }
+</style>

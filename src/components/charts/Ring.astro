@@ -1,0 +1,68 @@
+---
+/** Circular progress indicator that sweeps in when scrolled into view. */
+import { formatValue, type Unit } from '../../lib/chart';
+
+interface Props {
+  value: number;
+  max?: number;
+  size?: number;
+  stroke?: number;
+  color?: string;
+  /** Centre text; defaults to the percentage. */
+  display?: string;
+  /** Animate the centre number (counts up with the ring). */
+  countUnit?: Unit;
+  label: string;
+  sub?: string;
+  class?: string;
+}
+const { value, max = 100, size = 120, stroke = 9, color = 'var(--accent)', display, countUnit, label, sub, class: className } = Astro.props;
+const pct = Math.max(0, Math.min(100, (value / max) * 100));
+const r = 50 - stroke / 2;
+const centre = display ?? `${Math.round(pct)}%`;
+---
+
+<figure class:list={['ring', className]} data-chart="ring" style={`--size:${size}px;--c:${color};--p:${pct}`}>
+  <div class="ring-viz">
+    <svg viewBox="0 0 100 100" aria-hidden="true">
+      <circle cx="50" cy="50" r={r} class="track" stroke-width={stroke} />
+      <circle cx="50" cy="50" r={r} class="arc" stroke-width={stroke} pathLength="100" />
+    </svg>
+    <span class="ring-centre num">
+      {countUnit ? (
+        <span data-count={value} data-unit={JSON.stringify(countUnit)}>{formatValue(value, countUnit)}</span>
+      ) : centre}
+    </span>
+  </div>
+  <figcaption>
+    <span class="ring-label">{label}</span>
+    {sub && <span class="ring-sub">{sub}</span>}
+  </figcaption>
+</figure>
+
+<style>
+  .ring { margin: 0; display: grid; justify-items: center; gap: 0.75rem; text-align: center; }
+  .ring-viz { position: relative; width: var(--size); height: var(--size); }
+  .ring svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+  .ring circle { fill: none; stroke-linecap: round; }
+  .track { stroke: color-mix(in srgb, var(--c) 12%, var(--bg-2)); }
+  .arc {
+    stroke: var(--c);
+    stroke-dasharray: 100;
+    stroke-dashoffset: 100;
+    transition: stroke-dashoffset 1.6s var(--ease-out) 0.1s;
+  }
+  .ring.is-visible .arc { stroke-dashoffset: calc(100 - var(--p)); }
+  .ring-centre {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    font-size: calc(var(--size) * 0.2);
+    font-weight: 500;
+    color: var(--text);
+  }
+  figcaption { display: grid; gap: 0.15rem; }
+  .ring-label { font-size: var(--fs-sm); font-weight: 500; }
+  .ring-sub { font-size: 0.78rem; color: var(--text-faint); }
+</style>

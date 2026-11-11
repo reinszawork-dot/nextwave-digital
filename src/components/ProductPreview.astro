@@ -29,12 +29,9 @@ const Preview = { wisely: BudgetPreview, lull: SleepPreview, kindling: HabitPrev
     margin: 0;
     position: relative;
     border-radius: 18px;
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    background: linear-gradient(180deg, #121931, #0c1124);
-    box-shadow:
-      0 1px 0 rgba(255, 255, 255, 0.06) inset,
-      0 30px 60px -30px rgba(0, 0, 0, 0.8),
-      0 0 80px -40px var(--p-accent);
+    border: 1px solid var(--border);
+    background: var(--surface-2);
+    box-shadow: var(--shadow);
     overflow: hidden;
   }
   .window::before {
@@ -52,9 +49,10 @@ const Preview = { wisely: BudgetPreview, lull: SleepPreview, kindling: HabitPrev
     align-items: center;
     gap: 6px;
     padding: 0.7rem 0.9rem;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
   }
-  .chrome span { width: 9px; height: 9px; border-radius: 50%; background: rgba(255, 255, 255, 0.12); }
+  .chrome span { width: 9px; height: 9px; border-radius: 50%; background: rgba(41, 37, 30, 0.12); }
   .chrome p { margin-left: auto; margin-right: auto; padding-right: 33px; font-size: 0.72rem; color: var(--text-faint); font-weight: 500; }
   .screen { position: relative; padding: 1.15rem 1.15rem 1.3rem; }
 </style>

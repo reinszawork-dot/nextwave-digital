@@ -4,19 +4,22 @@ interface Props {
   title: string;
   id: string;
   align?: 'left' | 'center';
+  /** Words at the end of the title to set in serif italic accent. */
+  emphasis?: string;
 }
-const { eyebrow, title, id, align = 'left' } = Astro.props;
+const { eyebrow, title, id, align = 'left', emphasis } = Astro.props;
+const main = emphasis && title.endsWith(emphasis) ? title.slice(0, -emphasis.length) : title;
 ---
 
 <div class:list={['section-heading', 'reveal', align]}>
   <p class="eyebrow">{eyebrow}</p>
-  <h2 id={id}>{title}</h2>
+  <h2 id={id}>{main}{emphasis && main !== title && <span class="em">{emphasis}</span>}</h2>
   {Astro.slots.has('default') && <div class="intro"><slot /></div>}
 </div>
 
 <style>
-  .section-heading { display: grid; gap: 1rem; max-width: 720px; }
+  .section-heading { display: grid; gap: 1.1rem; max-width: 760px; }
   .section-heading.center { margin-inline: auto; text-align: center; justify-items: center; }
-  h2 { font-size: var(--fs-h2); letter-spacing: -0.035em; }
-  .intro { font-size: var(--fs-lg); color: var(--text-muted); max-width: 60ch; }
+  h2 { font-size: var(--fs-h2); font-weight: 400; letter-spacing: -0.03em; }
+  .intro { font-size: var(--fs-lg); color: var(--text-muted); max-width: 58ch; }
 </style>

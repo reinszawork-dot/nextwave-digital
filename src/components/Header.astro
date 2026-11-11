@@ -5,39 +5,44 @@ import { nav } from '../data/site';
 ---
 
 <header class="site-header" data-header>
-  <div class="container header-inner">
-    <a href="/#home" class="brand" aria-label="NextWave Digital — home">
-      <Logo />
-    </a>
+  <div class="container">
+    <div class="header-bar">
+      <a href="/#home" class="brand" aria-label="NextWave Digital — home">
+        <Logo />
+      </a>
 
-    <nav class="desktop-nav" aria-label="Primary">
-      <ul>
-        {nav.map((item) => (
-          <li><a href={item.href} class="nav-link">{item.label}</a></li>
-        ))}
-      </ul>
-    </nav>
+      <nav class="desktop-nav" aria-label="Primary">
+        <ul>
+          {nav.map((item) => (
+            <li><a href={item.href} class="nav-link">{item.label}</a></li>
+          ))}
+        </ul>
+      </nav>
 
-    <a href="/#products" class="btn btn-primary header-cta">Our products</a>
+      <a href="/#products" class="btn btn-primary header-cta">
+        Our products
+        <Icon name="arrow-right" size={16} />
+      </a>
 
-    <button
-      class="menu-toggle"
-      type="button"
-      aria-expanded="false"
-      aria-controls="mobile-menu"
-      data-menu-toggle
-    >
-      <span class="sr-only" data-menu-label>Open menu</span>
-      <Icon name="menu" size={22} class="icon-open" />
-      <Icon name="close" size={22} class="icon-close" />
-    </button>
+      <button
+        class="menu-toggle"
+        type="button"
+        aria-expanded="false"
+        aria-controls="mobile-menu"
+        data-menu-toggle
+      >
+        <span class="sr-only" data-menu-label>Open menu</span>
+        <Icon name="menu" size={20} class="icon-open" />
+        <Icon name="close" size={20} class="icon-close" />
+      </button>
+    </div>
   </div>
 
   <div class="mobile-menu" id="mobile-menu" data-menu hidden>
     <nav aria-label="Mobile">
       <ul>
-        {nav.map((item) => (
-          <li><a href={item.href} class="mobile-link" data-menu-link>{item.label}</a></li>
+        {nav.map((item, i) => (
+          <li style={`--i:${i}`}><a href={item.href} class="mobile-link" data-menu-link>{item.label}<Icon name="arrow-up-right" size={20} /></a></li>
         ))}
       </ul>
       <a href="/#products" class="btn btn-primary mobile-cta" data-menu-link>
@@ -54,57 +59,80 @@ import { nav } from '../data/site';
     top: 0;
     z-index: 50;
     height: var(--header-h);
-    border-bottom: 1px solid transparent;
-    transition: background-color 0.3s, border-color 0.3s, backdrop-filter 0.3s;
+    display: flex;
+    align-items: center;
   }
-  .site-header.is-scrolled,
-  .site-header.is-open {
-    background: rgba(7, 10, 19, 0.78);
-    backdrop-filter: saturate(160%) blur(16px);
-    -webkit-backdrop-filter: saturate(160%) blur(16px);
-    border-bottom-color: var(--border);
-  }
-  /* backdrop-filter would make the fixed mobile menu position relative to the header,
-     so drop it (and use a solid bar) while the menu is open. */
-  .site-header.is-open {
-    background: var(--bg);
-    backdrop-filter: none;
-    -webkit-backdrop-filter: none;
-  }
-  .header-inner {
-    height: 100%;
+  .site-header > .container { width: 100%; }
+  .header-bar {
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 1.5rem;
+    height: 56px;
+    padding: 0 0.5rem 0 1rem;
+    border-radius: 999px;
+    border: 1px solid transparent;
+    transition: background-color 0.4s, border-color 0.4s, box-shadow 0.4s, backdrop-filter 0.4s;
+  }
+  .site-header.is-scrolled .header-bar {
+    background: rgba(251, 250, 246, 0.72);
+    border-color: var(--border);
+    box-shadow: var(--shadow-sm);
+    backdrop-filter: saturate(140%) blur(14px);
+    -webkit-backdrop-filter: saturate(140%) blur(14px);
+  }
+  /* backdrop-filter would make the fixed mobile menu position relative to the bar,
+     so use a solid bar (no filter) while the menu is open. */
+  .site-header.is-open .header-bar {
+    background: var(--surface);
+    border-color: var(--border);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
   }
   .brand { display: inline-flex; border-radius: 8px; }
 
   .desktop-nav { display: none; }
-  .desktop-nav ul { display: flex; gap: 0.25rem; }
+  .desktop-nav ul { display: flex; gap: 0.15rem; }
   .nav-link {
+    position: relative;
     display: inline-block;
-    padding: 0.45rem 0.85rem;
+    padding: 0.45rem 0.9rem;
     border-radius: 999px;
     font-size: var(--fs-sm);
     color: var(--text-muted);
-    transition: color 0.2s, background-color 0.2s;
+    transition: color 0.25s, background-color 0.25s;
   }
-  .nav-link:hover { color: var(--text); background: rgba(255, 255, 255, 0.05); }
+  .nav-link:hover { color: var(--text); background: rgba(41, 37, 30, 0.05); }
+  .nav-link::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    bottom: 3px;
+    width: 4px;
+    height: 4px;
+    margin-left: -2px;
+    border-radius: 50%;
+    background: var(--accent);
+    transform: scale(0);
+    transition: transform 0.35s var(--ease-out);
+  }
   .nav-link[aria-current='true'] { color: var(--text); }
+  .nav-link[aria-current='true']::after { transform: scale(1); }
 
-  .header-cta { display: none; min-height: 40px; padding: 0.5rem 1.1rem; }
+  .header-cta { display: none; min-height: 42px; padding: 0.5rem 1.1rem; }
 
   .menu-toggle {
     display: inline-grid;
     place-items: center;
     width: 44px;
     height: 44px;
-    border-radius: 12px;
+    border-radius: 50%;
     border: 1px solid var(--border-strong);
-    background: rgba(255, 255, 255, 0.03);
+    background: var(--surface);
     cursor: pointer;
+    transition: transform 0.2s;
   }
+  .menu-toggle:active { transform: scale(0.94); }
   .menu-toggle :global(.icon-close) { display: none; }
   .menu-toggle[aria-expanded='true'] :global(.icon-open) { display: none; }
   .menu-toggle[aria-expanded='true'] :global(.icon-close) { display: block; }
@@ -112,26 +140,30 @@ import { nav } from '../data/site';
   .mobile-menu {
     position: fixed;
     inset: var(--header-h) 0 0 0;
-    background: rgba(7, 10, 19, 0.97);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    padding: 1.5rem var(--gutter) 2rem;
+    background: var(--bg);
+    padding: 1rem var(--gutter) 2rem;
     overflow-y: auto;
-    animation: menu-in 0.35s var(--ease-out);
+    animation: menu-in 0.4s var(--ease-out);
   }
   .mobile-menu[hidden] { display: none; }
-  .mobile-menu li { border-bottom: 1px solid var(--border); }
+  .mobile-menu li {
+    border-bottom: 1px solid var(--border);
+    animation: item-in 0.5s var(--ease-out) both;
+    animation-delay: calc(var(--i) * 45ms + 60ms);
+  }
   .mobile-link {
-    display: block;
-    padding: 1.05rem 0.25rem;
-    font-size: 1.5rem;
-    font-weight: 550;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.1rem 0.25rem;
+    font-family: var(--font-serif);
+    font-size: 2rem;
     letter-spacing: -0.02em;
   }
+  .mobile-link :global(svg) { color: var(--text-faint); }
   .mobile-cta { width: 100%; margin-top: 2rem; }
-  @keyframes menu-in {
-    from { opacity: 0; transform: translateY(-8px); }
-  }
+  @keyframes menu-in { from { opacity: 0; } }
+  @keyframes item-in { from { opacity: 0; transform: translateY(10px); } }
 
   @media (min-width: 900px) {
     .desktop-nav { display: block; }

@@ -1,0 +1,138 @@
+---
+import SectionHeading from './SectionHeading.astro';
+import ProductIcon from './ProductIcon.astro';
+import ProductDashboard from './ProductDashboard.astro';
+import Icon from './Icon.astro';
+import { products } from '../data/products';
+import { showcase } from '../data/showcase';
+---
+
+<section id="showcase" class="section section-band showcase" aria-labelledby="showcase-title">
+  <div class="container">
+    <SectionHeading eyebrow="Inside the apps" title="Clarity you can see." emphasis="you can see." id="showcase-title">
+      <p>
+        Every NextWave app turns everyday data into calm, readable insight. Explore the kinds of views
+        each one gives you — hover the charts to read the details.
+      </p>
+    </SectionHeading>
+
+    <div class="tabs reveal" data-tabs style={`--tab-accent:${products[0].accent}`}>
+      <div class="tablist" role="tablist" aria-label="Choose a product">
+        {products.map((p, i) => (
+          <button
+            type="button"
+            role="tab"
+            id={`tab-${p.id}`}
+            aria-controls={`panel-${p.id}`}
+            aria-selected={i === 0 ? 'true' : 'false'}
+            tabindex={i === 0 ? 0 : -1}
+            data-accent={p.accent}
+            class="tab"
+            style={`--p-accent:${p.accent}`}
+          >
+            <ProductIcon id={p.id} size={26} />
+            <span>{p.name}</span>
+          </button>
+        ))}
+      </div>
+
+      <div class="panels">
+        {products.map((p, i) => (
+          <div
+            class="panel"
+            role="tabpanel"
+            id={`panel-${p.id}`}
+            aria-labelledby={`tab-${p.id}`}
+            hidden={i !== 0}
+            tabindex="0"
+          >
+            <div class="panel-head">
+              <div>
+                <p class="panel-cat" style={`color:${p.accent}`}>{p.category}</p>
+                <h3>{showcase[p.id].headline}</h3>
+              </div>
+              <div class="panel-links">
+                <span class="sample-note">Sample data</span>
+                <a href={`/products/${p.id}`} class="btn btn-ghost">
+                  View {p.name}
+                  <Icon name="arrow-right" size={16} />
+                </a>
+              </div>
+            </div>
+            <ProductDashboard id={p.id} />
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .tabs { margin-top: clamp(2.5rem, 2rem + 2vw, 3.5rem); }
+  .tablist {
+    display: flex;
+    gap: 4px;
+    padding: 5px;
+    width: max-content;
+    max-width: 100%;
+    overflow-x: auto;
+    scrollbar-width: none;
+    border-radius: 999px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-sm);
+  }
+  .tablist::-webkit-scrollbar { display: none; }
+  @media (max-width: 560px) {
+    .tablist { display: grid; grid-template-columns: 1fr 1fr; width: 100%; border-radius: 22px; }
+    .tab { justify-content: flex-start; }
+  }
+  .tab {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    flex: none;
+    padding: 0.4rem 1rem 0.4rem 0.45rem;
+    border: 0;
+    border-radius: 999px;
+    background: transparent;
+    font-size: var(--fs-sm);
+    font-weight: 500;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s, box-shadow 0.3s, transform 0.15s;
+  }
+  .tab:hover { color: var(--text); background: rgba(41, 37, 30, 0.04); }
+  .tab:active { transform: scale(0.97); }
+  .tab[aria-selected='true'] {
+    color: var(--text);
+    background: var(--surface-2);
+    box-shadow: var(--shadow-sm), 0 0 0 1px color-mix(in srgb, var(--p-accent) 30%, transparent);
+  }
+
+  .panels {
+    margin-top: 1.25rem;
+    padding: clamp(1rem, 0.6rem + 2vw, 2rem);
+    border-radius: var(--radius-xl);
+    background:
+      radial-gradient(700px 300px at 85% -10%, color-mix(in srgb, var(--tab-accent) 12%, transparent), transparent 70%),
+      var(--surface);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+    transition: background 0.6s;
+  }
+  .panel:focus-visible { outline-offset: 8px; border-radius: var(--radius-lg); }
+  .panel:global(.panel-in) { animation: panel-in 0.6s var(--ease-out); }
+  @keyframes panel-in { from { opacity: 0; transform: translateY(10px); } }
+  .panel-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 1rem 2rem;
+    margin-bottom: 1.5rem;
+  }
+  .panel-cat { font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 0.5rem; }
+  .panel-head h3 { font-family: var(--font-serif); font-size: clamp(1.5rem, 1.2rem + 1.2vw, 2.1rem); font-weight: 400; letter-spacing: -0.02em; }
+  .panel-links { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
+</style>

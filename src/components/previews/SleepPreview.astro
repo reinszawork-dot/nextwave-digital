@@ -47,14 +47,14 @@ const week = [
   }
   .orb::before {
     inset: 0;
-    background: radial-gradient(circle, rgba(167, 139, 250, 0.35), transparent 70%);
+    background: radial-gradient(circle, rgba(125, 107, 176, 0.22), transparent 70%);
     animation: breathe 14s ease-in-out infinite;
   }
   .orb span {
     width: 42px;
     height: 42px;
-    background: radial-gradient(circle at 35% 30%, #c4b5fd, #7c3aed);
-    box-shadow: 0 0 30px rgba(167, 139, 250, 0.5);
+    background: radial-gradient(circle at 35% 30%, #c9bde6, #7d6bb0);
+    box-shadow: 0 0 30px rgba(125, 107, 176, 0.35);
     animation: breathe 14s ease-in-out infinite;
   }
   @keyframes breathe {
@@ -67,7 +67,7 @@ const week = [
   .cue .out { animation-name: cue-out; }
   @keyframes cue { 0%, 50% { opacity: 1; } 57%, 96% { opacity: 0; } }
   @keyframes cue-out { 0%, 52% { opacity: 0; } 60%, 95% { opacity: 1; } 100% { opacity: 0; } }
-  .pv-sub { font-size: 0.75rem; color: #a78bfa; }
+  .pv-sub { font-size: 0.75rem; color: #7d6bb0; }
   .pv-row { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 0.6rem; }
   .avg { font-size: 0.78rem; color: var(--text-muted); font-variant-numeric: tabular-nums; }
   .bars { display: grid; grid-template-columns: repeat(7, 1fr); gap: 0.45rem; height: 84px; }
@@ -78,7 +78,7 @@ const week = [
     max-width: 22px;
     height: var(--h);
     border-radius: 6px;
-    background: linear-gradient(to top, rgba(124, 58, 237, 0.55), #a78bfa);
+    background: linear-gradient(to top, rgba(125, 107, 176, 0.45), #7d6bb0);
     transform-origin: bottom;
     transform: scaleY(0);
     transition: transform 1s var(--ease-out) var(--d);

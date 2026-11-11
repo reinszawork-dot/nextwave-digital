@@ -1,0 +1,37 @@
+{
+  "measuredOn": "2026-11-11",
+  "apps": {
+    "wisely": {
+      "files": 9,
+      "sizeKB": 242.3,
+      "gzipKB": 78.5,
+      "linesOfCode": 3030,
+      "offline": true,
+      "installable": true
+    },
+    "lull": {
+      "files": 12,
+      "sizeKB": 200.3,
+      "gzipKB": 97.9,
+      "linesOfCode": 1969,
+      "offline": true,
+      "installable": true
+    },
+    "kindling": {
+      "files": 5,
+      "sizeKB": 73.2,
+      "gzipKB": 15.4,
+      "linesOfCode": 969,
+      "offline": true,
+      "installable": true
+    },
+    "studyhub": {
+      "files": 18,
+      "sizeKB": 321.9,
+      "gzipKB": 146.3,
+      "linesOfCode": 3193,
+      "offline": true,
+      "installable": true
+    }
+  }
+}

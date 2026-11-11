@@ -21,8 +21,8 @@ const max = 3;
       <svg viewBox="0 0 64 64" class="ring" aria-hidden="true">
         <defs>
           <linearGradient id="sh-ring" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0" stop-color="#99f6e4" />
-            <stop offset="1" stop-color="#14b8a6" />
+            <stop offset="0" stop-color="#a9d6d2" />
+            <stop offset="1" stop-color="#3a8a86" />
           </linearGradient>
         </defs>
         <circle cx="32" cy="32" r={R} class="track" />
@@ -66,20 +66,20 @@ const max = 3;
   .ring-wrap { position: relative; width: 64px; height: 64px; flex: none; }
   .ring { width: 100%; height: 100%; transform: rotate(-90deg); }
   .ring circle { fill: none; stroke-width: 7; stroke-linecap: round; }
-  .track { stroke: rgba(255, 255, 255, 0.07); }
+  .track { stroke: rgba(41, 37, 30, 0.07); }
   .fill { stroke-dashoffset: var(--c); transition: stroke-dashoffset 1.2s var(--ease-out); }
   :global(.is-visible) .fill { stroke-dashoffset: var(--o); }
   .ring-num { position: absolute; inset: 0; display: grid; place-items: center; font-size: 0.8rem; font-weight: 700; }
   .top-text { display: grid; gap: 0.1rem; min-width: 0; }
   .big { font-size: 1.05rem; font-weight: 650; }
   .big span { font-size: 0.75rem; color: var(--text-faint); font-weight: 500; }
-  .streak { display: inline-flex; align-items: center; gap: 0.3rem; font-size: 0.72rem; color: #fb7185; }
+  .streak { display: inline-flex; align-items: center; gap: 0.3rem; font-size: 0.72rem; color: #c0564a; }
   .streak svg { width: 12px; height: 12px; }
   .panel {
     padding: 0.7rem 0.8rem 0.6rem;
     border-radius: 12px;
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.05);
+    background: rgba(41, 37, 30, 0.03);
+    border: 1px solid rgba(41, 37, 30, 0.05);
   }
   .bars { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; height: 64px; margin: 0.55rem 0 0; padding: 0; list-style: none; }
   .bars li { display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 4px; }
@@ -89,7 +89,7 @@ const max = 3;
     height: 0;
     min-height: 3px;
     border-radius: 5px 5px 3px 3px;
-    background: linear-gradient(180deg, #5eead4, #0d9488);
+    background: linear-gradient(180deg, #7cbcb7, #3a8a86);
     transition: height 0.8s var(--ease-out) var(--d);
   }
   :global(.is-visible) .bar { height: var(--h); }
@@ -100,8 +100,8 @@ const max = 3;
     gap: 0.7rem;
     padding: 0.6rem 0.7rem;
     border-radius: 12px;
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.05);
+    background: rgba(41, 37, 30, 0.03);
+    border: 1px solid rgba(41, 37, 30, 0.05);
   }
   .badge {
     display: grid;
@@ -110,8 +110,8 @@ const max = 3;
     height: 40px;
     flex: none;
     border-radius: 10px;
-    background: rgba(251, 113, 133, 0.14);
-    color: #fb7185;
+    background: rgba(192, 86, 74, 0.1);
+    color: #c0564a;
     font-size: 0.6rem;
     text-transform: uppercase;
     line-height: 1.1;
@@ -120,7 +120,7 @@ const max = 3;
   .exam-text { display: grid; min-width: 0; flex: 1; }
   .exam-name { font-size: 0.8rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .exam-sub { font-size: 0.68rem; color: var(--text-faint); }
-  .pill { font-size: 0.66rem; font-weight: 600; padding: 0.2rem 0.5rem; border-radius: 99px; background: rgba(45, 212, 191, 0.14); color: #5eead4; white-space: nowrap; }
+  .pill { font-size: 0.66rem; font-weight: 600; padding: 0.2rem 0.5rem; border-radius: 99px; background: rgba(58, 138, 134, 0.12); color: #2f726f; white-space: nowrap; }
   @media (prefers-reduced-motion: reduce) {
     .fill, .bar { transition: none; }
   }

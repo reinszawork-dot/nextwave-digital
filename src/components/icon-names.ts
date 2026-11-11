@@ -1,7 +1,8 @@
-/** Names of the icons available in Icon.astro. */
+/** Names of the icons available in Icon.astro (all Lucide icons). */
 export type IconName =
   | 'arrow-right'
   | 'arrow-left'
+  | 'arrow-up-right'
   | 'wallet'
   | 'moon'
   | 'flame'
@@ -16,4 +17,12 @@ export type IconName =
   | 'target'
   | 'compass'
   | 'layers'
-  | 'cap';
+  | 'cap'
+  | 'chart-line'
+  | 'chart-column'
+  | 'gauge'
+  | 'phone'
+  | 'no-account'
+  | 'feather'
+  | 'quote'
+  | 'activity';

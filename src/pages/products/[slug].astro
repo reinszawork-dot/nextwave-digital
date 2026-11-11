@@ -3,7 +3,11 @@ import Base from '../../layouts/Base.astro';
 import Icon from '../../components/Icon.astro';
 import ProductIcon from '../../components/ProductIcon.astro';
 import ProductPreview from '../../components/ProductPreview.astro';
+import ProductDashboard from '../../components/ProductDashboard.astro';
+import Counter from '../../components/charts/Counter.astro';
 import { products, type Product } from '../../data/products';
+import { showcase } from '../../data/showcase';
+import stats from '../../data/stats.json';
 
 export function getStaticPaths() {
   return products.map((product) => ({ params: { slug: product.id }, props: { product } }));
@@ -14,6 +18,15 @@ interface Props {
 }
 const { product } = Astro.props;
 const others = products.filter((p) => p.id !== product.id);
+const s = (stats.apps as Record<string, (typeof stats.apps)['wisely']>)[product.id];
+const facts = s
+  ? [
+      { value: s.gzipKB, unit: { suffix: ' KB', decimals: 1 }, label: 'App code, compressed' },
+      { value: s.linesOfCode, unit: {}, label: 'Lines of code' },
+      { value: product.features.length, unit: {}, label: 'Core features' },
+      { value: 0, unit: {}, label: 'Accounts required' },
+    ]
+  : [];
 ---
 
 <Base title={`${product.name} — ${product.category} app`} description={product.summary}>
@@ -35,7 +48,8 @@ const others = products.filter((p) => p.id !== product.id);
               product.appUrl ? (
                 <a href={product.appUrl} class="btn btn-primary" target="_blank" rel="noopener">
                   Open {product.name}
-                  <Icon name="external" size={16} />
+                  <Icon name="arrow-up-right" size={16} />
+                  <span class="sr-only">(opens in a new tab)</span>
                 </a>
               ) : (
                 <span class="btn btn-primary" aria-disabled="true">Link coming soon</span>
@@ -47,24 +61,54 @@ const others = products.filter((p) => p.id !== product.id);
 
         <div class="hero-preview reveal" style="--reveal-delay: 200ms">
           <ProductPreview id={product.id} />
-          <p class="preview-note">Illustrative preview with sample data.</p>
+          <p class="preview-note"><span class="sample-note">Illustrative preview with sample data</span></p>
         </div>
       </div>
     </section>
 
+    {facts.length > 0 && (
+      <section class="facts-wrap" aria-label={`${product.name} at a glance`}>
+        <div class="container">
+          <ul class="facts reveal">
+            {facts.map((f) => (
+              <li>
+                <Counter value={f.value} unit={f.unit} class="fact-value" />
+                <span>{f.label}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+    )}
+
     <section class="section features" aria-labelledby="features-title">
       <div class="container">
         <p class="eyebrow">What it does</p>
-        <h2 id="features-title">Everything {product.name} helps you with</h2>
+        <h2 id="features-title">Everything {product.name} <span class="em">helps you with</span></h2>
         <ul class="feature-grid">
           {product.features.map((f, i) => (
-            <li class="feature reveal" style={`--reveal-delay:${(i % 3) * 90}ms`}>
+            <li class="feature reveal" style={`--reveal-delay:${(i % 3) * 90}ms`} data-spotlight>
               <span class="check"><Icon name="check" size={18} /></span>
               <h3>{f.title}</h3>
               <p>{f.text}</p>
             </li>
           ))}
         </ul>
+      </div>
+    </section>
+
+    <section class="section section-band insight" aria-labelledby="insight-title">
+      <div class="container">
+        <div class="insight-head reveal">
+          <div>
+            <p class="eyebrow">Inside {product.name}</p>
+            <h2 id="insight-title">{showcase[product.id].headline}</h2>
+          </div>
+          <span class="sample-note">Sample data · hover the charts</span>
+        </div>
+        <div class="insight-board reveal">
+          <ProductDashboard id={product.id} />
+        </div>
       </div>
     </section>
 
@@ -95,20 +139,22 @@ const others = products.filter((p) => p.id !== product.id);
     position: relative;
     isolation: isolate;
     overflow: hidden;
-    padding-top: clamp(2.5rem, 1.5rem + 4vw, 5rem);
-    padding-bottom: clamp(4rem, 2rem + 5vw, 7rem);
+    padding-top: clamp(2rem, 1.5rem + 3vw, 4rem);
+    padding-bottom: clamp(3.5rem, 2rem + 4vw, 6rem);
   }
   .hero-glow {
     position: absolute;
     z-index: -1;
-    top: -200px;
+    top: -220px;
     right: -10%;
     width: 70vw;
     max-width: 900px;
-    aspect-ratio: 1.4;
-    background: radial-gradient(closest-side, var(--p-soft), transparent);
-    filter: blur(30px);
+    aspect-ratio: 1.3;
+    background: radial-gradient(closest-side, color-mix(in srgb, var(--p-accent) 22%, transparent), transparent);
+    filter: blur(40px);
+    animation: hero-drift 20s ease-in-out infinite alternate;
   }
+  @keyframes hero-drift { to { transform: translate(-6%, 8%) scale(1.1); } }
   .hero-grid { display: grid; gap: 3rem; align-items: center; }
   .back {
     display: inline-flex;
@@ -117,70 +163,115 @@ const others = products.filter((p) => p.id !== product.id);
     font-size: var(--fs-sm);
     color: var(--text-muted);
     margin-bottom: 2rem;
-    transition: color 0.2s;
+    transition: color 0.2s, gap 0.3s var(--ease-out);
   }
-  .back:hover { color: var(--text); }
+  .back:hover { color: var(--text); gap: 0.6rem; }
   .title-row { display: flex; align-items: center; gap: 1rem; }
   .tag {
     font-size: var(--fs-xs);
-    font-weight: 550;
+    font-weight: 500;
     padding: 0.3rem 0.75rem;
     border-radius: 999px;
-    color: var(--p-accent);
+    color: color-mix(in srgb, var(--p-accent) 80%, black);
     background: var(--p-soft);
-    border: 1px solid color-mix(in srgb, var(--p-accent) 25%, transparent);
   }
   h1 {
     margin-top: 1.5rem;
-    font-size: clamp(2.75rem, 2rem + 4vw, 4.5rem);
-    letter-spacing: -0.045em;
+    font-size: clamp(3.2rem, 2rem + 5vw, 6rem);
+    font-weight: 400;
+    letter-spacing: -0.04em;
+    line-height: 0.95;
   }
-  .pitch { margin-top: 1.25rem; font-size: var(--fs-lg); color: var(--text-muted); max-width: 50ch; }
+  .pitch { margin-top: 1.4rem; font-size: var(--fs-lg); color: var(--text-muted); max-width: 50ch; }
   .cta { margin-top: 2.25rem; display: flex; flex-wrap: wrap; gap: 0.75rem; }
-  .cta .btn-primary { --btn-bg: color-mix(in srgb, var(--p-accent) 75%, #1e293b); }
+  .cta .btn-primary { --btn-bg: color-mix(in srgb, var(--p-accent) 78%, #1e1d1a); }
   .hero-preview { max-width: 460px; width: 100%; justify-self: center; }
-  .preview-note { margin-top: 0.75rem; font-size: var(--fs-xs); color: var(--text-faint); text-align: center; }
+  .preview-note { margin-top: 0.9rem; text-align: center; }
 
-  .features { padding-top: 0; }
-  .features h2 { margin-top: 0.75rem; font-size: clamp(1.75rem, 1.4rem + 1.5vw, 2.5rem); letter-spacing: -0.03em; max-width: 22ch; }
-  .features .eyebrow { color: var(--p-accent); }
-  .feature-grid { margin-top: 2.5rem; display: grid; gap: 1rem; }
+  .facts {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    border-radius: var(--radius-xl);
+    border: 1px solid var(--border);
+    background: var(--surface);
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+  }
+  .facts li {
+    display: grid;
+    gap: 0.35rem;
+    padding: 1.4rem 1.5rem;
+    border-right: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+  .facts li:nth-child(2n) { border-right: 0; }
+  .facts li:nth-child(n + 3) { border-bottom: 0; }
+  .facts :global(.fact-value) { font-family: var(--font-serif); font-size: clamp(2rem, 1.6rem + 1.5vw, 2.8rem); line-height: 1; letter-spacing: -0.03em; }
+  .facts span { font-size: 0.82rem; color: var(--text-faint); }
+
+  .features h2,
+  .insight h2 { margin-top: 0.9rem; font-size: clamp(1.9rem, 1.4rem + 2vw, 3rem); font-weight: 400; letter-spacing: -0.03em; max-width: 22ch; }
+  .feature-grid { margin-top: 2.75rem; display: grid; gap: 1rem; }
   .feature {
-    padding: 1.6rem;
+    position: relative;
+    overflow: hidden;
+    padding: 1.75rem;
     border-radius: var(--radius-lg);
     border: 1px solid var(--border);
-    background: linear-gradient(180deg, rgba(20, 27, 49, 0.6), rgba(15, 21, 39, 0.3));
+    background: var(--surface);
+    box-shadow: var(--shadow-sm);
+    transition: box-shadow 0.4s var(--ease-out), transform 0.4s var(--ease-out), opacity 1s var(--ease-out);
   }
+  .feature::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(240px circle at var(--mx, -200px) var(--my, -200px), var(--p-soft), transparent 70%);
+    pointer-events: none;
+  }
+  .feature.is-visible:hover { box-shadow: var(--shadow); transform: translateY(-3px); }
   .check {
     display: inline-grid;
     place-items: center;
-    width: 34px;
-    height: 34px;
-    border-radius: 10px;
-    color: var(--p-accent);
+    width: 36px;
+    height: 36px;
+    border-radius: 11px;
+    color: color-mix(in srgb, var(--p-accent) 85%, black);
     background: var(--p-soft);
-    margin-bottom: 1rem;
+    margin-bottom: 1.1rem;
   }
-  .feature h3 { font-size: 1.0625rem; letter-spacing: -0.015em; margin-bottom: 0.4rem; }
+  .feature h3 { font-size: 1.08rem; font-weight: 500; margin-bottom: 0.4rem; }
   .feature p { color: var(--text-muted); font-size: var(--fs-sm); }
 
-  .more { padding-top: 0; }
-  .more-title { font-size: 1.25rem; letter-spacing: -0.02em; margin-bottom: 1.25rem; }
+  .insight-head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 1rem; margin-bottom: 2rem; }
+  .insight-board {
+    padding: clamp(1rem, 0.6rem + 2vw, 2rem);
+    border-radius: var(--radius-xl);
+    border: 1px solid var(--border);
+    background: radial-gradient(700px 300px at 85% -10%, var(--p-soft), transparent 70%), var(--surface);
+    box-shadow: var(--shadow);
+  }
+
+  .more-title { font-size: 1.6rem; font-weight: 400; letter-spacing: -0.02em; margin-bottom: 1.5rem; }
   .more-grid { display: grid; gap: 1rem; }
   .more-card {
     display: flex;
     align-items: center;
     gap: 1rem;
+    height: 100%;
     padding: 1.25rem;
-    border-radius: var(--radius);
+    border-radius: var(--radius-lg);
     border: 1px solid var(--border);
     background: var(--surface);
-    transition: border-color 0.3s, transform 0.3s var(--ease-out);
+    box-shadow: var(--shadow-sm);
+    transition: border-color 0.3s, transform 0.4s var(--ease-out), box-shadow 0.4s var(--ease-out);
   }
-  .more-card:hover { border-color: color-mix(in srgb, var(--p-accent) 40%, transparent); transform: translateY(-2px); }
+  .more-card:hover { border-color: color-mix(in srgb, var(--p-accent) 35%, transparent); transform: translateY(-2px); box-shadow: var(--shadow); }
   .more-text { display: grid; gap: 0.2rem; flex: 1; }
+  .more-text strong { font-weight: 600; }
   .more-text span { font-size: var(--fs-sm); color: var(--text-muted); }
-  .more-card :global(.more-arrow) { color: var(--text-faint); flex: none; }
+  .more-card :global(.more-arrow) { color: var(--text-faint); flex: none; transition: transform 0.3s var(--ease-out); }
+  .more-card:hover :global(.more-arrow) { transform: translateX(3px); color: var(--p-accent); }
 
   @media (min-width: 720px) {
     .feature-grid { grid-template-columns: repeat(2, 1fr); }
@@ -190,5 +281,9 @@ const others = products.filter((p) => p.id !== product.id);
     .hero-grid { grid-template-columns: 1.1fr 1fr; gap: 4rem; }
     .feature-grid { grid-template-columns: repeat(3, 1fr); }
     .more-grid { grid-template-columns: repeat(3, 1fr); }
+    .facts { grid-template-columns: repeat(4, 1fr); }
+    .facts li { border-bottom: 0; }
+    .facts li:nth-child(2n) { border-right: 1px solid var(--border); }
+    .facts li:last-child { border-right: 0; }
   }
 </style>

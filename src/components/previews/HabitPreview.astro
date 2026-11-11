@@ -47,22 +47,22 @@ const dayLabels = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
     gap: 1rem;
     padding: 0.7rem 0.8rem;
     border-radius: 12px;
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.05);
+    background: rgba(41, 37, 30, 0.03);
+    border: 1px solid rgba(41, 37, 30, 0.05);
   }
   .habit-meta { display: grid; gap: 0.15rem; min-width: 0; }
   .habit-name { font-size: 0.82rem; font-weight: 550; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .streak { display: inline-flex; align-items: center; gap: 0.25rem; font-size: 0.72rem; color: #fb923c; font-variant-numeric: tabular-nums; }
+  .streak { display: inline-flex; align-items: center; gap: 0.25rem; font-size: 0.72rem; color: #c9774f; font-variant-numeric: tabular-nums; }
   .streak svg { width: 12px; height: 12px; }
   .dot {
     width: 18px;
     height: 18px;
     border-radius: 6px;
-    background: rgba(255, 255, 255, 0.06);
+    background: rgba(41, 37, 30, 0.06);
   }
   .dot.on {
-    background: linear-gradient(135deg, #fdba74, #f97316);
-    box-shadow: 0 0 10px -2px rgba(249, 115, 22, 0.6);
+    background: linear-gradient(135deg, #e7b08f, #c9774f);
+    box-shadow: 0 0 10px -2px rgba(201, 119, 79, 0.45);
     transform: scale(0.4);
     opacity: 0;
     transition: transform 0.5s var(--ease-out) var(--d), opacity 0.4s var(--d);

@@ -29,8 +29,8 @@ export const products: Product[] = [
       'A simple financial organisation tool that helps users manage their monthly budgets and track expenses.',
     pitch:
       'Wisely gives every rand a job. Plan your month around payday, log what you spend and see exactly where your money goes — with clear, animated reports.',
-    accent: '#34d399',
-    accentSoft: 'rgba(52, 211, 153, 0.14)',
+    accent: '#4f8a68',
+    accentSoft: 'rgba(79, 138, 104, 0.12)',
     features: [
       { title: 'Monthly budgets', text: 'Set spending limits per category and watch your progress through the month.' },
       { title: 'Expense tracking', text: 'Log transactions quickly and review all your activity in one place.' },
@@ -49,8 +49,8 @@ export const products: Product[] = [
       'A personal wellbeing tool designed to help users understand their sleep patterns and everyday stress.',
     pitch:
       'Lull is a calm space for stressful moments and restless nights. Pause before a craving, breathe it out, wind down properly and see how sleep and stress connect over time.',
-    accent: '#a78bfa',
-    accentSoft: 'rgba(167, 139, 250, 0.14)',
+    accent: '#7d6bb0',
+    accentSoft: 'rgba(125, 107, 176, 0.12)',
     features: [
       { title: 'Craving pause', text: 'An in-the-moment toolkit for stress eating: rate the urge, check what you really need and ride it out.' },
       { title: 'Guided breathing', text: 'A visual breathing guide to slow down when stress builds up.' },
@@ -69,8 +69,8 @@ export const products: Product[] = [
       'A productivity tool that helps users build positive routines, track progress and stay consistent.',
     pitch:
       'Kindling makes consistency visible. Check in on your habits each day, keep your streaks alive and watch small actions add up across weeks and months.',
-    accent: '#fb923c',
-    accentSoft: 'rgba(251, 146, 60, 0.14)',
+    accent: '#c9774f',
+    accentSoft: 'rgba(201, 119, 79, 0.12)',
     features: [
       { title: 'Daily check-ins', text: 'Tick off habits in seconds from a simple daily view.' },
       { title: 'Streaks', text: 'Keep the fire going — streaks show how consistent you have been.' },
@@ -89,8 +89,8 @@ export const products: Product[] = [
       'A student productivity tool that helps students organise their studies, manage their time and track academic progress.',
     pitch:
       'StudyHub keeps everything a student needs in one calm place. Focus with a study timer, plan around exams and deadlines, and watch your hours, marks and streaks improve week by week.',
-    accent: '#2dd4bf',
-    accentSoft: 'rgba(45, 212, 191, 0.14)',
+    accent: '#3a8a86',
+    accentSoft: 'rgba(58, 138, 134, 0.12)',
     features: [
       { title: 'Study timer', text: 'Pomodoro-style focus sessions with breaks, logged automatically to your study history.' },
       { title: 'Exams and deadlines', text: 'A study calendar for exams and assignments, with countdowns on your dashboard.' },

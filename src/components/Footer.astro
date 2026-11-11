@@ -1,5 +1,6 @@
 ---
 import Logo from './Logo.astro';
+import Icon from './Icon.astro';
 import { nav, site } from '../data/site';
 import { products } from '../data/products';
 const year = new Date().getFullYear();
@@ -25,6 +26,19 @@ const year = new Date().getFullYear();
         {products.map((p) => <li><a href={`/products/${p.id}`}>{p.name} <span>· {p.category}</span></a></li>)}
       </ul>
     </nav>
+
+    <nav aria-label="Footer — open the apps">
+      <h2 class="footer-h">Open an app</h2>
+      <ul>
+        {products.filter((p) => p.appUrl).map((p) => (
+          <li><a href={p.appUrl!} target="_blank" rel="noopener">{p.name} <Icon name="arrow-up-right" size={13} /><span class="sr-only">(opens in a new tab)</span></a></li>
+        ))}
+      </ul>
+    </nav>
+  </div>
+
+  <div class="container">
+    <p class="wordmark" aria-hidden="true">Next<em>Wave</em></p>
   </div>
 
   <div class="container footer-bottom">
@@ -36,41 +50,57 @@ const year = new Date().getFullYear();
 <style>
   .site-footer {
     border-top: 1px solid var(--border);
-    padding-top: 4rem;
-    background: linear-gradient(to bottom, transparent, rgba(15, 21, 39, 0.5));
+    padding-top: 4.5rem;
+    background: var(--bg-2);
+    overflow: hidden;
   }
-  .footer-grid {
-    display: grid;
-    gap: 2.5rem;
-    grid-template-columns: 1fr 1fr;
-  }
+  .footer-grid { display: grid; gap: 2.5rem; grid-template-columns: 1fr 1fr; }
   .footer-brand { grid-column: 1 / -1; display: grid; gap: 1rem; align-content: start; }
   .footer-brand p { color: var(--text-muted); font-size: var(--fs-sm); max-width: 30ch; }
   .footer-h {
-    font-size: var(--fs-xs);
-    font-weight: 600;
-    letter-spacing: 0.1em;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.08em;
     text-transform: uppercase;
     color: var(--text-faint);
     margin-bottom: 1rem;
   }
   .footer-grid ul { display: grid; gap: 0.6rem; }
-  .footer-grid a { color: var(--text-muted); font-size: var(--fs-sm); transition: color 0.2s; }
+  .footer-grid a {
+    color: var(--text-muted);
+    font-size: var(--fs-sm);
+    transition: color 0.2s;
+  }
   .footer-grid a:hover { color: var(--text); }
+  .footer-grid a :global(svg) { display: inline-block; vertical-align: -2px; margin-left: 0.15rem; }
   .footer-grid a span { color: var(--text-faint); }
+  .wordmark {
+    margin-top: 3.5rem;
+    font-size: clamp(4.5rem, 2rem + 13vw, 13rem);
+    font-weight: 600;
+    letter-spacing: -0.06em;
+    line-height: 0.8;
+    color: transparent;
+    background: linear-gradient(180deg, rgba(41, 37, 30, 0.13), rgba(41, 37, 30, 0.02));
+    -webkit-background-clip: text;
+    background-clip: text;
+    user-select: none;
+    white-space: nowrap;
+  }
+  .wordmark em { font-family: var(--font-serif); font-weight: 400; font-style: italic; letter-spacing: -0.03em; }
   .footer-bottom {
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
     gap: 0.5rem 2rem;
-    margin-top: 3.5rem;
     padding-block: 1.75rem;
     border-top: 1px solid var(--border);
     color: var(--text-faint);
     font-size: var(--fs-xs);
   }
-  @media (min-width: 768px) {
-    .footer-grid { grid-template-columns: 2fr 1fr 1fr; }
+  @media (min-width: 820px) {
+    .footer-grid { grid-template-columns: 2fr 1fr 1fr 1fr; }
     .footer-brand { grid-column: auto; }
   }
 </style>

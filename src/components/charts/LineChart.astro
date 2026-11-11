@@ -1,0 +1,210 @@
+---
+/**
+ * Smooth line / area chart. Server-rendered SVG; the site script adds the draw-in
+ * animation (when scrolled into view) and the hover crosshair + tooltip.
+ */
+import { formatValue, niceMax, smoothPath, nextId, type Unit } from '../../lib/chart';
+
+interface Series {
+  label: string;
+  values: number[];
+  color: string;
+  area?: boolean;
+  dashed?: boolean;
+}
+interface Props {
+  labels: string[];
+  series: Series[];
+  unit?: Unit;
+  height?: number;
+  yMax?: number;
+  ticks?: number;
+  /** Show every nth x-axis label (keeps the axis calm on narrow screens). */
+  labelEvery?: number;
+  legend?: boolean;
+  label: string;
+  class?: string;
+}
+
+const {
+  labels,
+  series,
+  unit = {},
+  height = 220,
+  ticks = 4,
+  labelEvery = 1,
+  legend = series.length > 1,
+  label,
+  class: className,
+} = Astro.props;
+
+const W = 1000;
+const H = 300;
+const all = series.flatMap((s) => s.values);
+const max = Astro.props.yMax ?? niceMax(Math.max(...all) * 1.08);
+const toY = (v: number) => H - (v / max) * H;
+const toX = (i: number) => (labels.length === 1 ? W / 2 : (i / (labels.length - 1)) * W);
+
+const drawn = series.map((s) => {
+  const pts = s.values.map((v, i) => [toX(i), toY(v)] as [number, number]);
+  const line = smoothPath(pts);
+  return { ...s, line, areaPath: s.area ? `${line}L${W},${H}L0,${H}Z` : null, gid: nextId('lc') };
+});
+const tickValues = Array.from({ length: ticks + 1 }, (_, i) => (max / ticks) * i);
+const payload = JSON.stringify({ labels, max, unit, series: series.map(({ label, values, color }) => ({ label, values, color })) });
+---
+
+<figure class:list={['lc', className]} data-chart="line" data-payload={payload} style={`--h:${height}px`}>
+  {legend && (
+    <ul class="lc-legend" aria-hidden="true">
+      {series.map((s) => (
+        <li><span class:list={['sw', { dashed: s.dashed }]} style={`--c:${s.color}`}></span>{s.label}</li>
+      ))}
+    </ul>
+  )}
+  <div class="lc-body">
+    <ol class="lc-y" aria-hidden="true">
+      {tickValues.slice().reverse().map((t) => <li>{formatValue(t, { ...unit, decimals: t % 1 ? 1 : 0 })}</li>)}
+    </ol>
+    <div class="lc-plot" data-plot>
+      <div class="lc-grid" aria-hidden="true">
+        {tickValues.map(() => <span></span>)}
+      </div>
+      <div class="lc-draw">
+        <svg viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" role="img" aria-label={label}>
+          <defs>
+            {drawn.filter((s) => s.areaPath).map((s) => (
+              <linearGradient id={s.gid} x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color={s.color} stop-opacity="0.24" />
+                <stop offset="1" stop-color={s.color} stop-opacity="0" />
+              </linearGradient>
+            ))}
+          </defs>
+          {drawn.map((s) => s.areaPath && <path d={s.areaPath} fill={`url(#${s.gid})`} />)}
+          {drawn.map((s) => (
+            <path
+              d={s.line}
+              fill="none"
+              stroke={s.color}
+              stroke-width={s.dashed ? 1.5 : 2.25}
+              stroke-dasharray={s.dashed ? '5 6' : undefined}
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              vector-effect="non-scaling-stroke"
+            />
+          ))}
+        </svg>
+        {drawn.map((s) => (
+          <span class="lc-end" style={`--c:${s.color};left:100%;top:${(toY(s.values.at(-1)!) / H) * 100}%`} aria-hidden="true"></span>
+        ))}
+      </div>
+      <div class="lc-hover" aria-hidden="true">
+        <span class="lc-cross"></span>
+        {series.map((s) => <span class="lc-dot" style={`--c:${s.color}`}></span>)}
+        <div class="lc-tip"></div>
+      </div>
+    </div>
+    <span></span>
+    <ol class="lc-x" aria-hidden="true">
+      {labels.map((l, i) => <li class:list={{ hide: i % labelEvery !== 0 && i !== labels.length - 1 }}>{l}</li>)}
+    </ol>
+  </div>
+  <table class="sr-only">
+    <caption>{label}</caption>
+    <thead><tr><th scope="col">Point</th>{series.map((s) => <th scope="col">{s.label}</th>)}</tr></thead>
+    <tbody>
+      {labels.map((l, i) => (
+        <tr><th scope="row">{l}</th>{series.map((s) => <td>{formatValue(s.values[i], unit)}</td>)}</tr>
+      ))}
+    </tbody>
+  </table>
+</figure>
+
+<style>
+  .lc { margin: 0; display: flex; flex-direction: column; gap: 0.75rem; }
+  .lc-legend { display: flex; flex-wrap: wrap; gap: 0.4rem 1.1rem; font-size: 0.78rem; color: var(--text-muted); }
+  .lc-legend li { display: inline-flex; align-items: center; gap: 0.45rem; }
+  .sw { width: 14px; height: 2px; border-radius: 2px; background: var(--c); }
+  .sw.dashed { background: repeating-linear-gradient(90deg, var(--c) 0 4px, transparent 4px 7px); }
+
+  .lc-body { flex: 1; display: grid; grid-template-columns: auto 1fr; grid-template-rows: minmax(var(--h), 1fr) auto; gap: 0.6rem; }
+  .lc-y {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    font-family: var(--font-mono);
+    font-size: 0.66rem;
+    color: var(--text-faint);
+    text-align: right;
+    margin: -0.45em 0;
+  }
+  .lc-plot { position: relative; min-width: 0; touch-action: pan-y; cursor: crosshair; }
+  .lc-grid { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: space-between; }
+  .lc-grid span { height: 1px; background: var(--border); }
+  .lc-grid span:last-child { background: var(--border-strong); }
+
+  .lc-draw {
+    position: absolute;
+    inset: 0;
+    clip-path: inset(-10px 100% -10px -10px);
+    transition: clip-path 1.6s var(--ease-in-out);
+  }
+  .lc.is-visible .lc-draw { clip-path: inset(-10px -10px -10px -10px); }
+  .lc-draw svg { width: 100%; height: 100%; overflow: visible; }
+  .lc-end {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    margin: -4px 0 0 -4px;
+    border-radius: 50%;
+    background: var(--c);
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--c) 18%, transparent);
+  }
+
+  .lc-hover { position: absolute; inset: 0; pointer-events: none; opacity: 0; transition: opacity 0.2s; }
+  .lc-plot.is-hovering .lc-hover { opacity: 1; }
+  .lc-cross { position: absolute; top: 0; bottom: 0; width: 1px; background: var(--border-strong); left: var(--x, 0); }
+  .lc-dot {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    margin: -5px 0 0 -5px;
+    border-radius: 50%;
+    background: var(--surface-2);
+    border: 2px solid var(--c);
+    box-shadow: var(--shadow-sm);
+    transition: left 0.12s var(--ease-out), top 0.12s var(--ease-out);
+  }
+  .lc-tip {
+    position: absolute;
+    top: 0;
+    left: var(--x, 0);
+    transform: translate(var(--tx, -50%), calc(-100% - 10px));
+    min-width: 120px;
+    padding: 0.55rem 0.7rem;
+    border-radius: 12px;
+    background: rgba(30, 29, 26, 0.92);
+    color: #f6f3ec;
+    font-size: 0.75rem;
+    line-height: 1.45;
+    box-shadow: var(--shadow);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    white-space: nowrap;
+    transition: left 0.12s var(--ease-out);
+  }
+  .lc-tip :global(b) { display: block; font-weight: 500; color: #c9c2b4; margin-bottom: 0.15rem; font-size: 0.7rem; }
+  .lc-tip :global(div) { display: flex; align-items: center; gap: 0.45rem; }
+  .lc-tip :global(i) { flex: none; width: 7px; height: 7px; border-radius: 50%; }
+  .lc-tip :global(.v) { font-family: var(--font-mono); margin-left: auto; padding-left: 1.1rem; }
+
+  .lc-x {
+    display: flex;
+    justify-content: space-between;
+    font-family: var(--font-mono);
+    font-size: 0.66rem;
+    color: var(--text-faint);
+  }
+  .lc-x li { width: 0; display: flex; justify-content: center; white-space: nowrap; }
+  .lc-x li.hide { visibility: hidden; }
+</style>

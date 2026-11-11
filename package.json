@@ -4,7 +4,9 @@
   "private": true,
   "type": "module",
   "description": "Official website of NextWave Digital.",
-  "engines": { "node": ">=18.20.8" },
+  "engines": {
+    "node": ">=18.20.8"
+  },
   "scripts": {
     "dev": "astro dev",
     "build": "astro check && astro build",
@@ -13,6 +15,7 @@
     "check": "astro check"
   },
   "dependencies": {
+    "@lucide/astro": "1.61.0",
     "astro": "5.18.2"
   },
   "devDependencies": {
