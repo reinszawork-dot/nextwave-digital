@@ -92,6 +92,8 @@
     back: '<path d="M19 12H5M12 19l-7-7 7-7"/>',
     clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
     user: '<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>',
+    sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
+    moon: '<path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/>',
     undo: '<path d="M3 7v6h6"/><path d="M21 17a9 9 0 0 0-15-6.7L3 13"/>',
   };
   const svgIc = (n) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${IC[n] || ''}</svg>`;
@@ -1356,6 +1358,19 @@
       default: break;
     }
   });
+
+  // theme: dark by default, light on request; kept outside the data so it applies before first paint
+  const setTheme = (light) => {
+    if (light) document.documentElement.dataset.theme = 'light'; else delete document.documentElement.dataset.theme;
+    $('#themeBtn').innerHTML = ic(light ? 'moon' : 'sun');
+    $('meta[name=theme-color]').content = light ? '#F6F3FF' : '#0B0914';
+  };
+  setTheme(document.documentElement.dataset.theme === 'light');
+  $('#themeBtn').onclick = () => {
+    const light = document.documentElement.dataset.theme !== 'light';
+    setTheme(light);
+    try { localStorage.setItem('shcb.theme', light ? 'light' : 'dark'); } catch (e) { /* storage blocked: theme lasts for this visit */ }
+  };
 
   $('#navOpen').onclick = openNav;
   $('#navClose').onclick = closeNav;

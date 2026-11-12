@@ -12,6 +12,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
+  <script>try { if (localStorage.getItem('shcb.theme') === 'light') document.documentElement.dataset.theme = 'light'; } catch (e) {}</script>
 </head>
 <body>
   <div class="app">
@@ -39,8 +40,8 @@
         <h1 class="page-title" id="pageTitle">Dashboard</h1>
         <div class="top-actions">
           <button class="btn btn-primary btn-sm hide-xs" data-action="add-tx"><i data-i="plus"></i>Add transaction</button>
-          <div class="pop-wrap">
-            <button class="icon-btn" id="bellBtn" aria-label="Notifications" aria-haspopup="true" aria-expanded="false"><i data-i="bell"></i><span class="dot" id="bellDot" hidden></span></button>
+          <button class="icon-btn" id="themeBtn" aria-label="Switch between light and dark"><i data-i="sun"></i></button>
+          <div class="pop-wrap"><button class="icon-btn" id="bellBtn" aria-label="Notifications" aria-haspopup="true" aria-expanded="false"><i data-i="bell"></i><span class="dot" id="bellDot" hidden></span></button>
             <div class="popover" id="bellPop" hidden></div>
           </div>
           <div class="pop-wrap">
