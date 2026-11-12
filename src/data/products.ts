@@ -5,7 +5,7 @@
  * `appUrl` is the live app link. While it is `null`, the site shows a
  * "Link coming soon" state instead of a dead button.
  */
-export type ProductId = 'wisely' | 'lull' | 'kindling' | 'studyhub';
+export type ProductId = 'wisely' | 'lull' | 'kindling' | 'studyhub' | 'forge';
 
 export interface Product {
   id: ProductId;
@@ -100,6 +100,26 @@ export const products: Product[] = [
       { title: 'Goals and streaks', text: 'Daily and weekly study goals, personal goals, streaks and achievements to keep you going.' },
     ],
     appUrl: 'https://studyhub-tau-eight.vercel.app',
+  },
+  {
+    id: 'forge',
+    name: 'Forge',
+    category: 'Fitness & Nutrition',
+    summary:
+      'A fitness tool that combines workout logging with calorie and macro tracking, so training and eating are planned in one place.',
+    pitch:
+      'Forge is your gym logbook and food diary in one. Log sets in seconds, let it tell you what to lift next, and hit calorie and protein targets worked out from your own body and goal.',
+    accent: '#6f8a2c',
+    accentSoft: 'rgba(111, 138, 44, 0.13)',
+    features: [
+      { title: 'Workout logger', text: 'Routines, last session’s numbers beside every set, an automatic rest timer and personal-record alerts.' },
+      { title: 'Smart progression', text: 'Suggests your next weight and reps from how the last session went, spots stalls and plans deload weeks.' },
+      { title: 'Calorie and macro diary', text: 'Daily calorie, protein, carb and fat targets from your profile, with meals and water tracking.' },
+      { title: 'Barcode and food search', text: 'Scan packaged food or search Open Food Facts, with South African products and staples like pap and biltong.' },
+      { title: 'Progress charts', text: 'A smoothed weight trend, calories against target, muscles trained this week and strength over time.' },
+      { title: 'Exercise guides', text: 'Form cues, muscles worked and the most common mistake for every exercise in the library.' },
+    ],
+    appUrl: 'https://reinszawork-dot.github.io/forge/',
   },
 ];
 

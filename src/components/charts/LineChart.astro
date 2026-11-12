@@ -18,6 +18,8 @@ interface Props {
   unit?: Unit;
   height?: number;
   yMax?: number;
+  /** Axis start. Defaults to 0; set it for values like body weight that never go near zero. */
+  yMin?: number;
   ticks?: number;
   /** Show every nth x-axis label (keeps the axis calm on narrow screens). */
   labelEvery?: number;
@@ -41,8 +43,9 @@ const {
 const W = 1000;
 const H = 300;
 const all = series.flatMap((s) => s.values);
-const max = Astro.props.yMax ?? niceMax(Math.max(...all) * 1.08);
-const toY = (v: number) => H - (v / max) * H;
+const min = Astro.props.yMin ?? 0;
+const max = Astro.props.yMax ?? (min ? Math.ceil(Math.max(...all) + (Math.max(...all) - min) * 0.15) : niceMax(Math.max(...all) * 1.08));
+const toY = (v: number) => H - ((v - min) / (max - min)) * H;
 const toX = (i: number) => (labels.length === 1 ? W / 2 : (i / (labels.length - 1)) * W);
 
 const drawn = series.map((s) => {
@@ -50,8 +53,8 @@ const drawn = series.map((s) => {
   const line = smoothPath(pts);
   return { ...s, line, areaPath: s.area ? `${line}L${W},${H}L0,${H}Z` : null, gid: nextId('lc') };
 });
-const tickValues = Array.from({ length: ticks + 1 }, (_, i) => (max / ticks) * i);
-const payload = JSON.stringify({ labels, max, unit, series: series.map(({ label, values, color }) => ({ label, values, color })) });
+const tickValues = Array.from({ length: ticks + 1 }, (_, i) => min + ((max - min) / ticks) * i);
+const payload = JSON.stringify({ labels, min, max, unit, series: series.map(({ label, values, color }) => ({ label, values, color })) });
 ---
 
 <figure class:list={['lc', className]} data-chart="line" data-payload={payload} style={`--h:${height}px`}>

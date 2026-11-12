@@ -6,7 +6,7 @@ import { products } from '../data/products';
 
 <section id="products" class="section products" aria-labelledby="products-title">
   <div class="container">
-    <SectionHeading eyebrow="Our products" title="Four apps. One goal: an easier everyday." emphasis="an easier everyday." id="products-title" align="center">
+    <SectionHeading eyebrow="Our products" title="Five apps. One goal: an easier everyday." emphasis="an easier everyday." id="products-title" align="center">
       <p>Each NextWave product tackles one part of daily life — and shares the same care for simplicity, privacy and design.</p>
     </SectionHeading>
 
@@ -24,5 +24,11 @@ import { products } from '../data/products';
   }
   @media (min-width: 760px) {
     .cards { grid-template-columns: repeat(2, 1fr); gap: 1.5rem; }
+    /* An odd last card sits centred under the pair above instead of leaving a hole. */
+    .cards > :global(:last-child:nth-child(odd)) {
+      grid-column: 1 / -1;
+      justify-self: center;
+      width: calc(50% - 0.75rem);
+    }
   }
 </style>

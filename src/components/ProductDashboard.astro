@@ -32,6 +32,7 @@ const d = showcase[id];
       series={d.line.series.map((s) => ({ ...s, color: s.color ?? p.accent }))}
       unit={d.line.unit}
       labelEvery={d.line.labelEvery}
+      yMin={d.line.yMin}
       height={240}
       label={`${p.name} sample chart: ${d.line.title}`}
     />

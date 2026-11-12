@@ -18,10 +18,10 @@
       "installable": true
     },
     "kindling": {
-      "files": 5,
-      "sizeKB": 73.2,
-      "gzipKB": 15.4,
-      "linesOfCode": 969,
+      "files": 25,
+      "sizeKB": 266.4,
+      "gzipKB": 81.8,
+      "linesOfCode": 4366,
       "offline": true,
       "installable": true
     },
@@ -30,6 +30,14 @@
       "sizeKB": 321.9,
       "gzipKB": 146.3,
       "linesOfCode": 3193,
+      "offline": true,
+      "installable": true
+    },
+    "forge": {
+      "files": 10,
+      "sizeKB": 147,
+      "gzipKB": 52.6,
+      "linesOfCode": 2030,
       "offline": true,
       "installable": true
     }

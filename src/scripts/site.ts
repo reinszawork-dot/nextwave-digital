@@ -62,6 +62,7 @@ observe();
 /* ------------------------------------------------------------------ */
 interface LinePayload {
   labels: string[];
+  min?: number;
   max: number;
   unit: Unit;
   series: { label: string; values: number[]; color: string }[];
@@ -85,7 +86,8 @@ document.querySelectorAll<HTMLElement>('[data-chart="line"]').forEach((chart) =>
       const d = dots[si];
       if (!d) return;
       d.style.left = `${x}%`;
-      d.style.top = `${(1 - s.values[idx] / data.max) * 100}%`;
+      const lo = data.min ?? 0;
+      d.style.top = `${(1 - (s.values[idx] - lo) / (data.max - lo)) * 100}%`;
     });
     tip.innerHTML =
       `<b>${data.labels[idx]}</b>` +

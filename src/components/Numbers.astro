@@ -22,7 +22,7 @@ const measured = new Date(stats.measuredOn).toLocaleDateString('en-ZA', { day: '
 
 const kpis = [
   { icon: 'layers', value: live, label: 'Live products', note: 'Open in any browser' },
-  { icon: 'activity', value: features, label: 'Core features', note: 'Across the four apps' },
+  { icon: 'activity', value: features, label: 'Core features', note: 'Across the five apps' },
   { icon: 'no-account', value: 0, label: 'Accounts required', note: 'No sign-up, no passwords' },
   { icon: 'feather', value: lightest.s.gzipKB, label: `KB — all of ${lightest.p.name}'s code`, note: 'Every file, compressed', decimals: 1 },
 ] as const;
@@ -31,7 +31,7 @@ const kpis = [
 <section id="numbers" class="section numbers" aria-labelledby="numbers-title">
   <div class="container">
     <SectionHeading eyebrow="By the numbers" title="Small, fast and private by design." emphasis="private by design." id="numbers-title">
-      <p>Real figures from our four live apps — measured straight from their source code.</p>
+      <p>Real figures from our five live apps — measured straight from their source code.</p>
     </SectionHeading>
 
     <ul class="kpi-row">
@@ -49,7 +49,7 @@ const kpis = [
       <div class="board-card board-bars reveal">
         <div class="board-head">
           <h3>App by app</h3>
-          <p>Compare the four apps. Hover or tab through the bars for exact values.</p>
+          <p>Compare the five apps. Hover or tab through the bars for exact values.</p>
         </div>
         <BarChart
           labels={products.map((p) => p.name)}
@@ -60,7 +60,7 @@ const kpis = [
             { key: 'features', label: 'Core features', values: products.map((p) => p.features.length) },
           ]}
           height={230}
-          label="Comparison of the four NextWave apps by compressed size, lines of code and core features"
+          label="Comparison of the five NextWave apps by compressed size, lines of code and core features"
         />
       </div>
 

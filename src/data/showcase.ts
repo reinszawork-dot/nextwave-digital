@@ -16,6 +16,8 @@ export interface Showcase {
     series: { label: string; values: number[]; color?: string; area?: boolean; dashed?: boolean }[];
     unit?: Unit;
     labelEvery?: number;
+    /** Axis start for values that never approach zero (e.g. body weight). */
+    yMin?: number;
   };
   bars: { title: string; labels: string[]; values: number[]; unit?: Unit };
   ring: { label: string; value: number; max: number; display: string; sub: string };
@@ -112,6 +114,31 @@ export const showcase: Record<ProductId, Showcase> = {
       { label: 'Study streak', value: 14, unit: { suffix: ' days' } },
       { label: 'Tasks completed', value: 23 },
       { label: 'Days to next exam', value: 9 },
+    ],
+  },
+  forge: {
+    headline: 'Know what to lift. Know what to eat.',
+    line: {
+      title: 'Body weight · scale vs. smoothed trend',
+      labels: ['13 Oct', '16 Oct', '19 Oct', '22 Oct', '25 Oct', '28 Oct', '31 Oct', '3 Nov', '6 Nov', '9 Nov'],
+      series: [
+        { label: 'Trend', values: [84.0, 83.8, 83.6, 83.5, 83.2, 83.0, 82.8, 82.6, 82.4, 82.2], area: true },
+        { label: 'Scale', values: [84.4, 83.5, 84.0, 83.1, 83.6, 82.6, 83.1, 82.3, 82.8, 81.9], color: '#8c867a', dashed: true },
+      ],
+      unit: { suffix: ' kg', decimals: 1 },
+      labelEvery: 3,
+      yMin: 81,
+    },
+    bars: {
+      title: 'Muscles trained · sets this week',
+      labels: ['Chest', 'Back', 'Shoulders', 'Legs', 'Arms', 'Core'],
+      values: [12, 14, 9, 16, 10, 6],
+    },
+    ring: { label: 'Calories', value: 1380, max: 2100, display: '720', sub: 'kcal left of 2,100' },
+    kpis: [
+      { label: 'Workouts this week', value: 4 },
+      { label: 'Personal records', value: 3, note: 'This month' },
+      { label: 'Protein today', value: 118, unit: { suffix: ' g' } },
     ],
   },
 };

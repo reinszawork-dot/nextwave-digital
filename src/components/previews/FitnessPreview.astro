@@ -1,0 +1,116 @@
+---
+/* Illustrative Forge screen: calories left, today's macros and the next workout with its suggestion. Sample data only. */
+const target = 2100;
+const eaten = 1380;
+const R = 26;
+const C = 2 * Math.PI * R;
+const pct = eaten / target;
+const macros = [
+  { label: 'Protein', v: 118, goal: 165, color: '#4f8fb8' },
+  { label: 'Carbs', v: 142, goal: 230, color: '#d4a63a' },
+  { label: 'Fat', v: 41, goal: 58, color: '#c96f8e' },
+];
+---
+
+<div class="pv">
+  <div class="top">
+    <div class="ring-wrap">
+      <svg viewBox="0 0 64 64" class="ring" aria-hidden="true">
+        <defs>
+          <linearGradient id="fg-ring" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#f0a46a" />
+            <stop offset="1" stop-color="#d9733a" />
+          </linearGradient>
+        </defs>
+        <circle cx="32" cy="32" r={R} class="track" />
+        <circle cx="32" cy="32" r={R} class="fill" stroke="url(#fg-ring)" style={`--c:${C};--o:${C * (1 - pct)}`} stroke-dasharray={C} />
+      </svg>
+      <span class="ring-num">{Math.round(pct * 100)}%</span>
+    </div>
+    <div class="top-text">
+      <p class="pv-label">Calories left</p>
+      <p class="big">{(target - eaten).toLocaleString('en-ZA')} <span>of {target.toLocaleString('en-ZA')} kcal</span></p>
+      <p class="streak">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22c4 0 7-2.7 7-6.8 0-3.6-2.5-6-4.2-8.2-.5 2-1.6 3.2-2.8 3.6.3-3-1-6.2-3.8-8.6.2 3.4-2 5.6-3.4 7.6A9.6 9.6 0 0 0 5 15.2C5 19.3 8 22 12 22Z" fill="currentColor" /></svg>
+        9-day streak
+      </p>
+    </div>
+  </div>
+
+  <div class="panel">
+    <p class="pv-label">Today's macros</p>
+    <ul class="macros">
+      {macros.map((m, i) => (
+        <li>
+          <span class="m-row"><span>{m.label}</span><b>{m.v}/{m.goal}g</b></span>
+          <span class="track-bar"><span class="m-bar" style={`--w:${Math.min(100, (m.v / m.goal) * 100)}%;--c:${m.color};--d:${i * 90}ms`}></span></span>
+        </li>
+      ))}
+    </ul>
+  </div>
+
+  <div class="next">
+    <span class="badge" aria-hidden="true">
+      <svg viewBox="0 0 24 24"><path d="M14.4 14.4 9.6 9.6M18.66 21.51a2 2 0 1 1-2.83-2.83l-1.77 1.77a2 2 0 1 1-2.83-2.83l6.37-6.37a2 2 0 1 1 2.83 2.83l-1.77 1.77a2 2 0 1 1 2.83 2.83zM21.5 21.5l-1.4-1.4M3.9 3.9 2.5 2.5M6.4 12.77a2 2 0 1 1-2.83-2.83l1.77-1.77a2 2 0 1 1-2.83-2.83l2.83-2.83a2 2 0 1 1 2.83 2.83l1.77-1.77a2 2 0 1 1 2.83 2.83z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" /></svg>
+    </span>
+    <span class="next-text"><span class="next-name">Up next: Push day</span><span class="next-sub">Bench press · 62.5 kg × 9</span></span>
+    <span class="pill">+1 rep</span>
+  </div>
+</div>
+
+<style>
+  .pv { display: grid; gap: 0.8rem; }
+  .pv-label { font-size: 0.72rem; color: var(--text-faint); text-transform: uppercase; letter-spacing: 0.08em; }
+  .top { display: flex; align-items: center; gap: 0.9rem; }
+  .ring-wrap { position: relative; width: 64px; height: 64px; flex: none; }
+  .ring { width: 100%; height: 100%; transform: rotate(-90deg); }
+  .ring circle { fill: none; stroke-width: 7; stroke-linecap: round; }
+  .track { stroke: rgba(41, 37, 30, 0.07); }
+  .fill { stroke-dashoffset: var(--c); transition: stroke-dashoffset 1.2s var(--ease-out); }
+  :global(.is-visible) .fill { stroke-dashoffset: var(--o); }
+  .ring-num { position: absolute; inset: 0; display: grid; place-items: center; font-size: 0.8rem; font-weight: 700; }
+  .top-text { display: grid; gap: 0.1rem; min-width: 0; }
+  .big { font-size: 1.05rem; font-weight: 650; }
+  .big span { font-size: 0.75rem; color: var(--text-faint); font-weight: 500; }
+  .streak { display: inline-flex; align-items: center; gap: 0.3rem; font-size: 0.72rem; color: #c0564a; }
+  .streak svg { width: 12px; height: 12px; }
+  .panel {
+    padding: 0.7rem 0.8rem 0.75rem;
+    border-radius: 12px;
+    background: rgba(41, 37, 30, 0.03);
+    border: 1px solid rgba(41, 37, 30, 0.05);
+  }
+  .macros { display: grid; gap: 0.5rem; margin: 0.55rem 0 0; padding: 0; list-style: none; }
+  .m-row { display: flex; justify-content: space-between; font-size: 0.7rem; color: var(--text-faint); margin-bottom: 0.25rem; }
+  .m-row b { color: var(--text); font-weight: 600; }
+  .track-bar { display: block; height: 7px; border-radius: 99px; background: rgba(41, 37, 30, 0.07); overflow: hidden; }
+  .m-bar { display: block; height: 100%; width: 0; border-radius: inherit; background: var(--c); transition: width 0.9s var(--ease-out) var(--d); }
+  :global(.is-visible) .m-bar { width: var(--w); }
+  .next {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    padding: 0.6rem 0.7rem;
+    border-radius: 12px;
+    background: rgba(41, 37, 30, 0.03);
+    border: 1px solid rgba(41, 37, 30, 0.05);
+  }
+  .badge {
+    display: grid;
+    place-items: center;
+    width: 38px;
+    height: 40px;
+    flex: none;
+    border-radius: 10px;
+    background: rgba(111, 138, 44, 0.13);
+    color: #5a7322;
+  }
+  .badge svg { width: 20px; height: 20px; }
+  .next-text { display: grid; min-width: 0; flex: 1; }
+  .next-name { font-size: 0.8rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .next-sub { font-size: 0.68rem; color: var(--text-faint); }
+  .pill { font-size: 0.66rem; font-weight: 600; padding: 0.2rem 0.5rem; border-radius: 99px; background: rgba(111, 138, 44, 0.13); color: #5a7322; white-space: nowrap; }
+  @media (prefers-reduced-motion: reduce) {
+    .fill, .m-bar { transition: none; }
+  }
+</style>

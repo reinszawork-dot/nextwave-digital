@@ -25,4 +25,5 @@ export type IconName =
   | 'no-account'
   | 'feather'
   | 'quote'
-  | 'activity';
+  | 'activity'
+  | 'dumbbell';
