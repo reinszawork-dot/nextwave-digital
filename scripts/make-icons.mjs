@@ -24,7 +24,7 @@ const og = `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" vi
   </g>
   <text x="96" y="356" font-family="${serif}" font-size="76" fill="#1e1d1a" letter-spacing="-2">Technology designed to make</text>
   <text x="96" y="446" font-family="${serif}" font-size="76" font-style="italic" fill="#c26a48" letter-spacing="-2">everyday life better.</text>
-  <text x="96" y="540" font-family="${sans}" font-size="26" fill="#8c867a">Wisely · Lull · Kindling · StudyHub · Forge</text>
+  <text x="96" y="540" font-family="${sans}" font-size="26" fill="#8c867a">Wisely · Lull · Kindling · StudyHub · Forge · CashBook</text>
 </svg>`;
 await sharp(Buffer.from(og)).png().toFile('public/og-image.png');
 console.log('Icons written.');

@@ -1,0 +1,11 @@
+{
+  "name": "Side Hustle CashBook",
+  "short_name": "CashBook",
+  "description": "Track every rand your side hustles make. Private and offline.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#0B0914",
+  "theme_color": "#0B0914",
+  "icons": [{ "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }]
+}

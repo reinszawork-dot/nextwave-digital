@@ -141,4 +141,29 @@ export const showcase: Record<ProductId, Showcase> = {
       { label: 'Protein today', value: 118, unit: { suffix: ' g' } },
     ],
   },
+  cashbook: {
+    headline: 'Know which hustle actually pays.',
+    line: {
+      title: 'Money in vs. money out · last 10 months',
+      labels: ['Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov'],
+      series: [
+        { label: 'Money in', values: [9800, 10400, 11200, 12900, 12100, 11800, 14600, 15200, 16900, 17400], area: true },
+        { label: 'Money out', values: [3900, 4100, 4300, 4600, 4500, 4400, 4900, 5100, 5300, 5200], color: '#8c867a', dashed: true },
+      ],
+      unit: rand,
+      labelEvery: 3,
+    },
+    bars: {
+      title: 'Profit by income stream · this month',
+      labels: ['Baking', 'Design', 'Online store', 'Affiliate'],
+      values: [3100, 4200, 1900, 1400],
+      unit: rand,
+    },
+    ring: { label: 'Tax set aside', value: 10900, max: 14900, display: '73%', sub: 'R 10 900 of R 14 900' },
+    kpis: [
+      { label: 'Net profit this month', value: 10600, unit: rand },
+      { label: 'Owed to you', value: 7090, unit: rand, note: '4 customers' },
+      { label: 'Income streams', value: 4 },
+    ],
+  },
 };

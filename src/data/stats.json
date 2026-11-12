@@ -40,6 +40,14 @@
       "linesOfCode": 2512,
       "offline": true,
       "installable": true
+    },
+    "cashbook": {
+      "files": 7,
+      "sizeKB": 173.5,
+      "gzipKB": 46.8,
+      "linesOfCode": 2323,
+      "offline": true,
+      "installable": true
     }
   }
 }

@@ -11,7 +11,7 @@ interface Props {
 }
 const { id } = Astro.props;
 const product = getProduct(id)!;
-const Preview = { wisely: BudgetPreview, lull: SleepPreview, kindling: HabitPreview, studyhub: StudyPreview, forge: FitnessPreview }[id];
+const Preview = { wisely: BudgetPreview, lull: SleepPreview, kindling: HabitPreview, studyhub: StudyPreview, forge: FitnessPreview }[id as Exclude<ProductId, 'cashbook'>];
 ---
 
 <figure class="window" style={`--p-accent:${product.accent};--p-soft:${product.accentSoft}`}>
@@ -20,7 +20,8 @@ const Preview = { wisely: BudgetPreview, lull: SleepPreview, kindling: HabitPrev
     <p>{product.name}</p>
   </div>
   <div class="screen" aria-hidden="true">
-    <Preview />
+    {/* CashBook uses a real screenshot of the app (sample data) rather than a drawn mock-up */}
+    {id === 'cashbook' ? <img src="/previews/cashbook.jpg" alt="" width="1200" height="760" loading="lazy" style="display:block;width:100%;height:auto;border-radius:10px" /> : <Preview />}
   </div>
   <figcaption class="sr-only">Illustrative preview of the {product.name} app with sample data.</figcaption>
 </figure>

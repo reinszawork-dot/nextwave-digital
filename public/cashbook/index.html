@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en-ZA">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Side Hustle CashBook</title>
+  <meta name="description" content="Track every rand your side hustles make: cash book, income streams, who owes you, tax set-aside and savings goals.">
+  <meta name="theme-color" content="#0B0914">
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar" id="sidebar" aria-label="Main navigation">
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 32 32" width="36" height="36"><defs><linearGradient id="lg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8B5CF6"/><stop offset=".55" stop-color="#EC4899"/><stop offset="1" stop-color="#FB923C"/></linearGradient></defs><rect width="32" height="32" rx="10" fill="url(#lg)"/><path d="M17.5 5 9 17.5h6L13.5 27 23 14h-6.2z" fill="#fff"/></svg>
+        </span>
+        <span class="brand-name">Side Hustle<br><b>CashBook</b></span>
+        <button class="icon-btn only-mobile" id="navClose" aria-label="Close menu"><i data-i="x"></i></button>
+      </div>
+      <nav id="nav"></nav>
+      <div class="side-card">
+        <div class="side-card-icon"><i data-i="shield"></i></div>
+        <b>Your data stays here</b>
+        <p>Everything is saved in this browser. Back it up from Settings.</p>
+        <a class="btn btn-primary btn-sm" href="#/settings">Back up now</a>
+      </div>
+    </aside>
+    <div class="scrim" id="scrim"></div>
+
+    <div class="main">
+      <header class="topbar">
+        <button class="icon-btn only-mobile" id="navOpen" aria-label="Open menu"><i data-i="menu"></i></button>
+        <h1 class="page-title" id="pageTitle">Dashboard</h1>
+        <div class="top-actions">
+          <button class="btn btn-primary btn-sm hide-xs" data-action="add-tx"><i data-i="plus"></i>Add transaction</button>
+          <div class="pop-wrap">
+            <button class="icon-btn" id="bellBtn" aria-label="Notifications" aria-haspopup="true" aria-expanded="false"><i data-i="bell"></i><span class="dot" id="bellDot" hidden></span></button>
+            <div class="popover" id="bellPop" hidden></div>
+          </div>
+          <div class="pop-wrap">
+            <button class="profile-btn" id="profileBtn" aria-haspopup="true" aria-expanded="false"><span class="avatar" id="avatar">?</span><i data-i="chev-down" class="hide-xs"></i></button>
+            <div class="popover" id="profilePop" hidden></div>
+          </div>
+        </div>
+      </header>
+      <main id="view" tabindex="-1"></main>
+    </div>
+  </div>
+
+  <button class="fab" data-action="add-tx" aria-label="Add transaction"><i data-i="plus"></i></button>
+  <div class="modal-root" id="modalRoot" hidden></div>
+  <div class="toasts" id="toasts" aria-live="polite"></div>
+
+  <script src="charts.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

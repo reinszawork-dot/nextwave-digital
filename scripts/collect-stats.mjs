@@ -8,7 +8,7 @@ import { execFileSync } from 'node:child_process';
 import { gzipSync } from 'node:zlib';
 
 const root = resolve(import.meta.dirname, '..', '..');
-const apps = { wisely: 'wisely', lull: 'lull', kindling: 'habit-tracker', studyhub: 'studyhub', forge: 'forge' };
+const apps = { wisely: 'wisely', lull: 'lull', kindling: 'habit-tracker', studyhub: 'studyhub', forge: 'forge', cashbook: 'nextwave-digital/public/cashbook' };
 const skip = new Set(['.git', 'node_modules', 'README.md']);
 
 const out = { measuredOn: new Date().toISOString().slice(0, 10), apps: {} };

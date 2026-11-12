@@ -5,7 +5,7 @@
  * `appUrl` is the live app link. While it is `null`, the site shows a
  * "Link coming soon" state instead of a dead button.
  */
-export type ProductId = 'wisely' | 'lull' | 'kindling' | 'studyhub' | 'forge';
+export type ProductId = 'wisely' | 'lull' | 'kindling' | 'studyhub' | 'forge' | 'cashbook';
 
 export interface Product {
   id: ProductId;
@@ -120,6 +120,26 @@ export const products: Product[] = [
       { title: 'Exercise guides', text: 'Form cues, muscles worked and the most common mistake for every exercise in the library.' },
     ],
     appUrl: 'https://reinszawork-dot.github.io/forge/',
+  },
+  {
+    id: 'cashbook',
+    name: 'Side Hustle CashBook',
+    category: 'Side Hustles',
+    summary:
+      'A cash book for side hustles that tracks money in and out across several income streams, so you can see what each one really earns.',
+    pitch:
+      'Side Hustle CashBook shows which hustle actually pays. Record every rand in and out, keep each income stream separate, chase who still owes you and put a slice aside for tax — from your first R500 to several small businesses.',
+    accent: '#b0508f',
+    accentSoft: 'rgba(176, 80, 143, 0.12)',
+    features: [
+      { title: 'Cash book', text: 'Record money in and out with a category and payment method — cash, EFT, card, SnapScan or Zapper — then search and filter it.' },
+      { title: 'Income streams', text: 'Give each side hustle its own income, expenses, profit and history, and see which one performs best.' },
+      { title: 'Who owes me', text: 'Track unpaid customers with due dates. Mark a payment as received and it lands in your cash book.' },
+      { title: 'Tax set-aside', text: 'Choose a percentage of profit to put aside across the March to February tax year. A savings helper, not tax advice.' },
+      { title: 'Savings goals', text: 'Set a target, add money as you go and see how much to save each month to get there.' },
+      { title: 'Reports and CSV export', text: 'Monthly and tax-year reports with income against expenses, profit trends and stream comparisons, exportable as CSV.' },
+    ],
+    appUrl: '/cashbook/',
   },
 ];
 
