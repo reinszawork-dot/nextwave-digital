@@ -1258,7 +1258,8 @@
   const ROUTES = { dashboard: pageDashboard, cashbook: pageCashbook, streams: pageStreams, monthly: pageMonthly, owed: pageOwed, tax: pageTax, goals: pageGoals, reports: pageReports, settings: pageSettings };
   let lastRoute = '';
   function render() {
-    const [route = 'dashboard', sub] = location.hash.replace(/^#\/?/, '').split('/');
+    const [r0, sub] = location.hash.replace(/^#\/?/, '').split('/');
+    const route = r0 || 'dashboard'; // an empty hash splits to [''], which a default value would not catch
     let page;
     try {
       page = route === 'streams' && sub ? pageStream(decodeURIComponent(sub)) : ROUTES[route] ? ROUTES[route]() : { title: 'Not found', html: `<div class="card">${emptyState('alert', 'Page not found', 'That page doesn’t exist.', '<a class="btn" href="#/dashboard">Go to dashboard</a>')}</div>` };
