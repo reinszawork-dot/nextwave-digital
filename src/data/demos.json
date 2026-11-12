@@ -18,5 +18,9 @@
   "forge": {
     "seconds": 11.9,
     "recordedOn": "2026-11-12"
+  },
+  "cashbook": {
+    "seconds": 13.7,
+    "recordedOn": "2026-11-12"
   }
 }

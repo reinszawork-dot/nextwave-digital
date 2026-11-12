@@ -147,6 +147,22 @@ const demos = {
       await tap('[data-tab="today"]', 1600);
     },
   },
+  cashbook: {
+    url: 'https://nextwave-digital-six.vercel.app/cashbook/',
+    async run({ wait, tap, type, scroll, poster }) {
+      // The app's background is always moving, so idle time is never trimmed: keep the pauses short.
+      await wait(1100);
+      poster();
+      await scroll(600, 1000);
+      await tap('.fab', 450);
+      await type('#txForm [name=amount]', '450');
+      await tap('#txForm button[type=submit]', 1000);
+      await tap('#navOpen', 450);
+      await tap('#nav a[href="#/streams"]', 1600);
+      await scroll(400, 900);
+      await wait(500);
+    },
+  },
 };
 
 /* ------------------------------------------------------------------ */
