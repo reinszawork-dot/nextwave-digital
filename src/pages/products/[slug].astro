@@ -3,6 +3,8 @@ import Base from '../../layouts/Base.astro';
 import Icon from '../../components/Icon.astro';
 import ProductIcon from '../../components/ProductIcon.astro';
 import ProductPreview from '../../components/ProductPreview.astro';
+import DemoVideo from '../../components/DemoVideo.astro';
+import demos from '../../data/demos.json';
 import ProductDashboard from '../../components/ProductDashboard.astro';
 import Counter from '../../components/charts/Counter.astro';
 import { products, type Product } from '../../data/products';
@@ -18,6 +20,7 @@ interface Props {
 }
 const { product } = Astro.props;
 const others = products.filter((p) => p.id !== product.id);
+const hasDemo = product.id in demos;
 const s = (stats.apps as Record<string, (typeof stats.apps)['wisely']>)[product.id];
 const facts = s
   ? [
@@ -59,9 +62,15 @@ const facts = s
           </div>
         </div>
 
-        <div class="hero-preview reveal" style="--reveal-delay: 200ms">
-          <ProductPreview id={product.id} />
-          <p class="preview-note"><span class="sample-note">Illustrative preview with sample data</span></p>
+        <div class="hero-preview rise" style="--reveal-delay: 200ms">
+          {hasDemo ? (
+            <DemoVideo id={product.id} />
+          ) : (
+            <>
+              <ProductPreview id={product.id} />
+              <p class="preview-note"><span class="sample-note">Illustrative preview with sample data</span></p>
+            </>
+          )}
         </div>
       </div>
     </section>

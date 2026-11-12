@@ -1,43 +1,43 @@
 {
-  "measuredOn": "2026-11-11",
+  "measuredOn": "2026-11-12",
   "apps": {
     "wisely": {
-      "files": 9,
-      "sizeKB": 242.3,
-      "gzipKB": 78.5,
-      "linesOfCode": 3030,
+      "files": 10,
+      "sizeKB": 270.9,
+      "gzipKB": 87.5,
+      "linesOfCode": 3460,
       "offline": true,
       "installable": true
     },
     "lull": {
-      "files": 12,
-      "sizeKB": 200.3,
-      "gzipKB": 97.9,
-      "linesOfCode": 1969,
+      "files": 14,
+      "sizeKB": 233.1,
+      "gzipKB": 109.3,
+      "linesOfCode": 2363,
       "offline": true,
       "installable": true
     },
     "kindling": {
-      "files": 25,
-      "sizeKB": 266.4,
-      "gzipKB": 81.8,
-      "linesOfCode": 4366,
+      "files": 27,
+      "sizeKB": 296.2,
+      "gzipKB": 91.6,
+      "linesOfCode": 4836,
       "offline": true,
       "installable": true
     },
     "studyhub": {
-      "files": 18,
-      "sizeKB": 321.9,
-      "gzipKB": 146.3,
-      "linesOfCode": 3193,
+      "files": 20,
+      "sizeKB": 360.2,
+      "gzipKB": 158.9,
+      "linesOfCode": 3826,
       "offline": true,
       "installable": true
     },
     "forge": {
-      "files": 10,
-      "sizeKB": 147,
-      "gzipKB": 52.6,
-      "linesOfCode": 2030,
+      "files": 12,
+      "sizeKB": 178.9,
+      "gzipKB": 63.7,
+      "linesOfCode": 2512,
       "offline": true,
       "installable": true
     }

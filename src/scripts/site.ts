@@ -214,3 +214,67 @@ document.addEventListener('click', (e) => {
   bar.classList.add('is-active');
 });
 window.addEventListener('pageshow', () => bar?.classList.remove('is-active'));
+
+/* ------------------------------------------------------------------ */
+/* Product demo videos: play muted while on screen, pause when not     */
+/* ------------------------------------------------------------------ */
+document.querySelectorAll<HTMLElement>('[data-demo]').forEach((demo) => {
+  const video = demo.querySelector('video');
+  const toggle = demo.querySelector<HTMLButtonElement>('[data-demo-toggle]');
+  const bar = demo.querySelector<HTMLElement>('.progress');
+  if (!video || !toggle) return;
+
+  // JS is running: swap the native controls for our own minimal ones.
+  video.removeAttribute('controls');
+  video.muted = true;
+  const name = toggle.getAttribute('aria-label')?.replace(/^Play /, '') ?? 'demo';
+  let userPaused = reduceMotion; // reduced-motion visitors start paused and choose to play
+  let onScreen = false;
+
+  const sync = () => {
+    const playing = !video.paused;
+    demo.classList.toggle('is-playing', playing);
+    toggle.setAttribute('aria-label', `${playing ? 'Pause' : 'Play'} ${name}`);
+  };
+  let retries = 0;
+  const tryPlay = () =>
+    video.play().catch(() => {
+      sync();
+      // Browsers can reject an early play() (e.g. page opened in a background tab); try again shortly.
+      if (retries++ < 3) setTimeout(update, 500);
+    });
+  const update = () => {
+    if (onScreen && !userPaused) {
+      if (video.paused) tryPlay();
+    } else if (!video.paused) video.pause();
+  };
+  video.addEventListener('canplay', update);
+
+  video.addEventListener('play', sync);
+  video.addEventListener('pause', sync);
+  video.addEventListener('loadeddata', () => demo.classList.add('is-ready'));
+  video.addEventListener('timeupdate', () => {
+    if (bar && video.duration) bar.style.setProperty('--t', String(video.currentTime / video.duration));
+  });
+
+  toggle.addEventListener('click', () => {
+    userPaused = !video.paused;
+    if (userPaused) video.pause();
+    else tryPlay();
+  });
+
+  if ('IntersectionObserver' in window) {
+    new IntersectionObserver(
+      ([entry]) => {
+        onScreen = entry.isIntersecting;
+        update();
+      },
+      { threshold: 0.35 },
+    ).observe(video);
+  } else {
+    onScreen = true;
+    update();
+  }
+  document.addEventListener('visibilitychange', () => (document.hidden ? video.pause() : update()));
+  sync();
+});

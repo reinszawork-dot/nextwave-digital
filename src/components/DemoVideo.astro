@@ -1,0 +1,148 @@
+---
+/**
+ * Short, looping screen recording of a live app, framed as a phone.
+ * Videos live in public/demos/ and are recorded by tools/demo-recorder.
+ * Plays muted only while on screen; never autoplays for "reduce motion" users.
+ */
+import Icon from './Icon.astro';
+import { getProduct, type ProductId } from '../data/products';
+import demos from '../data/demos.json';
+
+interface Props {
+  id: ProductId;
+}
+const { id } = Astro.props;
+const p = getProduct(id)!;
+const clip = (demos as Record<string, { seconds: number; recordedOn: string }>)[id];
+const secs = clip ? Math.round(clip.seconds) : null;
+---
+
+<figure class="demo" data-demo style={`--p-accent:${p.accent};--p-soft:${p.accentSoft}`}>
+  <div class="phone">
+    <div class="screen">
+      <video
+        muted
+        loop
+        playsinline
+        controls
+        preload="metadata"
+        poster={`/demos/${id}.jpg`}
+        width="600"
+        height="1298"
+        aria-label={`Screen recording of the ${p.name} app in use`}
+      >
+        <source src={`/demos/${id}.webm`} type="video/webm" />
+        <source src={`/demos/${id}.mp4`} type="video/mp4" />
+      </video>
+      <span class="progress" aria-hidden="true"><span></span></span>
+    </div>
+  </div>
+  <figcaption>
+    <button type="button" class="toggle" data-demo-toggle aria-label={`Play the ${p.name} demo`}>
+      <span class="ic-play"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l11-6.5z" fill="currentColor" /></svg></span>
+      <span class="ic-pause"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z" fill="currentColor" /></svg></span>
+    </button>
+    <span class="cap">
+      <span class="cap-title">See {p.name} in action</span>
+      <span class="cap-sub">Real recording of the live app{secs && ` · ${secs}s`}</span>
+    </span>
+    {p.appUrl && (
+      <a class="try" href={p.appUrl} target="_blank" rel="noopener">
+        Try it <Icon name="arrow-up-right" size={14} /><span class="sr-only">(opens in a new tab)</span>
+      </a>
+    )}
+  </figcaption>
+</figure>
+
+<style>
+  .demo { margin: 0; display: grid; justify-items: center; gap: 1.1rem; }
+  .phone {
+    position: relative;
+    width: min(300px, 78vw);
+    padding: 10px;
+    border-radius: 46px;
+    background: linear-gradient(160deg, #2b2a26, #121210);
+    box-shadow:
+      0 0 0 1px rgba(255, 255, 255, 0.06) inset,
+      0 2px 0 rgba(255, 255, 255, 0.08) inset,
+      var(--shadow-lg),
+      0 40px 80px -40px color-mix(in srgb, var(--p-accent) 55%, transparent);
+    transition: transform 0.6s var(--ease-out);
+  }
+  .phone::before {
+    /* Soft accent glow behind the device */
+    content: '';
+    position: absolute;
+    inset: 12% -30% 0;
+    z-index: -1;
+    background: radial-gradient(closest-side, var(--p-soft), transparent);
+    filter: blur(20px);
+  }
+  .demo:hover .phone { transform: translateY(-4px) rotate(-0.4deg); }
+  .screen {
+    position: relative;
+    overflow: hidden;
+    border-radius: 37px;
+    background: var(--bg-2);
+    aspect-ratio: 600 / 1298;
+  }
+  video { display: block; width: 100%; height: 100%; object-fit: cover; }
+  .progress {
+    position: absolute;
+    left: 18%;
+    right: 18%;
+    bottom: 8px;
+    height: 3px;
+    border-radius: 3px;
+    background: rgba(30, 29, 26, 0.12);
+    overflow: hidden;
+    opacity: 0;
+    transition: opacity 0.4s;
+  }
+  .progress span {
+    display: block;
+    height: 100%;
+    width: 100%;
+    border-radius: inherit;
+    background: rgba(30, 29, 26, 0.55);
+    transform-origin: left;
+    transform: scaleX(var(--t, 0));
+  }
+  .demo:global(.is-ready) .progress { opacity: 1; }
+
+  figcaption { display: flex; align-items: center; gap: 0.75rem; max-width: 340px; width: 100%; }
+  .toggle {
+    display: inline-grid;
+    place-items: center;
+    flex: none;
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    border: 1px solid var(--border-strong);
+    background: var(--surface-2);
+    color: var(--text);
+    cursor: pointer;
+    box-shadow: var(--shadow-sm);
+    transition: transform 0.2s, background-color 0.2s;
+  }
+  .toggle:hover { background: var(--surface); }
+  .toggle:active { transform: scale(0.93); }
+  .toggle svg { width: 16px; height: 16px; }
+  .ic-pause { display: none; }
+  .demo:global(.is-playing) .ic-pause { display: inline; }
+  .demo:global(.is-playing) .ic-play { display: none; }
+  .no-js .toggle { display: none; }
+  .cap { display: grid; gap: 0.05rem; flex: 1; min-width: 0; }
+  .cap-title { font-size: var(--fs-sm); font-weight: 500; }
+  .cap-sub { font-size: 0.75rem; color: var(--text-faint); }
+  .try {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    flex: none;
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: color-mix(in srgb, var(--p-accent) 80%, black);
+  }
+  .try:hover { text-decoration: underline; text-underline-offset: 3px; }
+</style>

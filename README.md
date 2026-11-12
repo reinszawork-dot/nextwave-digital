@@ -29,6 +29,20 @@ npm run preview    # serve the production build locally
 | **Real** figures on "By the numbers" | `src/data/stats.json`: regenerate with `node scripts/collect-stats.mjs` (measures the committed code of the sibling app folders) |
 | **Sample** data for the illustrative dashboards | `src/data/showcase.ts` (always labelled "Sample data" on the site) |
 | Testimonials (section stays hidden while empty) | `src/data/testimonials.ts`: add only real quotes, with permission |
+| Product demo videos (shown on each product page) | `public/demos/<id>.{webm,mp4,jpg}`, lengths in `src/data/demos.json`, player in `src/components/DemoVideo.astro` |
+
+### Re-recording the product demo videos
+
+The clips are real screen recordings of the **live** apps, made by an automated phone-sized Chrome window. After an app changes:
+
+```bash
+cd tools/demo-recorder
+npm install                      # once; uses your installed Chrome, no browser download
+node record.mjs                  # all apps, or e.g. `node record.mjs lull kindling`
+node record.mjs --encode-only    # re-encode existing recordings without re-recording
+```
+
+Each demo's steps live in `tools/demo-recorder/record.mjs`. If an app's buttons change, update that app's steps there. The tool is separate from the website and isn't installed or run by Vercel.
 | Product cards & previews | `src/components/ProductCard.astro`, `ProductPreview.astro`, `previews/*` |
 | Product detail pages | `src/pages/products/[slug].astro` → `/products/wisely`, `/products/lull`, `/products/kindling`, `/products/studyhub` |
 | Logo / favicon | `src/components/Logo.astro`, `public/favicon.svg` |
