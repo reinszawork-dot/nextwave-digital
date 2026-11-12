@@ -12,7 +12,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
-  <script>/* /cashbook without the slash would break relative files */ if (location.protocol !== 'file:' && !/(/|.html)$/.test(location.pathname)) location.replace(location.pathname + '/' + location.hash);</script>
+  <script>/* /cashbook without the slash would break relative files */ if (location.protocol !== 'file:' && !location.pathname.endsWith('/') && !location.pathname.endsWith('.html')) location.replace(location.pathname + '/' + location.hash);</script>
   <script>try { if (localStorage.getItem('shcb.theme') === 'light') document.documentElement.dataset.theme = 'light'; } catch (e) {}</script>
 </head>
 <body>
