@@ -144,7 +144,7 @@ const w = showcase.wisely.line;
     top: -140px;
     left: 50%;
     margin-left: min(-380px, -47.5vw);
-    background: radial-gradient(closest-side, rgba(228, 160, 124, 0.5), transparent);
+    background: radial-gradient(closest-side, var(--glow-1), transparent);
     animation: drift-a 22s ease-in-out infinite alternate;
   }
   .b2 {
@@ -152,7 +152,7 @@ const w = showcase.wisely.line;
     height: 420px;
     top: 120px;
     right: -180px;
-    background: radial-gradient(closest-side, rgba(150, 172, 204, 0.42), transparent);
+    background: radial-gradient(closest-side, var(--glow-2), transparent);
     animation: drift-b 26s ease-in-out infinite alternate;
   }
   .b3 {
@@ -160,7 +160,7 @@ const w = showcase.wisely.line;
     height: 380px;
     top: 260px;
     left: -200px;
-    background: radial-gradient(closest-side, rgba(214, 196, 160, 0.55), transparent);
+    background: radial-gradient(closest-side, var(--glow-3), transparent);
     animation: drift-a 30s ease-in-out infinite alternate-reverse;
   }
   @keyframes drift-a { to { transform: translate(60px, 40px) scale(1.12); } }
@@ -168,7 +168,7 @@ const w = showcase.wisely.line;
   .dots {
     position: absolute;
     inset: 0;
-    background-image: radial-gradient(rgba(41, 37, 30, 0.12) 1px, transparent 1px);
+    background-image: radial-gradient(var(--dot) 1px, transparent 1px);
     background-size: 26px 26px;
     mask-image: radial-gradient(ellipse 65% 50% at 50% 28%, #000 10%, transparent 72%);
     -webkit-mask-image: radial-gradient(ellipse 65% 50% at 50% 28%, #000 10%, transparent 72%);
@@ -183,7 +183,7 @@ const w = showcase.wisely.line;
     padding: 0.4rem 0.95rem 0.4rem 0.75rem;
     border-radius: 999px;
     border: 1px solid var(--border-strong);
-    background: rgba(251, 250, 246, 0.7);
+    background: var(--glass);
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
     font-size: var(--fs-xs);
@@ -246,8 +246,8 @@ const w = showcase.wisely.line;
     height: 100%;
     padding: 1.15rem 1.2rem 1rem;
     border-radius: var(--radius-lg);
-    background: rgba(255, 255, 255, 0.66);
-    border: 1px solid rgba(255, 255, 255, 0.8);
+    background: var(--glass-strong);
+    border: 1px solid var(--glass-border);
     box-shadow: var(--shadow-lg), 0 0 0 1px var(--border);
     backdrop-filter: blur(16px) saturate(140%);
     -webkit-backdrop-filter: blur(16px) saturate(140%);
@@ -289,7 +289,9 @@ const w = showcase.wisely.line;
     padding: 0.8rem 1rem;
     border-radius: var(--radius);
     border: 1px solid var(--border);
-    background: rgba(251, 250, 246, 0.8);
+    background: var(--glass);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
     text-align: left;
     transition: border-color 0.3s, transform 0.4s var(--ease-out), box-shadow 0.4s var(--ease-out), background-color 0.3s;
   }

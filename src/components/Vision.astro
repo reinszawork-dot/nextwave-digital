@@ -62,7 +62,10 @@ const pillars: { icon: IconName; title: string; text: string }[] = [
     isolation: isolate;
     padding: clamp(2rem, 1rem + 5vw, 5.5rem);
     border-radius: var(--radius-xl);
-    background: #1e1d1a;
+    background: var(--vision-bg);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
     color: #f3efe6;
     box-shadow: var(--shadow-lg);
   }

@@ -11,20 +11,26 @@ const serif = "Newsreader, 'Iowan Old Style', Georgia, 'Times New Roman', serif"
 const sans = "Geist, 'Segoe UI', Arial, sans-serif";
 const og = `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
   <defs>
-    <radialGradient id="a" cx="78%" cy="8%" r="60%"><stop offset="0" stop-color="#e4a07c" stop-opacity=".45"/><stop offset="1" stop-color="#f6f3ec" stop-opacity="0"/></radialGradient>
-    <radialGradient id="b" cx="100%" cy="100%" r="50%"><stop offset="0" stop-color="#96accc" stop-opacity=".35"/><stop offset="1" stop-color="#f6f3ec" stop-opacity="0"/></radialGradient>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#151a3c"/><stop offset=".6" stop-color="#0d1128"/><stop offset="1" stop-color="#120f26"/></linearGradient>
+    <radialGradient id="a" cx="12%" cy="0%" r="60%"><stop offset="0" stop-color="#9b8cff" stop-opacity=".45"/><stop offset="1" stop-color="#9b8cff" stop-opacity="0"/></radialGradient>
+    <radialGradient id="h" cx="60%" cy="82%" r="45%"><stop offset="0" stop-color="#f4977a" stop-opacity=".38"/><stop offset=".6" stop-color="#e88fb4" stop-opacity=".1"/><stop offset="1" stop-color="#e88fb4" stop-opacity="0"/></radialGradient>
+    <linearGradient id="em" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#b9abff"/><stop offset=".55" stop-color="#ec92b6"/><stop offset="1" stop-color="#f6ab7d"/></linearGradient>
   </defs>
-  <rect width="1200" height="630" fill="#f6f3ec"/>
+  <rect width="1200" height="630" fill="url(#bg)"/>
   <rect width="1200" height="630" fill="url(#a)"/>
-  <rect width="1200" height="630" fill="url(#b)"/>
-  <g transform="translate(96 96)">
-    <rect width="72" height="72" rx="20" fill="#1e1d1a"/>
-    <path d="M15 42c6 0 8.3-12.5 14.7-12.5S37.9 44.5 44.5 44.5 52.8 30 58 30" fill="none" stroke="#e4a07c" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
-    <text x="96" y="49" font-family="${sans}" font-size="38" font-weight="600" fill="#1e1d1a" letter-spacing="-1">Next<tspan font-family="${serif}" font-style="italic" font-weight="500" fill="#c26a48">Wave</tspan> <tspan font-weight="400" fill="#8c867a">Digital</tspan></text>
+  <rect width="1200" height="630" fill="url(#h)"/>
+  <g fill="none" stroke-width="1.6">
+    <path d="M0 560 C 200 530, 400 590, 600 560 S 1000 530, 1200 560" stroke="#f4977a" stroke-opacity=".45"/>
+    <path d="M0 590 C 220 565, 420 615, 640 590 S 1040 565, 1200 590" stroke="#9b8cff" stroke-opacity=".35"/>
+    <path d="M0 615 C 180 595, 380 635, 580 615 S 980 595, 1200 615" stroke="#6ccfd8" stroke-opacity=".3"/>
   </g>
-  <text x="96" y="356" font-family="${serif}" font-size="76" fill="#1e1d1a" letter-spacing="-2">Technology designed to make</text>
-  <text x="96" y="446" font-family="${serif}" font-size="76" font-style="italic" fill="#c26a48" letter-spacing="-2">everyday life better.</text>
-  <text x="96" y="540" font-family="${sans}" font-size="26" fill="#8c867a">Wisely · Lull · Kindling · StudyHub · Forge · CashBook</text>
+  <g transform="translate(96 96)">
+    <image href="data:image/svg+xml;base64,${favicon.toString('base64')}" width="72" height="72"/>
+    <text x="96" y="49" font-family="${sans}" font-size="38" font-weight="600" fill="#eceef7" letter-spacing="-1">Next<tspan font-family="${serif}" font-style="italic" font-weight="500" fill="url(#em)">Wave</tspan> <tspan font-weight="400" fill="#8a91b0">Digital</tspan></text>
+  </g>
+  <text x="96" y="340" font-family="${serif}" font-size="76" fill="#eceef7" letter-spacing="-2">Technology designed to make</text>
+  <text x="96" y="430" font-family="${serif}" font-size="76" font-style="italic" fill="#d9d3ff" letter-spacing="-2">everyday life better.</text>
+  <text x="96" y="510" font-family="${sans}" font-size="26" fill="#8a91b0">Wisely · Lull · Kindling · StudyHub · Forge · CashBook</text>
 </svg>`;
 await sharp(Buffer.from(og)).png().toFile('public/og-image.png');
 console.log('Icons written.');

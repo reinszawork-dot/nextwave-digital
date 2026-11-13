@@ -1,6 +1,7 @@
 ---
 /**
- * NextWave Digital wordmark: a charcoal tile with a clay wave, "Next" in sans,
+ * NextWave Digital wordmark. The mark is a sun setting into the tide: a midnight
+ * tile, a sunset half-disc on the horizon and two waves below. "Next" in sans,
  * "Wave" in serif italic and a quiet "Digital". `compact` hides the suffix.
  */
 interface Props {
@@ -8,20 +9,52 @@ interface Props {
   class?: string;
 }
 const { compact = false, class: className = '' } = Astro.props;
+// The logo appears more than once per page, so its SVG ids must be unique.
+const uid = `nw${Math.random().toString(36).slice(2, 8)}`;
 ---
 
 <span class:list={['logo', className]}>
   <svg class="logo-mark" viewBox="0 0 32 32" aria-hidden="true">
-    <rect width="32" height="32" rx="9" fill="#1e1d1a"></rect>
+    <defs>
+      <linearGradient id={`${uid}-tile`} x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#232a5c"></stop>
+        <stop offset="1" stop-color="#0b0f22"></stop>
+      </linearGradient>
+      <linearGradient id={`${uid}-sun`} x1="0" y1="0" x2="0" y2="0.5">
+        <stop offset="0" stop-color="#b9abff"></stop>
+        <stop offset="0.55" stop-color="#ec92b6"></stop>
+        <stop offset="1" stop-color="#f6ab7d"></stop>
+      </linearGradient>
+      <linearGradient id={`${uid}-wave`} x1="0" y1="0" x2="1" y2="0">
+        <stop offset="0" stop-color="#9b8cff"></stop>
+        <stop offset="1" stop-color="#6ccfd8"></stop>
+      </linearGradient>
+      <clipPath id={`${uid}-sky`}><rect x="0" y="0" width="32" height="18.2"></rect></clipPath>
+    </defs>
+    <rect x="0.5" y="0.5" width="31" height="31" rx="9" fill={`url(#${uid}-tile)`} stroke="rgba(214,220,255,.22)"></rect>
+    <g transform="translate(0 -1.5)">
+    <g clip-path={`url(#${uid}-sky)`}>
+      <circle class="logo-sun" cx="16" cy="18.2" r="7.2" fill={`url(#${uid}-sun)`}></circle>
+    </g>
     <path
       class="logo-wave"
-      d="M6.5 18.5c2.6 0 3.6-5.5 6.4-5.5s3.7 6.5 6.6 6.5 3.6-6.5 6-6.5"
+      d="M6 21.2c1.7 0 2.5-1.5 4-1.5s2.3 1.5 4 1.5 2.3-1.5 4-1.5 2.3 1.5 4 1.5 2.3-1.5 4-1.5"
       fill="none"
-      stroke="#e4a07c"
-      stroke-width="2.6"
+      stroke={`url(#${uid}-wave)`}
+      stroke-width="1.9"
       stroke-linecap="round"
       stroke-linejoin="round"
       pathLength="1"></path>
+    <path
+      class="logo-wave logo-wave-2"
+      d="M10 25.4c1.5 0 2-1.2 3-1.2s1.8 1.2 3 1.2 1.8-1.2 3-1.2 1.6 1.2 3 1.2"
+      fill="none"
+      stroke="rgba(214,220,255,.55)"
+      stroke-width="1.6"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      pathLength="1"></path>
+    </g>
   </svg>
   <span class="logo-text">
     <span class="logo-name">Next<em>Wave</em></span>
@@ -37,14 +70,19 @@ const { compact = false, class: className = '' } = Astro.props;
     line-height: 1;
     color: var(--text);
   }
-  .logo-mark { width: 30px; height: 30px; flex: none; }
+  .logo-mark { width: 30px; height: 30px; flex: none; overflow: visible; }
+  .logo-sun { animation: sun-rise 1.3s var(--ease-out) 0.1s both; }
+  @keyframes sun-rise { from { transform: translateY(7px); } }
   .logo-wave {
     stroke-dasharray: 1;
     stroke-dashoffset: 0;
-    animation: logo-draw 1.4s var(--ease-out) 0.15s both;
+    animation: logo-draw 1.4s var(--ease-out) 0.35s both;
   }
+  .logo-wave-2 { animation-delay: 0.55s; }
   @keyframes logo-draw { from { stroke-dashoffset: 1; } }
+  :global(a:hover) > .logo .logo-sun { animation: sun-rise 0.9s var(--ease-out); }
   :global(a:hover) > .logo .logo-wave { animation: logo-draw 1s var(--ease-out); }
+  :global(a:hover) > .logo .logo-wave-2 { animation-delay: 0.15s; animation-fill-mode: both; }
   .logo-text { display: inline-flex; align-items: baseline; gap: 0.32rem; font-size: 1.12rem; }
   .logo-name { font-weight: 600; letter-spacing: -0.03em; }
   .logo-name em {
@@ -53,8 +91,18 @@ const { compact = false, class: className = '' } = Astro.props;
     font-weight: 500;
     font-size: 1.12em;
     letter-spacing: -0.01em;
-    color: var(--accent);
     margin-left: 1px;
+    padding-right: 0.08em;
+    color: var(--accent);
+    background: linear-gradient(100deg, #b9abff 0%, #ec92b6 55%, #f6ab7d 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  :global([data-look='day']) .logo-name em {
+    background: linear-gradient(100deg, #7b6bd6 0%, #c2557f 55%, #c26a48 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
   }
   .logo-suffix { font-weight: 400; color: var(--text-faint); letter-spacing: -0.01em; }
 </style>

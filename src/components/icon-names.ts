@@ -5,6 +5,7 @@ export type IconName =
   | 'arrow-up-right'
   | 'wallet'
   | 'moon'
+  | 'sun'
   | 'flame'
   | 'shield'
   | 'offline'

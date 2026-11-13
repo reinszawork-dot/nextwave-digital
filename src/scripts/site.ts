@@ -278,3 +278,52 @@ document.querySelectorAll<HTMLElement>('[data-demo]').forEach((demo) => {
   document.addEventListener('visibilitychange', () => (document.hidden ? video.pause() : update()));
   sync();
 });
+
+/* ------------------------------------------------------------------ */
+/* Look toggle: Dusk (default) <-> Day, remembered on this device       */
+/* ------------------------------------------------------------------ */
+document.querySelectorAll<HTMLButtonElement>('[data-look-toggle]').forEach((btn) => {
+  const root = document.documentElement;
+  const sync = () => {
+    const isDay = root.dataset.look === 'day';
+    btn.setAttribute('aria-label', isDay ? 'Switch to the Dusk look' : 'Switch to the Day look');
+    document.querySelector('meta[name=theme-color]')?.setAttribute('content', isDay ? '#f6f3ec' : '#0b0f22');
+  };
+  sync();
+  btn.addEventListener('click', () => {
+    const toDay = root.dataset.look !== 'day';
+    if (toDay) root.dataset.look = 'day';
+    else delete root.dataset.look;
+    try { localStorage.setItem('nw-look', toDay ? 'day' : 'dusk'); } catch {}
+    sync();
+  });
+});
+
+/* ------------------------------------------------------------------ */
+/* Glass light + scroll depth                                          */
+/* ------------------------------------------------------------------ */
+const glassSel = '.principle, .contact-card, .kpi-row, .board-card, .card, .window, .panels, .quote, .facts, .feature, .insight-board, .more-card, .glass-card, .strip-item';
+if (window.matchMedia('(hover: hover)').matches && !reduceMotion) {
+  document.querySelectorAll<HTMLElement>(glassSel).forEach((el) => {
+    if (getComputedStyle(el).position === 'static') el.style.position = 'relative';
+    el.classList.add('glass-glow');
+    el.addEventListener('pointermove', (e) => {
+      const r = el.getBoundingClientRect();
+      el.style.setProperty('--mx', `${e.clientX - r.left}px`);
+      el.style.setProperty('--my', `${e.clientY - r.top}px`);
+    });
+  });
+}
+if (!reduceMotion) {
+  const bg = document.querySelector<HTMLElement>('.site-bg');
+  let queued = false;
+  const onScroll = () => {
+    if (queued || !bg) return;
+    queued = true;
+    requestAnimationFrame(() => {
+      bg.style.setProperty('--scroll', String(Math.min(window.scrollY, 4000)));
+      queued = false;
+    });
+  };
+  window.addEventListener('scroll', onScroll, { passive: true });
+}

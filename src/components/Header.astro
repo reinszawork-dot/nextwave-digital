@@ -19,6 +19,11 @@ import { nav } from '../data/site';
         </ul>
       </nav>
 
+      <button class="look-toggle" type="button" data-look-toggle aria-label="Switch to the Day look">
+        <Icon name="sun" size={18} class="look-sun" />
+        <Icon name="moon" size={18} class="look-moon" />
+      </button>
+
       <a href="/#products" class="btn btn-primary header-cta">
         Our products
         <Icon name="arrow-right" size={16} />
@@ -75,7 +80,7 @@ import { nav } from '../data/site';
     transition: background-color 0.4s, border-color 0.4s, box-shadow 0.4s, backdrop-filter 0.4s;
   }
   .site-header.is-scrolled .header-bar {
-    background: rgba(251, 250, 246, 0.72);
+    background: var(--glass-strong);
     border-color: var(--border);
     box-shadow: var(--shadow-sm);
     backdrop-filter: saturate(140%) blur(14px);
@@ -102,7 +107,7 @@ import { nav } from '../data/site';
     color: var(--text-muted);
     transition: color 0.25s, background-color 0.25s;
   }
-  .nav-link:hover { color: var(--text); background: rgba(41, 37, 30, 0.05); }
+  .nav-link:hover { color: var(--text); background: var(--hover); }
   .nav-link::after {
     content: '';
     position: absolute;
@@ -118,6 +123,25 @@ import { nav } from '../data/site';
   }
   .nav-link[aria-current='true'] { color: var(--text); }
   .nav-link[aria-current='true']::after { transform: scale(1); }
+
+  .look-toggle {
+    display: inline-grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    margin-left: auto;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    background: var(--glass);
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: color 0.25s, background-color 0.25s, transform 0.2s;
+  }
+  .look-toggle:hover { color: var(--text); background: var(--hover); }
+  .look-toggle:active { transform: scale(0.94); }
+  .look-toggle :global(.look-moon) { display: none; }
+  :global([data-look='day']) .look-toggle :global(.look-sun) { display: none; }
+  :global([data-look='day']) .look-toggle :global(.look-moon) { display: block; }
 
   .header-cta { display: none; min-height: 42px; padding: 0.5rem 1.1rem; }
 
