@@ -32,7 +32,7 @@ const items: Item[] = [];
 
 function add(el: HTMLElement, kind: Kind, extra: Partial<Item> = {}) {
   // Elements driven here must not also run the CSS reveal transition.
-  if (kind === 'converge' || kind === 'zoom') el.classList.remove('reveal');
+  if (kind === 'converge' || kind === 'zoom') { el.classList.remove('reveal'); el.classList.add('is-visible'); }
   el.classList.add('sfx', `sfx-${kind}`);
   items.push({ el, kind, top: 0, h: 0, i: 0, n: 1, speed: 0, side: 1, last: -1, ...extra });
 }
@@ -77,7 +77,8 @@ function setup() {
   });
 
   // Panels that zoom into place
-  document.querySelectorAll<HTMLElement>('.tabs[data-tabs], .vision-panel, .contact-card, .facts, .insight-board').forEach((el) => add(el, 'zoom'));
+  document.querySelectorAll<HTMLElement>('.tabs[data-tabs], .vision-panel, .contact-card, .facts, .insight-board').forEach((el, i) => add(el, 'zoom', { side: i % 2 ? 1 : -1 }));
+  document.querySelectorAll<HTMLElement>('.section-heading').forEach((el, i) => add(el, 'converge', { i, side: i % 2 ? 1 : -1 }));
 
   // Read-along quote
   document.querySelectorAll<HTMLElement>('.about-copy p').forEach((p) => add(p, 'read', { parts: splitWords(p, 'sfx-word') }));
@@ -117,18 +118,24 @@ function setup() {
   });
   const heads = document.querySelectorAll<HTMLElement>('.sfx-heading');
   if ('IntersectionObserver' in window) {
-    const hio = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { e.target.classList.add('sfx-in'); hio.unobserve(e.target); } }), { rootMargin: '0px 0px -12% 0px' });
+    const hio = new IntersectionObserver((es) => es.forEach((e) => {
+      if (e.isIntersecting) e.target.classList.add('sfx-in');
+      else if (e.boundingClientRect.top > 0) e.target.classList.remove('sfx-in');
+    }), { rootMargin: '0px 0px -12% 0px' });
     heads.forEach((h) => hio.observe(h));
   } else heads.forEach((h) => h.classList.add('sfx-in'));
 }
 
 /* Where each element sits on the page, measured without our own motion applied. */
+let maxScroll = 1;
 function measure() {
   const sy = window.scrollY;
-  items.forEach((it) => {
+  // Clear every piece first, then read, then restore: one layout pass instead of one per piece,
+  // and nested pieces (inside a zooming panel) are measured without their parent's motion.
+  const saved = items.map((it) => { const s = it.el.style; const v = [s.translate, s.scale, s.rotate]; s.translate = s.scale = s.rotate = ''; return v; });
+  maxScroll = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+  items.forEach((it, idx) => {
     const s = it.el.style;
-    const saved = [s.translate, s.scale, s.rotate];
-    s.translate = s.scale = s.rotate = '';
     const r = it.el.getBoundingClientRect();
     it.top = r.top + sy;
     it.h = r.height;
@@ -137,11 +144,12 @@ function measure() {
       const mid = r.left + r.width / 2 - (parent.left + parent.width / 2);
       // Two-column grids: left column comes from the left, right from the right.
       // Single column (phones): alternate sides.
-      it.side = Math.abs(mid) > 8 ? Math.sign(mid) : it.i % 2 === 0 ? -1 : 1;
+      if (!it.el.classList.contains('section-heading')) it.side = Math.abs(mid) > 8 ? Math.sign(mid) : it.i % 2 === 0 ? -1 : 1;
     }
-    [s.translate, s.scale, s.rotate] = saved;
     it.last = -1;
+    void s; void idx;
   });
+  items.forEach((it, idx) => { const s = it.el.style; [s.translate, s.scale, s.rotate] = saved[idx]; });
 }
 
 function frame() {
@@ -156,28 +164,32 @@ function frame() {
       // Text sinks and fades before the rising previews reach it; gentler on narrow screens.
       const speed = it.speed > 0 && vw < 700 ? it.speed * 0.6 : it.speed;
       s.translate = `0 ${(sy * speed).toFixed(1)}px`;
-      if (it.speed > 0) s.opacity = clamp(1 - sy / (vh * (vw < 700 ? 0.38 : 0.6))).toFixed(3);
+      if (it.speed > 0) {
+        const op = clamp(1 - sy / (vh * (vw < 700 ? 0.38 : 0.6)));
+        s.opacity = op.toFixed(3);
+        s.pointerEvents = op < 0.15 ? 'none' : ''; // faded buttons shouldn't catch clicks
+      }
       it.last = sy > vh * 1.6 ? 1 : 0;
       continue;
     }
     if (y > vh * 1.2 || y + it.h < -vh * 0.5) continue; // far off-screen
     if (it.kind === 'converge') {
-      const p = easeOut(clamp((vh * 0.98 - y) / (vh * 0.55)));
+      const p = easeOut(clamp((vh * 1.02 - y) / (vh * 0.7)));
       if (Math.abs(p - it.last) < 0.002) continue;
       it.last = p;
       const q = 1 - p;
-      const dx = it.side * Math.min(170, vw * 0.22) * q;
-      const dy = (70 + (it.i % 3) * 26) * q;
+      const dx = it.side * Math.min(560, vw * 0.6) * q;
+      const dy = (30 + (it.i % 3) * 18) * q;
       s.translate = `${dx.toFixed(1)}px ${dy.toFixed(1)}px`;
-      s.rotate = `${(it.side * 5 * q).toFixed(2)}deg`;
-      s.scale = (0.86 + 0.14 * p).toFixed(3);
-      s.opacity = clamp(0.12 + p * 1.15).toFixed(3);
+      s.rotate = `${(it.side * 12 * q).toFixed(2)}deg`;
+      s.scale = (0.72 + 0.28 * p).toFixed(3);
+      s.opacity = clamp(p * 1.25).toFixed(3);
     } else if (it.kind === 'zoom') {
-      const p = easeOut(clamp((vh * 0.98 - y) / (vh * 0.6)));
+      const p = easeOut(clamp((vh * 1.02 - y) / (vh * 0.7)));
       if (Math.abs(p - it.last) < 0.002) continue;
       it.last = p;
-      s.scale = (0.88 + 0.12 * p).toFixed(3);
-      s.translate = `0 ${((1 - p) * 70).toFixed(1)}px`;
+      s.scale = (0.82 + 0.18 * p).toFixed(3);
+      s.translate = `${(it.side * Math.min(420, vw * 0.45) * (1 - p)).toFixed(1)}px ${((1 - p) * 50).toFixed(1)}px`;
       s.opacity = clamp(0.2 + p).toFixed(3);
     } else if (it.kind === 'read' && it.parts) {
       const p = clamp((vh * 0.85 - y) / (it.h + vh * 0.3));
@@ -200,8 +212,7 @@ function frame() {
     }
   }
   // Page progress line
-  const max = document.documentElement.scrollHeight - vh;
-  bar.style.scale = `${max > 0 ? clamp(sy / max).toFixed(4) : 0} 1`;
+  bar.style.scale = `${clamp(sy / maxScroll).toFixed(4)} 1`;
 }
 
 let bar: HTMLElement;
@@ -211,6 +222,13 @@ const schedule = () => {
   queued = true;
   requestAnimationFrame(() => { queued = false; frame(); });
 };
+
+/* Pause decorative loops in sections that are off-screen. (A whole-page "scrolling" flag was tried
+   and measured slower: toggling a class on <html> restyles the entire page.) */
+if ('IntersectionObserver' in window) {
+  const off = new IntersectionObserver((es) => es.forEach((e) => e.target.classList.toggle('is-offscreen', !e.isIntersecting)), { rootMargin: '150px 0px' });
+  document.querySelectorAll('main section, .site-footer').forEach((s) => off.observe(s));
+}
 
 if (!reduce) {
   bar = document.createElement('div');

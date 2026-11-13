@@ -19,7 +19,10 @@ function runCounter(el: HTMLElement) {
   }
   const duration = 1400;
   const start = performance.now();
+  const run = String(Number(el.dataset.run || 0) + 1);
+  el.dataset.run = run;
   const tick = (now: number) => {
+    if (el.dataset.run !== run) return;
     const t = Math.min(1, (now - start) / duration);
     const eased = 1 - Math.pow(1 - t, 3);
     el.textContent = formatValue(target * eased, unit);
@@ -43,9 +46,12 @@ const io =
     ? new IntersectionObserver(
         (entries) => {
           for (const e of entries) {
-            if (!e.isIntersecting) continue;
-            activate(e.target);
-            io!.unobserve(e.target);
+            if (e.isIntersecting) {
+              if (!e.target.classList.contains('is-visible')) activate(e.target);
+            } else if (e.boundingClientRect.top > 0 && !reduceMotion) {
+              // Below the screen again (scrolling up): fade out, so it plays again next time.
+              e.target.classList.remove('is-visible');
+            }
           }
         },
         { rootMargin: '0px 0px -10% 0px', threshold: 0.12 },
@@ -306,6 +312,7 @@ document.querySelectorAll<HTMLButtonElement>('[data-look-toggle]').forEach((btn)
 const glassSel = '.principle, .contact-card, .kpi-row, .board-card, .card, .window, .panels, .quote, .facts, .feature, .insight-board, .more-card, .glass-card, .strip-item';
 if (window.matchMedia('(hover: hover)').matches && !reduceMotion) {
   document.querySelectorAll<HTMLElement>(glassSel).forEach((el) => {
+    if (el.matches('[data-spotlight]')) return; // has its own cursor spotlight already
     if (getComputedStyle(el).position === 'static') el.style.position = 'relative';
     el.classList.add('glass-glow');
     el.addEventListener('pointermove', (e) => {
