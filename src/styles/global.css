@@ -455,3 +455,41 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
 @media (prefers-reduced-motion: reduce) {
   .site-bg .sky-layer, .site-bg .sea-layer { transform: none; }
 }
+
+/* ---------- Scroll motion (see scripts/scrollfx.ts) ---------- */
+main { overflow-x: clip; }
+.sfx-converge, .sfx-zoom { will-change: translate, scale, opacity; }
+.sfx-heading .sfx-hw {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: top;
+  padding: 0 0.1em 0.14em;
+  margin: 0 -0.1em -0.14em;
+}
+.sfx-heading .sfx-hw > span {
+  display: inline-block;
+  translate: 0 108%;
+  transition: translate 0.95s var(--ease-out) calc(var(--w, 0) * 55ms + 80ms);
+}
+.sfx-heading.sfx-in .sfx-hw > span { translate: 0 0; }
+.sfx-word { transition: opacity 0.25s linear; }
+.wordmark.sfx-assemble { background: none; }
+.wordmark .sfx-letter {
+  display: inline-block;
+  background-image: linear-gradient(180deg, var(--wordmark-top), var(--wordmark-bottom));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  will-change: translate, rotate, opacity;
+}
+.scroll-progress {
+  position: fixed;
+  inset: 0 0 auto 0;
+  height: 2px;
+  z-index: 199;
+  background: var(--brand-gradient);
+  transform-origin: left center;
+  scale: 0 1;
+  pointer-events: none;
+  box-shadow: 0 0 10px var(--accent-soft);
+}

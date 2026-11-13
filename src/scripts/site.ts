@@ -3,6 +3,7 @@
  * Everything degrades gracefully: content and charts are fully rendered on the server.
  */
 import { formatValue, type Unit } from '../lib/chart';
+import './scrollfx';
 
 const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
