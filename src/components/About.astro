@@ -71,7 +71,7 @@ import { site } from '../data/site';
     background: radial-gradient(260px circle at var(--mx, -200px) var(--my, -200px), rgba(194, 106, 72, 0.08), transparent 70%);
     pointer-events: none;
   }
-  .principle.is-visible:hover { box-shadow: var(--shadow); transform: translateY(-3px); border-color: var(--border-strong); }
+  @media (hover: hover) and (pointer: fine) { .principle.is-visible:hover { box-shadow: var(--shadow); transform: translateY(-3px); border-color: var(--border-strong); } }
   .principle-icon {
     display: inline-grid;
     place-items: center;

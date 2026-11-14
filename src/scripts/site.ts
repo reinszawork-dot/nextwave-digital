@@ -322,16 +322,3 @@ if (window.matchMedia('(hover: hover)').matches && !reduceMotion) {
     });
   });
 }
-if (!reduceMotion) {
-  const bg = document.querySelector<HTMLElement>('.site-bg');
-  let queued = false;
-  const onScroll = () => {
-    if (queued || !bg) return;
-    queued = true;
-    requestAnimationFrame(() => {
-      bg.style.setProperty('--scroll', String(Math.min(window.scrollY, 4000)));
-      queued = false;
-    });
-  };
-  window.addEventListener('scroll', onScroll, { passive: true });
-}

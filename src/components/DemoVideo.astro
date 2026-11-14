@@ -78,7 +78,7 @@ const secs = clip ? Math.round(clip.seconds) : null;
     background: radial-gradient(closest-side, var(--p-soft), transparent);
     filter: blur(20px);
   }
-  .demo:hover .phone { transform: translateY(-4px) rotate(-0.4deg); }
+  @media (hover: hover) and (pointer: fine) { .demo:hover .phone { transform: translateY(-4px) rotate(-0.4deg); } }
   .screen {
     position: relative;
     overflow: hidden;

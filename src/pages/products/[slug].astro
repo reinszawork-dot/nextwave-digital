@@ -238,7 +238,7 @@ const facts = s
     background: radial-gradient(240px circle at var(--mx, -200px) var(--my, -200px), var(--p-soft), transparent 70%);
     pointer-events: none;
   }
-  .feature.is-visible:hover { box-shadow: var(--shadow); transform: translateY(-3px); }
+  @media (hover: hover) and (pointer: fine) { .feature.is-visible:hover { box-shadow: var(--shadow); transform: translateY(-3px); } }
   .check {
     display: inline-grid;
     place-items: center;
@@ -275,12 +275,12 @@ const facts = s
     box-shadow: var(--shadow-sm);
     transition: border-color 0.3s, transform 0.4s var(--ease-out), box-shadow 0.4s var(--ease-out);
   }
-  .more-card:hover { border-color: color-mix(in srgb, var(--p-accent) 35%, transparent); transform: translateY(-2px); box-shadow: var(--shadow); }
+  @media (hover: hover) and (pointer: fine) { .more-card:hover { border-color: color-mix(in srgb, var(--p-accent) 35%, transparent); transform: translateY(-2px); box-shadow: var(--shadow); } }
   .more-text { display: grid; gap: 0.2rem; flex: 1; }
   .more-text strong { font-weight: 600; }
   .more-text span { font-size: var(--fs-sm); color: var(--text-muted); }
   .more-card :global(.more-arrow) { color: var(--text-faint); flex: none; transition: transform 0.3s var(--ease-out); }
-  .more-card:hover :global(.more-arrow) { transform: translateX(3px); color: var(--p-accent); }
+  @media (hover: hover) and (pointer: fine) { .more-card:hover :global(.more-arrow) { transform: translateX(3px); color: var(--p-accent); } }
 
   @media (min-width: 720px) {
     .feature-grid { grid-template-columns: repeat(2, 1fr); }
