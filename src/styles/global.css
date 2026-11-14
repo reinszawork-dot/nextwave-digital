@@ -40,9 +40,9 @@
   --header-h: 76px;
 
   /* Surfaces: midnight sea, frosted glass */
-  --bg: #0b0f22;
+  --bg: #171d3c;
   --bg-2: rgba(255, 255, 255, 0.025);
-  --surface: rgba(22, 27, 54, 0.52);
+  --surface: rgba(22, 27, 54, 0.36);
   --surface-2: rgba(30, 36, 70, 0.78);
   --border: rgba(214, 220, 255, 0.10);
   --border-strong: rgba(214, 220, 255, 0.18);
@@ -50,30 +50,32 @@
   /* Ink: moonlight */
   --text: #eceef7;
   --text-muted: #b1b6cf;
-  --text-faint: #8a91b0;
+  --text-faint: #a6add0; /* 4.5:1+ even over the brightest sky glow */
 
   /* Brand: sunset over water */
   --ink: #eceef7;
   --on-ink: #0b0f22;
   --accent: #f4977a;
   --accent-soft: rgba(244, 151, 122, 0.14);
-  --accent-2: #9b8cff;
+  --accent-2: #659aee;
   --accent-2-soft: rgba(155, 140, 255, 0.14);
-  --brand-gradient: linear-gradient(120deg, #9b8cff 0%, #e88fb4 50%, #f4b07a 100%);
+  --brand-gradient: linear-gradient(120deg, #659aee 0%, #d981e9 36%, #faa845 68%, #25c1b9 100%);
 
   /* Glass */
-  --glass: rgba(24, 29, 58, 0.42);
-  --glass-strong: rgba(20, 25, 52, 0.66);
-  --glass-border: rgba(214, 220, 255, 0.12);
-  --glass-blur: blur(20px) saturate(150%);
-  --glass-shine: inset 0 1px 0 rgba(255, 255, 255, 0.07);
+  --glass: rgba(24, 29, 58, 0.3);
+  --glass-strong: rgba(20, 25, 52, 0.52);
+  --glass-border: rgba(214, 226, 255, 0.17);
+  --glass-blur: blur(26px) saturate(185%);
+  /* Light on glass: bright top edge, faint rim, soft upper reflection, blue glow along the bottom */
+  --glass-shine: inset 0 1px 0 rgba(255, 255, 255, 0.18), inset 0 0 0 1px rgba(255, 255, 255, 0.03),
+    inset 0 70px 90px -70px rgba(255, 255, 255, 0.09), inset 0 -40px 60px -50px rgba(101, 154, 238, 0.16);
   --hover: rgba(214, 220, 255, 0.07);
   --ghost-bg: rgba(255, 255, 255, 0.05);
 
   /* Hero light */
-  --glow-1: rgba(155, 140, 255, 0.38);
-  --glow-2: rgba(244, 151, 122, 0.30);
-  --glow-3: rgba(108, 207, 216, 0.22);
+  --glow-1: rgba(101, 154, 238, 0.36);
+  --glow-2: rgba(217, 129, 233, 0.30);
+  --glow-3: rgba(37, 193, 185, 0.24);
   --dot: rgba(214, 220, 255, 0.10);
 
   --wordmark-top: rgba(214, 220, 255, 0.16);
@@ -82,7 +84,7 @@
   --logo-edge: rgba(214, 220, 255, 0.22);
   --logo-wave: #f4977a;
   --vision-bg: rgba(14, 18, 40, 0.55);
-  --em: #d9d3ff;
+  --em: #aec6ff; /* light periwinkle (orb blue #659aee lifted for contrast) */
 
   /* Depth: shadows read as soft darkness */
   --shadow-sm: 0 8px 24px -16px rgba(0, 0, 0, 0.7);
@@ -269,12 +271,12 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
 .site-bg {
   position: fixed; inset: 0; z-index: -1; pointer-events: none; overflow: hidden;
   background:
-    radial-gradient(120% 70% at 50% 0%, #1a1f45 0%, transparent 60%),
-    linear-gradient(180deg, #0b0f22 0%, #0d1128 55%, #120f26 100%);
+    radial-gradient(120% 70% at 50% 0%, #2e3a74 0%, transparent 62%),
+    linear-gradient(180deg, #1b2349 0%, #192046 55%, #231d45 100%);
 }
 .site-bg .sky-glow { position: absolute; border-radius: 50%; filter: blur(90px); will-change: transform; }
-.site-bg .g1 { width: 60vmax; height: 40vmax; left: -15vmax; top: -12vmax; background: radial-gradient(closest-side, rgba(155, 140, 255, 0.30), transparent); animation: sky-drift 34s ease-in-out infinite alternate; }
-.site-bg .g2 { width: 55vmax; height: 34vmax; right: -18vmax; top: 18vh; background: radial-gradient(closest-side, rgba(232, 143, 180, 0.20), transparent); animation: sky-drift 40s ease-in-out infinite alternate-reverse; }
+.site-bg .g1 { width: 60vmax; height: 40vmax; left: -15vmax; top: -12vmax; background: radial-gradient(closest-side, rgba(101, 154, 238, 0.30), transparent); animation: sky-drift 34s ease-in-out infinite alternate; }
+.site-bg .g2 { width: 55vmax; height: 34vmax; right: -18vmax; top: 18vh; background: radial-gradient(closest-side, rgba(217, 129, 233, 0.22), transparent); animation: sky-drift 40s ease-in-out infinite alternate-reverse; }
 /* The horizon: a band of sunset light where sky meets sea */
 .site-bg .horizon {
   position: absolute; left: -10%; right: -10%; bottom: 14vh; height: 30vh;
@@ -286,10 +288,10 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
 .site-bg .tide path { fill: none; vector-effect: non-scaling-stroke; stroke-width: 1.2; stroke-dasharray: 1; stroke-dashoffset: 0; animation: tide-draw 2.4s var(--ease-out) both; }
 /* Each line is its own layer and slides as a whole, so the browser moves it instead of repainting it. */
 .site-bg .tide { will-change: transform; animation: tide var(--tide-d, 22s) ease-in-out infinite alternate; }
-.site-bg .t1 { --tide-d: 22s; } .site-bg .t1 path { stroke: rgba(244, 151, 122, 0.40); animation-delay: 0.1s; }
-.site-bg .t2 { --tide-d: 28s; animation-delay: -6s; animation-direction: alternate-reverse; } .site-bg .t2 path { stroke: rgba(155, 140, 255, 0.30); animation-delay: 0.3s; }
-.site-bg .t3 { --tide-d: 34s; animation-delay: -12s; } .site-bg .t3 path { stroke: rgba(108, 207, 216, 0.28); animation-delay: 0.5s; }
-.site-bg .t4 { --tide-d: 26s; animation-delay: -3s; animation-direction: alternate-reverse; } .site-bg .t4 path { stroke: rgba(214, 220, 255, 0.12); animation-delay: 0.7s; }
+.site-bg .t1 { --tide-d: 22s; } .site-bg .t1 path { stroke: rgba(250, 168, 69, 0.42); animation-delay: 0.1s; }
+.site-bg .t2 { --tide-d: 28s; animation-delay: -6s; animation-direction: alternate-reverse; } .site-bg .t2 path { stroke: rgba(217, 129, 233, 0.34); animation-delay: 0.3s; }
+.site-bg .t3 { --tide-d: 34s; animation-delay: -12s; } .site-bg .t3 path { stroke: rgba(37, 193, 185, 0.34); animation-delay: 0.5s; }
+.site-bg .t4 { --tide-d: 26s; animation-delay: -3s; animation-direction: alternate-reverse; } .site-bg .t4 path { stroke: rgba(101, 154, 238, 0.26); animation-delay: 0.7s; }
 .site-bg .grain { position: absolute; inset: 0; opacity: 0.03; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
 @keyframes sky-drift { to { transform: translate(8vmax, 5vmax) scale(1.1); } }
 @keyframes tide { to { transform: translate3d(14%, 0, 0); } }
@@ -301,7 +303,7 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
   backdrop-filter: var(--glass-blur);
   -webkit-backdrop-filter: var(--glass-blur);
 }
-:root:not([data-look='day']) :is(.principle, .contact-card, .kpi-row, .board-card, .card, .window, .panels, .quote, .facts, .feature, .insight-board, .more-card, .card-surface) {
+:root:not([data-look='day']) :is(.principle, .contact-card, .kpi-row, .board-card, .card, .window, .panels, .quote, .facts, .feature, .insight-board, .more-card, .card-surface, .glass-card, .strip-item, .tablist) {
   border-color: var(--glass-border);
   box-shadow: var(--glass-shine), var(--shadow);
 }
@@ -499,3 +501,13 @@ main { overflow-x: clip; }
 }
 /* Decorative loops stop while their section is off-screen... */
 .is-offscreen, .is-offscreen *, .is-offscreen *::before, .is-offscreen *::after { animation-play-state: paused !important; }
+
+/* Hero app tiles: each enters and leaves in its own way (see scrollfx.ts, kind "strip") */
+.product-strip, .board { perspective: 900px; }
+.sfx-strip { will-change: translate, rotate, scale, opacity; }
+/* Wave landing flash: each app tile glows in its own colour as it lands (--land from scrollfx.ts) */
+:root .product-strip .strip-item.sfx-strip {
+  border-color: color-mix(in srgb, var(--p-accent) calc(var(--land, 0) * 70%), var(--glass-border));
+  box-shadow: var(--glass-shine), 0 0 calc(var(--land, 0) * 34px) calc(var(--land, 0) * 2px) color-mix(in srgb, var(--p-accent) 50%, transparent);
+}
+:root .product-strip .strip-item.sfx-strip:hover { box-shadow: var(--glass-shine), var(--shadow); }

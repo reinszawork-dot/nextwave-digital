@@ -294,7 +294,7 @@ document.querySelectorAll<HTMLButtonElement>('[data-look-toggle]').forEach((btn)
   const sync = () => {
     const isDay = root.dataset.look === 'day';
     btn.setAttribute('aria-label', isDay ? 'Switch to the Dusk look' : 'Switch to the Day look');
-    document.querySelector('meta[name=theme-color]')?.setAttribute('content', isDay ? '#f6f3ec' : '#0b0f22');
+    document.querySelector('meta[name=theme-color]')?.setAttribute('content', isDay ? '#f6f3ec' : '#171d3c');
   };
   sync();
   btn.addEventListener('click', () => {

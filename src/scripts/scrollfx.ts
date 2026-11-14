@@ -12,7 +12,8 @@
  */
 const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-type Kind = 'converge' | 'zoom' | 'read' | 'assemble' | 'depth';
+type Fx = 'slide' | 'pop' | 'bounce' | 'flip' | 'swing';
+type Kind = 'converge' | 'zoom' | 'read' | 'assemble' | 'depth' | 'strip';
 interface Item {
   el: HTMLElement;
   kind: Kind;
@@ -24,10 +25,21 @@ interface Item {
   side: number;
   parts?: HTMLElement[];
   last: number;
+  off?: number; // distance to just past the page edge on its side
+  fx?: Fx; // how a converge piece arrives
 }
 
 const clamp = (v: number, a = 0, b = 1) => Math.min(b, Math.max(a, v));
 const easeOut = (t: number) => 1 - Math.pow(1 - t, 3);
+const back = (t: number) => 1 + 2.70158 * Math.pow(t - 1, 3) + 1.70158 * Math.pow(t - 1, 2); // overshoots, then settles
+const bounce = (t: number) => {
+  const n = 7.5625, d = 2.75;
+  if (t < 1 / d) return n * t * t;
+  if (t < 2 / d) return n * (t -= 1.5 / d) * t + 0.75;
+  if (t < 2.5 / d) return n * (t -= 2.25 / d) * t + 0.9375;
+  return n * (t -= 2.625 / d) * t + 0.984375;
+};
+const elastic = (t: number) => (t <= 0 ? 0 : t >= 1 ? 1 : Math.pow(2, -10 * t) * Math.sin((t * 10 - 0.75) * ((2 * Math.PI) / 3)) + 1);
 const items: Item[] = [];
 
 function add(el: HTMLElement, kind: Kind, extra: Partial<Item> = {}) {
@@ -68,11 +80,22 @@ function setup() {
   const floats: [string, number][] = [['.hero .f-main', -0.08], ['.hero .f-ring', -0.2], ['.hero .f-bars', -0.16], ['.hero .f-stat', -0.26]];
   floats.forEach(([sel, speed]) => document.querySelectorAll<HTMLElement>(sel).forEach((el) => add(el, 'depth', { speed })));
 
+  // Hero app tiles: one wave that rolls across all six, in order
+  const tiles = document.querySelectorAll<HTMLElement>('.product-strip .strip-item');
+  tiles.forEach((el, i) => add(el, 'strip', { i, n: tiles.length }));
+
   // Pieces that converge into one grid
-  ['.products .cards', '.kpi-row', '.principles', '.feature-grid', '.board', '.pillars'].forEach((sel) => {
+  // Each section arrives with its own personality
+  const grids: [string, Fx | 'alt'][] = [['.products .cards', 'slide'], ['.kpi-row', 'pop'], ['.principles', 'bounce'], ['.feature-grid', 'alt'], ['.board', 'flip'], ['.pillars', 'swing']];
+  grids.forEach(([sel, fx]) => {
     document.querySelectorAll<HTMLElement>(sel).forEach((grid) => {
       const kids = [...grid.children].filter((k): k is HTMLElement => k instanceof HTMLElement);
-      kids.forEach((k, i) => add(k, 'converge', { i, n: kids.length }));
+      kids.forEach((k, i) => {
+        const f: Fx = fx === 'alt' ? (i % 2 ? 'bounce' : 'pop') : fx;
+        if (f === 'flip') k.style.transformOrigin = '50% 100%'; // stands up from its base
+        if (f === 'swing') k.style.transformOrigin = '50% 0'; // hangs from the top
+        add(k, 'converge', { i, n: kids.length, fx: f });
+      });
     });
   });
 
@@ -103,6 +126,14 @@ function setup() {
     };
     walk(wm);
     add(wm, 'assemble', { parts: letters });
+  });
+
+  // Any remaining fade-up content also enters from the side of the page it sits on
+  let n = 0;
+  document.querySelectorAll<HTMLElement>('main .reveal').forEach((el) => {
+    const moving = '.sfx-converge, .sfx-zoom, .sfx-strip, .sfx-depth';
+    if (el.closest(moving) || el.querySelector(moving)) return; // a parent or child already moves it
+    add(el, 'converge', { i: n++ });
   });
 
   // Headings rise in word by word (CSS handles the timing once .is-visible lands)
@@ -146,6 +177,8 @@ function measure() {
       // Single column (phones): alternate sides.
       if (!it.el.classList.contains('section-heading')) it.side = Math.abs(mid) > 8 ? Math.sign(mid) : it.i % 2 === 0 ? -1 : 1;
     }
+    // Start just past the screen edge on its own side (fully off the page)
+    if (it.kind === 'converge' || it.kind === 'zoom') it.off = (it.side < 0 ? r.right : window.innerWidth - r.left) + 40;
     it.last = -1;
     void s; void idx;
   });
@@ -174,23 +207,58 @@ function frame() {
     }
     if (y > vh * 1.2 || y + it.h < -vh * 0.5) continue; // far off-screen
     if (it.kind === 'converge') {
-      const p = easeOut(clamp((vh * 1.02 - y) / (vh * 0.7)));
-      if (Math.abs(p - it.last) < 0.002) continue;
-      it.last = p;
-      const q = 1 - p;
-      const dx = it.side * Math.min(560, vw * 0.6) * q;
-      const dy = (30 + (it.i % 3) * 18) * q;
-      s.translate = `${dx.toFixed(1)}px ${dy.toFixed(1)}px`;
-      s.rotate = `${(it.side * 12 * q).toFixed(2)}deg`;
-      s.scale = (0.72 + 0.28 * p).toFixed(3);
-      s.opacity = clamp(p * 1.25).toFixed(3);
+      const raw = clamp((vh * 1.02 - y) / (vh * 0.7));
+      if (Math.abs(raw - it.last) < 0.002) continue;
+      it.last = raw;
+      if (!it.fx || it.fx === 'slide') {
+        const p = easeOut(raw), q = 1 - p;
+        s.translate = `${(it.side * (it.off ?? vw * 0.6) * q).toFixed(1)}px ${((30 + (it.i % 3) * 18) * q).toFixed(1)}px`;
+        s.rotate = `${(it.side * 16 * q).toFixed(2)}deg`;
+        s.scale = (0.72 + 0.28 * p).toFixed(3);
+        s.opacity = clamp(p * 1.25).toFixed(3);
+        continue;
+      }
+      // Pieces in a row land one after another
+      const t = clamp(raw * 1.45 - (it.i % 4) * 0.13);
+      if (it.fx === 'pop') {
+        s.scale = (0.25 + 0.75 * back(t)).toFixed(3);
+        s.translate = `0 ${((1 - t) * 40).toFixed(1)}px`;
+        s.rotate = `${(it.side * 10 * (1 - t)).toFixed(2)}deg`;
+      } else if (it.fx === 'bounce') {
+        s.translate = `0 ${(-160 * (1 - bounce(t))).toFixed(1)}px`;
+        s.rotate = '0deg';
+        s.scale = '1';
+      } else if (it.fx === 'flip') {
+        s.rotate = `x ${(75 * (1 - back(t))).toFixed(1)}deg`;
+        s.translate = `0 ${((1 - t) * 50).toFixed(1)}px`;
+        s.scale = '1';
+      } else if (it.fx === 'swing') {
+        s.rotate = `${(it.side * 38 * (1 - elastic(t))).toFixed(2)}deg`;
+        s.translate = `0 ${((1 - t) * 30).toFixed(1)}px`;
+        s.scale = '1';
+      }
+      s.opacity = clamp(t * 2.2).toFixed(3);
     } else if (it.kind === 'zoom') {
       const p = easeOut(clamp((vh * 1.02 - y) / (vh * 0.7)));
       if (Math.abs(p - it.last) < 0.002) continue;
       it.last = p;
       s.scale = (0.82 + 0.18 * p).toFixed(3);
-      s.translate = `${(it.side * Math.min(420, vw * 0.45) * (1 - p)).toFixed(1)}px ${((1 - p) * 50).toFixed(1)}px`;
+      s.translate = `${(it.side * (it.off ?? vw * 0.45) * (1 - p)).toFixed(1)}px ${((1 - p) * 50).toFixed(1)}px`;
       s.opacity = clamp(0.2 + p).toFixed(3);
+    } else if (it.kind === 'strip') {
+      // Row progress; each tile starts a beat after the one before it. Tiles already on the first screen came in with the hero.
+      const inRaw = it.top < vh * 0.98 ? 1 : clamp((vh * 1.02 - y) / (vh * 0.45));
+      const outRaw = clamp((vh * 0.24 - y) / (vh * 0.34));
+      const e = easeOut(clamp(inRaw * 1.6 - it.i * 0.12)); // entering, left to right
+      const g = clamp(outRaw * 1.6 - (it.n - 1 - it.i) * 0.12); // leaving, right to left
+      const key = e * 3 + g;
+      if (Math.abs(key - it.last) < 0.002) continue;
+      it.last = key;
+      s.translate = `0 ${(70 * (1 - e) - 40 * Math.sin(Math.PI * e) - 60 * g).toFixed(1)}px`; // rides up over a crest, then settles
+      s.rotate = `x ${(28 * (1 - e) - 20 * g).toFixed(1)}deg`;
+      s.scale = (0.9 + 0.1 * e - 0.08 * g).toFixed(3);
+      s.opacity = clamp(Math.min(e * 1.6, 1 - g * 1.2)).toFixed(3);
+      s.setProperty('--land', (Math.sin(Math.PI * e) * (1 - g)).toFixed(3)); // its own colour flashes as it lands
     } else if (it.kind === 'read' && it.parts) {
       const p = clamp((vh * 0.85 - y) / (it.h + vh * 0.3));
       if (Math.abs(p - it.last) < 0.002) continue;
