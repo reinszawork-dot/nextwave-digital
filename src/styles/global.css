@@ -42,8 +42,8 @@
   /* Surfaces: midnight sea, frosted glass */
   --bg: #171d3c;
   --bg-2: rgba(255, 255, 255, 0.025);
-  --surface: rgba(22, 27, 54, 0.62); /* no backdrop blur on panels (it cost ~15 fps on scroll), so a little more opaque */
-  --surface-2: rgba(30, 36, 70, 0.78);
+  --surface: rgba(26, 32, 64, 0.5); /* no backdrop blur on panels (it cost ~15 fps on scroll); the glass reads through rim light instead */
+  --surface-2: rgba(34, 41, 78, 0.7);
   --border: rgba(214, 220, 255, 0.10);
   --border-strong: rgba(214, 220, 255, 0.18);
 
@@ -62,15 +62,15 @@
   --brand-gradient: linear-gradient(120deg, #659aee 0%, #d981e9 36%, #faa845 68%, #25c1b9 100%);
 
   /* Glass */
-  --glass: rgba(24, 29, 58, 0.58);
-  --glass-strong: rgba(20, 25, 52, 0.52);
-  --glass-border: rgba(214, 226, 255, 0.17);
+  --glass: rgba(26, 32, 64, 0.44);
+  --glass-strong: rgba(22, 28, 58, 0.68); /* for glass that can pass over text (hero cards, header) */
+  --glass-border: rgba(220, 230, 255, 0.24);
   --glass-blur: blur(26px) saturate(185%);
   /* Light on glass: bright top edge, faint rim, soft upper reflection, blue glow along the bottom */
-  --glass-shine: inset 0 1px 0 rgba(255, 255, 255, 0.18), inset 0 0 0 1px rgba(255, 255, 255, 0.03),
-    inset 0 70px 90px -70px rgba(255, 255, 255, 0.09), inset 0 -40px 60px -50px rgba(101, 154, 238, 0.16);
+  --glass-shine: inset 0 1px 0 rgba(255, 255, 255, 0.34), inset 0 0 0 1px rgba(255, 255, 255, 0.05),
+    inset 0 90px 110px -80px rgba(255, 255, 255, 0.16), inset 0 -40px 60px -45px rgba(101, 154, 238, 0.24);
   --hover: rgba(214, 220, 255, 0.07);
-  --ghost-bg: rgba(255, 255, 255, 0.05);
+  --ghost-bg: rgba(255, 255, 255, 0.09); /* lighter material for buttons than for panels */
 
   /* Hero light */
   --glow-1: rgba(101, 154, 238, 0.36);
@@ -149,8 +149,8 @@
   --font-serif: var(--font-sans); /* display type is sans in this look */
   --bg: #000000;
   --bg-2: rgba(255, 255, 255, 0.02);
-  --surface: rgba(24, 24, 27, 0.78);
-  --surface-2: #1c1c1e;
+  --surface: rgba(22, 24, 32, 0.5);
+  --surface-2: rgba(36, 38, 48, 0.72);
   --border: rgba(255, 255, 255, 0.08);
   --border-strong: rgba(255, 255, 255, 0.16);
   --text: #f5f5f7;
@@ -163,11 +163,11 @@
   --accent-2: #c7c7cc;
   --accent-2-soft: rgba(199, 199, 204, 0.12);
   --brand-gradient: linear-gradient(120deg, #ffffff 0%, #c7c7cc 38%, #8e8e93 62%, #2997ff 100%);
-  --glass: rgba(24, 24, 27, 0.72);
-  --glass-strong: rgba(18, 18, 20, 0.86);
-  --glass-border: rgba(255, 255, 255, 0.10);
-  --glass-blur: blur(20px) saturate(160%);
-  --glass-shine: inset 0 1px 0 rgba(255, 255, 255, 0.10);
+  --glass: rgba(22, 24, 32, 0.48);
+  --glass-strong: rgba(14, 16, 24, 0.62);
+  --glass-border: rgba(255, 255, 255, 0.13);
+  --glass-blur: blur(24px) saturate(180%);
+  --glass-shine: inset 0 1px 0 rgba(255, 255, 255, 0.2), inset 0 0 0 1px rgba(255, 255, 255, 0.03); /* bright top edge = light on the pane */
   --hover: rgba(255, 255, 255, 0.06);
   --ghost-bg: rgba(255, 255, 255, 0.06);
   --glow-1: rgba(41, 151, 255, 0.16);
@@ -179,15 +179,26 @@
   --logo-tile: rgba(255, 255, 255, 0.06);
   --logo-edge: rgba(255, 255, 255, 0.2);
   --logo-wave: #2997ff;
-  --vision-bg: #0b0b0d;
+  --vision-bg: rgba(10, 12, 20, 0.55);
   --em: #2997ff;
   color-scheme: dark;
 }
 [data-look='studio'] .site-bg { display: none; }
+/* Studio background: still pools of Apple blue, indigo and cyan light on black (no looping motion).
+   Fixed, so the see-through panels pick up different colour as they scroll past. */
 [data-look='studio'] body {
-  background: radial-gradient(110% 55% at 50% -12%, rgba(41, 151, 255, 0.12), transparent 62%), #000;
+  background:
+    radial-gradient(48% 36% at 50% 40%, rgba(41, 151, 255, 0.24), transparent 70%) fixed, /* soft light behind the headline */
+    radial-gradient(85% 62% at 50% -14%, rgba(41, 151, 255, 0.62), rgba(41, 151, 255, 0.12) 52%, transparent 76%) fixed,
+    radial-gradient(48% 55% at 104% 30%, rgba(94, 92, 230, 0.55), transparent 72%) fixed,
+    radial-gradient(46% 52% at -6% 68%, rgba(100, 210, 255, 0.34), transparent 72%) fixed,
+    radial-gradient(70% 48% at 70% 112%, rgba(41, 151, 255, 0.42), transparent 72%) fixed,
+    #000;
 }
 [data-look='studio'] :is(h1, h2) { font-weight: 600; letter-spacing: -0.035em; }
+/* Dusk: big serif display reads looser as it grows, so it tightens more than h2 */
+:root:not([data-look]) h1 { letter-spacing: -0.03em; }
+:root:not([data-look]) h2 { letter-spacing: -0.025em; }
 
 /* Cross-document page transitions (supported browsers fade between pages). */
 @view-transition { navigation: auto; }
@@ -357,6 +368,7 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
 @media (prefers-reduced-transparency: reduce) {
   :root:not([data-look]) { --surface: #161b36; --surface-2: #1e2446; --glass: #161b36; --glass-strong: #141934; }
   :root[data-look='studio'] { --surface: #18181b; --surface-2: #1c1c1e; --glass: #18181b; --glass-strong: #121214; }
+  [data-look='studio'] body { background: #000; }
 }
 
 /* Generic card surface. */
