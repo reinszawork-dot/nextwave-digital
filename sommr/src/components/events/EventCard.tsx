@@ -15,7 +15,7 @@ export function eventWhen(e: Pick<EventRow, 'starts_at' | 'all_day' | 'ends_at'>
 }
 
 function DatePanel({ event, category, tall = false }: { event: EventRow; category?: CategoryLite; tall?: boolean }) {
-  const color = category?.color ?? '#b0552a';
+  const color = category?.color ?? '#a44e27';
   return (
     <div
       className={`relative flex ${tall ? 'aspect-[16/10]' : 'h-full'} w-full items-end justify-between overflow-hidden p-4`}

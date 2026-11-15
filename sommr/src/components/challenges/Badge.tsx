@@ -12,7 +12,7 @@ export function Badge({ a, earnedAt, progress, index = 0 }: { a: AchievementDef;
     <li className={`card flex flex-col items-center p-5 text-center ${earned ? '' : 'bg-transparent shadow-none'}`} style={{ ['--i' as string]: Math.min(index, 10) }}>
       <span
         className={`grid h-16 w-16 place-items-center rounded-full transition-transform ${earned ? 'pop-in text-white' : 'border border-dashed border-line-strong text-ink-3'}`}
-        style={earned ? { background: 'radial-gradient(circle at 30% 30%, #f0a06b, #b0552a)' } : undefined}
+        style={earned ? { background: 'radial-gradient(circle at 30% 30%, #f0a06b, #a44e27)' } : undefined}
         aria-hidden="true"
       >
         <Icon size={26} strokeWidth={1.8} />

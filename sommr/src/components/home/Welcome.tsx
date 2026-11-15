@@ -87,7 +87,7 @@ export function Welcome() {
               </p>
             </div>
             <div className="lg:text-right">
-              <Link href="/register" className="btn btn-lg bg-sun-deep text-white hover:bg-[#9c4a23]">
+              <Link href="/register" className="btn btn-lg bg-sun-deep text-white hover:bg-[#8f431f]">
                 Create your free account
               </Link>
             </div>

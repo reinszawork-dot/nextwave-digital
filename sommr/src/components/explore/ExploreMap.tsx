@@ -487,7 +487,7 @@ export function ExploreMap({
   );
 
   return (
-    <div className="fixed inset-x-0 bottom-[var(--bottom-nav-h)] top-14 flex lg:inset-y-0 lg:left-[var(--sidebar-w)] lg:right-0">
+    <div id="main" className="fixed inset-x-0 bottom-[var(--bottom-nav-h)] top-14 flex lg:inset-y-0 lg:left-[var(--sidebar-w)] lg:right-0">
       {desktop ? (
         <aside className="relative z-10 flex w-[400px] shrink-0 flex-col border-r border-line bg-cream" aria-label="Places">
           <div className="space-y-3 px-5 pb-3 pt-7">

@@ -13,7 +13,7 @@
   --color-ink-3: #6f675b;
 
   --color-sun: #d9733b;
-  --color-sun-deep: #b0552a;
+  --color-sun-deep: #a44e27;
   --color-sun-soft: #f7e5d5;
   --color-sea: #7aa3c8;
   --color-sea-deep: #3d6c93;
@@ -145,7 +145,7 @@ body {
     color: #fff;
   }
   .btn-sun:hover:not(:disabled) {
-    background: #9c4a23;
+    background: #8f431f;
   }
   .btn-ghost {
     background: transparent;

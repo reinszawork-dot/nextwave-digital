@@ -1,4 +1,4 @@
-const TONES = ['#d9733b', '#3d6c93', '#5e8a52', '#95577f', '#b0552a', '#3f8580'];
+const TONES = ['#d9733b', '#3d6c93', '#5e8a52', '#95577f', '#a44e27', '#3f8580'];
 
 export function Avatar({ name, size = 36 }: { name: string; size?: number }) {
   const initials = name

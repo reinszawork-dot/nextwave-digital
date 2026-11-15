@@ -48,7 +48,7 @@ export default async function AdminOverview() {
         </div>
       </div>
 
-      <dl className="grid grid-cols-2 gap-3 md:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
         {[
           ['Upcoming events', c.upcoming, '/admin/events'],
           ['Awaiting review', (c.pending_events ?? 0) + (c.pending_places ?? 0), '/admin/submissions'],
@@ -61,8 +61,8 @@ export default async function AdminOverview() {
         ].map(([label, value, href]) => {
           const inner = (
             <>
-              <dt className="eyebrow">{label as string}</dt>
-              <dd className="display mt-1 text-4xl">{(value as number) ?? 0}</dd>
+              <p className="eyebrow">{label as string}</p>
+              <p className="display mt-1 text-4xl">{(value as number) ?? 0}</p>
             </>
           );
           return href ? (
@@ -75,7 +75,7 @@ export default async function AdminOverview() {
             </div>
           );
         })}
-      </dl>
+      </div>
 
       <section>
         <h2 className="display mb-4 text-3xl">Event sources</h2>

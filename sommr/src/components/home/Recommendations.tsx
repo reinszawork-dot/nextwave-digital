@@ -17,11 +17,18 @@ export function Recommendations({ interests, existing }: { interests: string[]; 
   // Round-robin through the user's interests, then everything else, until we have four ideas.
   const order = [...interests, ...INTERESTS.map((i) => i.slug).filter((s) => !interests.includes(s))];
   const pools = order.map((slug) => BUCKET_SUGGESTIONS.filter((s) => s.interest === slug && !existing.includes(s.slug)));
+  const photoOf = (s: (typeof BUCKET_SUGGESTIONS)[number]) => s.photo ?? INTERESTS.find((it) => it.slug === s.interest)!.photo;
   const picks: (typeof BUCKET_SUGGESTIONS)[number][] = [];
-  for (let round = 0; picks.length < 4 && round < 4; round++) {
-    for (const pool of pools.slice(0, Math.max(interests.length, 1) + (round > 0 ? order.length : 0))) {
-      if (pool[round] && !picks.includes(pool[round])) picks.push(pool[round]);
-      if (picks.length === 4) break;
+  // Prefer variety: no two cards with the same photo while there are alternatives.
+  for (const allowRepeat of [false, true]) {
+    for (let round = 0; picks.length < 4 && round < 6; round++) {
+      for (const pool of pools.slice(0, Math.max(interests.length, 1) + (round > 0 ? order.length : 0))) {
+        const s = pool[round];
+        if (!s || picks.includes(s)) continue;
+        if (!allowRepeat && picks.some((p) => photoOf(p) === photoOf(s))) continue;
+        picks.push(s);
+        if (picks.length === 4) break;
+      }
     }
   }
   if (picks.length === 0) return <p className="text-ink-3">You’ve added all our ideas for your interests. Nice.</p>;
@@ -29,7 +36,7 @@ export function Recommendations({ interests, existing }: { interests: string[]; 
     <div className="stagger grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
       {picks.map((s, i) => {
         const interest = INTERESTS.find((it) => it.slug === s.interest)!;
-        const photo = PHOTOS[interest.photo];
+        const photo = PHOTOS[photoOf(s)];
         const isAdded = added.includes(s.slug);
         return (
           <article key={s.slug} className="group relative h-56 overflow-hidden rounded-[22px] text-white shadow-[var(--shadow-card)]" style={{ ['--i' as string]: i }}>

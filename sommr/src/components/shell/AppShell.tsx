@@ -12,6 +12,12 @@ export function AppShell({ user, children }: { user: SessionUser; children: Reac
   const city = getCity(user.citySlug);
   return (
     <div className="min-h-dvh">
+      <a
+        href="#main"
+        className="sr-only z-[100] rounded-full bg-ink px-4 py-2 text-sm font-medium text-cream focus:not-sr-only focus:fixed focus:left-4 focus:top-3"
+      >
+        Skip to content
+      </a>
       {/* Desktop sidebar */}
       <aside className="fixed inset-y-0 left-0 z-40 hidden w-[var(--sidebar-w)] flex-col border-r border-line bg-cream px-5 py-7 lg:flex">
         <Link href="/" aria-label="SOMMR home" className="px-2">

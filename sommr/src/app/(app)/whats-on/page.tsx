@@ -95,7 +95,7 @@ export default async function WhatsOnPage({ searchParams }: PageProps<'/whats-on
               title: e.title,
               lat: e.lat!,
               lng: e.lng!,
-              color: catMap.get(e.category_slug)?.color ?? '#b0552a',
+              color: catMap.get(e.category_slug)?.color ?? '#a44e27',
               when: eventWhen(e),
               venue: e.venue_name,
             }))}

@@ -5,7 +5,7 @@ import { useEffect, useRef } from 'react';
 import { MAP_STYLE_URL, warmStyle } from '@/components/explore/mapStyle';
 
 /** A small, calm map with a single pin — for place and event pages. */
-export function MiniMap({ lat, lng, color = '#b0552a', label }: { lat: number; lng: number; color?: string; label: string }) {
+export function MiniMap({ lat, lng, color = '#a44e27', label }: { lat: number; lng: number; color?: string; label: string }) {
   const el = useRef<HTMLDivElement>(null);
   useEffect(() => {
     let map: import('maplibre-gl').Map | null = null;
