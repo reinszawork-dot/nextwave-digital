@@ -200,15 +200,17 @@ export function PreferencesForm({
                   aria-pressed={active}
                   onClick={() => toggle(it.slug)}
                   style={{ ['--i' as string]: i }}
-                  className={`group relative aspect-[4/5] overflow-hidden rounded-[20px] text-left outline-offset-4 transition-all duration-300 ${
+                  data-tilt="4"
+                  data-tilt-glare=""
+                  className={`group relative aspect-[4/5] overflow-hidden rounded-[20px] text-left outline-offset-4 ${
                     active ? 'ring-[3px] ring-sun ring-offset-2 ring-offset-cream' : ''
                   }`}
                 >
-                  <Image src={photo.src} alt="" fill sizes="(min-width: 768px) 22vw, 45vw" className="object-cover transition-transform duration-700 group-hover:scale-105" />
+                  <Image src={photo.src} alt="" fill sizes="(min-width: 768px) 22vw, 45vw" className={`object-cover transition-[scale] duration-1000 ease-[var(--ease-soft)] group-hover:scale-105 ${active ? 'scale-[1.04]' : ''}`} />
                   <span className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/15 to-transparent" />
                   <span
-                    className={`absolute right-3 top-3 grid h-7 w-7 place-items-center rounded-full border transition-all ${
-                      active ? 'border-sun bg-sun text-white' : 'border-white/70 bg-black/10 text-transparent'
+                    className={`absolute right-3 top-3 grid h-7 w-7 place-items-center rounded-full border transition-[background-color,border-color,color,scale] duration-300 ease-[var(--ease-spring)] ${
+                      active ? 'scale-110 border-sun bg-sun text-white' : 'border-white/70 bg-black/10 text-transparent'
                     }`}
                   >
                     <Check size={15} strokeWidth={2.5} aria-hidden="true" />

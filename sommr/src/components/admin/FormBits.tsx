@@ -87,7 +87,7 @@ export function Select({
 export function Check({ label, name, defaultChecked, hint }: { label: string; name: string; defaultChecked?: boolean; hint?: string }) {
   return (
     <label className="flex items-start gap-3 text-sm">
-      <input type="checkbox" name={name} defaultChecked={defaultChecked} className="mt-0.5 h-4.5 w-4.5 accent-[var(--color-sun-deep)]" />
+      <input type="checkbox" name={name} defaultChecked={defaultChecked} className="switch mt-0.5" />
       <span>
         <span className="font-medium">{label}</span>
         {hint ? <span className="block text-xs text-ink-3">{hint}</span> : null}

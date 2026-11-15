@@ -122,9 +122,13 @@ await check('bucket list: add, tick off, delete', async () => {
   await page.getByRole('button', { name: /Take a surf lesson/ }).click();
   await page.getByRole('checkbox', { name: /Take a surf lesson/ }).waitFor();
   await page.getByRole('button', { name: 'Edit Take a surf lesson' }).click();
-  page.once('dialog', (d) => d.accept());
   await page.getByRole('button', { name: 'Delete' }).click();
-  await page.getByRole('checkbox', { name: /Take a surf lesson/ }).waitFor({ state: 'detached' });
+  const dialog = page.getByRole('alertdialog');
+  await dialog.getByRole('button', { name: 'Remove' }).click();
+  await dialog.waitFor({ state: 'detached' });
+  await page.locator('textarea[aria-label="Notes"]').waitFor({ state: 'detached' });
+  // The suggestion is offered again once it's off the list.
+  await page.getByRole('button', { name: /Take a surf lesson/ }).waitFor();
   await page.screenshot({ path: `${OUT}/04-bucket.png`, fullPage: true });
 });
 

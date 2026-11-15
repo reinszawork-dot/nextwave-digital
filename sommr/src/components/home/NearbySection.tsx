@@ -86,9 +86,9 @@ export function NearbySection({
   }
   return (
     <>
-      <div className="stagger grid grid-cols-2 gap-3 md:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
         {state.places.map((p, i) => (
-          <div key={p.id} style={{ ['--i' as string]: i }}>
+          <div key={p.id} data-reveal="" style={{ ['--i' as string]: i % 4 + Math.floor(i / 4) }}>
             <PlaceCard place={toRow(p)} category={categoryInfo[p.category]} />
           </div>
         ))}

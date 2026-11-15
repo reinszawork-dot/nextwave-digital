@@ -25,10 +25,10 @@ export default async function PlacePage({ params }: PageProps<'/places/[id]'>) {
   const cat = categoryLite(categories.get(place.category_slug));
   return (
     <Page>
-      <Link href="/explore" className="mb-6 inline-flex items-center gap-1.5 text-sm font-medium text-ink-3 hover:text-ink">
-        <ArrowLeft size={16} aria-hidden="true" /> Explore
+      <Link href="/explore" transitionTypes={['nav-back']} className="group mb-6 inline-flex items-center gap-1.5 text-sm font-medium text-ink-3 hover:text-ink">
+        <ArrowLeft size={16} className="transition-transform duration-500 ease-[var(--ease-spring)] group-hover:-translate-x-1" aria-hidden="true" /> Explore
       </Link>
-      <div className="grid gap-8 lg:grid-cols-[1fr_1.1fr]">
+      <div className="stagger grid gap-8 lg:grid-cols-[1fr_1.1fr]" style={{ ['--stagger' as string]: '120ms' }}>
         <div className="card p-6 sm:p-8">
           <PlaceDetail
             category={cat}

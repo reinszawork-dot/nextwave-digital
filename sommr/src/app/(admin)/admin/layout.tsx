@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 import { AdminNav } from '@/components/admin/AdminNav';
+import { KeyedTransition } from '@/components/motion/KeyedTransition';
 import { Logo } from '@/components/ui/Logo';
 import { requireAdmin } from '@/server/auth';
 import { maybeOne, sql } from '@/server/db';
@@ -32,7 +33,9 @@ export default async function AdminLayout({ children }: { children: React.ReactN
           </div>
         </div>
       </header>
-      <main className="page-enter mx-auto max-w-[1240px] px-4 py-8 sm:px-8">{children}</main>
+      <main className="mx-auto max-w-[1240px] px-4 py-8 sm:px-8">
+        <KeyedTransition>{children}</KeyedTransition>
+      </main>
     </div>
   );
 }

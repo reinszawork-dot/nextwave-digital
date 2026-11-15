@@ -1,5 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import { ViewTransition } from 'react';
+import { WordReveal } from '@/components/motion/WordReveal';
 import { notFound } from 'next/navigation';
 import { AlertTriangle, ArrowLeft, CalendarPlus, Clock, ExternalLink, MapPin, Navigation, Ticket, User } from 'lucide-react';
 import { Page } from '@/components/shell/AppShell';
@@ -8,6 +10,7 @@ import { MiniMap } from '@/components/common/MiniMap';
 import { SaveButton } from '@/components/common/SaveButton';
 import { ShareButton } from '@/components/common/ShareButton';
 import { DatePanel } from '@/components/events/EventCard';
+import { ExpandableText } from '@/components/common/ExpandableText';
 import { directionsLinks } from '@/components/explore/mapStyle';
 import { getCity } from '@/lib/cities';
 import { formatLongDate, formatTime, timeAgo } from '@/lib/time';
@@ -48,8 +51,8 @@ export default async function EventPage({ params }: PageProps<'/events/[id]'>) {
 
   return (
     <Page>
-      <Link href="/whats-on" className="mb-6 inline-flex items-center gap-1.5 text-sm font-medium text-ink-3 hover:text-ink">
-        <ArrowLeft size={16} aria-hidden="true" /> What’s On
+      <Link href="/whats-on" transitionTypes={['nav-back']} className="group mb-6 inline-flex items-center gap-1.5 text-sm font-medium text-ink-3 hover:text-ink">
+        <ArrowLeft size={16} className="transition-transform duration-500 ease-[var(--ease-spring)] group-hover:-translate-x-1" aria-hidden="true" /> What’s On
       </Link>
 
       {e.status === 'cancelled' ? (
@@ -66,6 +69,7 @@ export default async function EventPage({ params }: PageProps<'/events/[id]'>) {
 
       <div className="grid gap-8 lg:grid-cols-[1.2fr_1fr]">
         <div>
+          <ViewTransition name={`event-media-${e.id}`} share="morph" default="none">
           <div className="relative overflow-hidden rounded-[26px] border border-line">
             {e.image_url ? (
               // eslint-disable-next-line @next/next/no-img-element
@@ -76,28 +80,25 @@ export default async function EventPage({ params }: PageProps<'/events/[id]'>) {
               </div>
             )}
           </div>
+          </ViewTransition>
           <div className="mt-6 flex flex-wrap items-center gap-2">
             <CategoryPill category={cat} />
             {price ? <span className="tag tag-sea">{price}</span> : null}
             {e.featured ? <span className="tag tag-sun">Editor’s pick</span> : null}
           </div>
-          <h1 className="display mt-3 text-[2.6rem] sm:text-5xl">{e.title}</h1>
+          <h1 className="display mt-3 text-[2.6rem] sm:text-5xl">
+            <WordReveal delay={180}>{e.title}</WordReveal>
+          </h1>
           {e.featured_note ? <p className="mt-4 rounded-2xl bg-sun-soft/70 px-4 py-3 text-ink-2">{e.featured_note}</p> : null}
           {e.description ? (
-            <div className="prose-sommr mt-6 max-w-2xl">
-              {e.description.split(/\n{2,}/).map((p, i) => (
-                <p key={i} className="whitespace-pre-line">
-                  {p}
-                </p>
-              ))}
-            </div>
+            <ExpandableText text={e.description} className="prose-sommr mt-6 max-w-2xl" />
           ) : (
             <p className="mt-6 text-ink-3">The organiser hasn’t shared a description. Check the ticket page for details.</p>
           )}
         </div>
 
-        <aside className="space-y-4">
-          <div className="card space-y-4 p-6">
+        <aside className="stagger space-y-4" style={{ ['--stagger' as string]: '120ms' }}>
+          <div className="card space-y-4 p-6" style={{ ['--i' as string]: 2 }}>
             <div className="flex items-start gap-3">
               <Clock size={19} className="mt-0.5 text-sun-deep" aria-hidden="true" />
               <div>
@@ -153,7 +154,11 @@ export default async function EventPage({ params }: PageProps<'/events/[id]'>) {
               ) : null}
             </div>
           </div>
-          {e.lat != null && e.lng != null ? <MiniMap lat={e.lat} lng={e.lng} color={cat?.color} label={e.venue_name ?? e.title} /> : null}
+          {e.lat != null && e.lng != null ? (
+            <div style={{ ['--i' as string]: 3 }}>
+              <MiniMap lat={e.lat} lng={e.lng} color={cat?.color} label={e.venue_name ?? e.title} />
+            </div>
+          ) : null}
           <p className="px-1 text-xs leading-relaxed text-ink-3">
             Listed by {e.source_name && ['ticketmaster', 'quicket', 'ical', 'jsonld'].includes(e.source) ? e.source_name : SOURCE_LABEL[e.source] ?? 'SOMMR'}
             {e.last_seen_at ? ` · checked ${timeAgo(e.last_seen_at)}` : ` · updated ${timeAgo(e.updated_at)}`}. Details can change — confirm with the organiser.

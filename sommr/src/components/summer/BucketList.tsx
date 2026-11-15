@@ -2,7 +2,10 @@
 
 import Link from 'next/link';
 import { useOptimistic, useState, useTransition } from 'react';
-import { Camera, Check, MapPin, Pencil, Plus, Ticket, Trash2 } from 'lucide-react';
+import { AnimatePresence, LayoutGroup, m } from 'motion/react';
+import { Camera, MapPin, Pencil, Plus, Ticket, Trash2 } from 'lucide-react';
+import { SPRING } from '@/components/motion/MotionProvider';
+import { useConfirm } from '@/components/ui/Confirm';
 import { Celebrate } from '@/components/common/Celebrate';
 import { SunArc } from '@/components/ui/SunArc';
 import { Spinner } from '@/components/ui/Spinner';
@@ -109,52 +112,89 @@ export function BucketList({ items, interests }: { items: BucketItemView[]; inte
           <div className="card p-5">
             <p className="field-label">Need ideas?</p>
             <ul className="flex flex-wrap gap-2">
-              {ideas.map((s) => (
-                <li key={s.slug}>
-                  <button type="button" className="chip" disabled={adding} onClick={() => add({ title: s.title, suggestion: s.slug })}>
-                    <Plus size={14} aria-hidden="true" /> {s.title}
-                  </button>
-                </li>
-              ))}
+              <AnimatePresence mode="popLayout" initial={false}>
+                {ideas.map((s) => (
+                  <m.li
+                    key={s.slug}
+                    layout
+                    initial={{ opacity: 0, scale: 0.85 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.8, transition: { duration: 0.18 } }}
+                    transition={SPRING.layout}
+                  >
+                    <button type="button" className="chip group" disabled={adding} onClick={() => add({ title: s.title, suggestion: s.slug })}>
+                      <Plus size={14} className="icon-spin" aria-hidden="true" /> {s.title}
+                    </button>
+                  </m.li>
+                ))}
+              </AnimatePresence>
             </ul>
           </div>
         ) : null}
       </div>
 
-      <div className="space-y-6">
-        <section aria-labelledby="todo-heading">
-          <h2 id="todo-heading" className="display mb-3 text-[1.9rem]">
-            To do
-          </h2>
-          {open.length === 0 ? (
-            <p className="card px-5 py-8 text-center text-sm text-ink-3">{optimistic.length ? 'All done! Add something new?' : 'Nothing yet — add your own or pick an idea.'}</p>
-          ) : (
-            <ul className="card divide-y divide-line">
-              {open.map((i) => (
-                <Row key={i.id} item={i} onToggle={() => toggle(i)} editing={editing === i.id} setEditing={setEditing} />
-              ))}
-            </ul>
-          )}
-        </section>
-        {finished.length ? (
-          <section aria-labelledby="done-heading">
-            <h2 id="done-heading" className="display mb-3 text-[1.9rem]">
-              Done
+      <LayoutGroup>
+        <div className="space-y-6">
+          <m.section layout="position" transition={SPRING.layout} aria-labelledby="todo-heading">
+            <h2 id="todo-heading" className="display mb-3 text-[1.9rem]">
+              To do
             </h2>
-            <ul className="card divide-y divide-line">
-              {finished.map((i) => (
-                <Row key={i.id} item={i} onToggle={() => toggle(i)} editing={editing === i.id} setEditing={setEditing} />
-              ))}
-            </ul>
-          </section>
-        ) : null}
-      </div>
+            {open.length === 0 ? (
+              <m.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="card px-5 py-8 text-center text-sm text-ink-3">
+                {optimistic.length ? 'All done! Add something new?' : 'Nothing yet — add your own or pick an idea.'}
+              </m.p>
+            ) : (
+              <m.ul layout transition={SPRING.layout} style={{ borderRadius: 22 }} className="card divide-y divide-line overflow-hidden">
+                <AnimatePresence mode="popLayout" initial={false}>
+                  {open.map((i) => (
+                    <Row key={i.id} item={i} onToggle={() => toggle(i)} editing={editing === i.id} setEditing={setEditing} />
+                  ))}
+                </AnimatePresence>
+              </m.ul>
+            )}
+          </m.section>
+          <AnimatePresence initial={false}>
+            {finished.length ? (
+              <m.section
+                key="done"
+                layout="position"
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 8 }}
+                transition={SPRING.layout}
+                aria-labelledby="done-heading"
+              >
+                <h2 id="done-heading" className="display mb-3 text-[1.9rem]">
+                  Done
+                </h2>
+                <m.ul layout transition={SPRING.layout} style={{ borderRadius: 22 }} className="card divide-y divide-line overflow-hidden">
+                  <AnimatePresence mode="popLayout" initial={false}>
+                    {finished.map((i) => (
+                      <Row key={i.id} item={i} onToggle={() => toggle(i)} editing={editing === i.id} setEditing={setEditing} />
+                    ))}
+                  </AnimatePresence>
+                </m.ul>
+              </m.section>
+            ) : null}
+          </AnimatePresence>
+        </div>
+      </LayoutGroup>
     </div>
   );
 }
 
+/** Rows share a layoutId, so a ticked-off item glides from “To do” into “Done”. */
+const ROW_MOTION = {
+  layout: true,
+  initial: { opacity: 0, y: -8 },
+  animate: { opacity: 1, y: 0 },
+  exit: { opacity: 0, x: -16, transition: { duration: 0.18 } },
+  transition: SPRING.layout,
+} as const;
+
 function Row({ item, onToggle, editing, setEditing }: { item: BucketItemView; onToggle: () => void; editing: boolean; setEditing: (id: string | null) => void }) {
   const toast = useToast();
+  const confirm = useConfirm();
   const [pending, start] = useTransition();
   const [title, setTitle] = useState(item.title);
   const [notes, setNotes] = useState(item.notes ?? '');
@@ -162,7 +202,7 @@ function Row({ item, onToggle, editing, setEditing }: { item: BucketItemView; on
 
   if (editing) {
     return (
-      <li className="space-y-2 px-4 py-4">
+      <m.li layoutId={item.id} {...ROW_MOTION} className="space-y-2 bg-paper px-4 py-4">
         <input value={title} onChange={(e) => setTitle(e.target.value)} className="input" aria-label="Title" maxLength={140} />
         <textarea value={notes} onChange={(e) => setNotes(e.target.value)} className="textarea !min-h-20" aria-label="Notes" placeholder="Notes (optional)" maxLength={1000} />
         <div className="flex gap-2">
@@ -187,8 +227,8 @@ function Row({ item, onToggle, editing, setEditing }: { item: BucketItemView; on
             type="button"
             className="btn btn-danger btn-sm ml-auto"
             disabled={pending}
-            onClick={() => {
-              if (!window.confirm('Remove this from your bucket list?')) return;
+            onClick={async () => {
+              if (!(await confirm({ title: 'Remove this from your bucket list?', body: item.title, confirmLabel: 'Remove' }))) return;
               start(async () => {
                 const r = await deleteBucketAction(item.id);
                 if (!r.ok) toast(r.error, { tone: 'error' });
@@ -198,23 +238,30 @@ function Row({ item, onToggle, editing, setEditing }: { item: BucketItemView; on
             <Trash2 size={14} aria-hidden="true" /> Delete
           </button>
         </div>
-      </li>
+      </m.li>
     );
   }
 
   return (
-    <li className="group flex items-center gap-3 px-4 py-3.5">
+    <m.li layoutId={item.id} {...ROW_MOTION} className="group flex items-center gap-3 bg-paper px-4 py-3.5">
       <button
         type="button"
         role="checkbox"
         aria-checked={done}
         aria-label={done ? `Mark “${item.title}” as not done` : `Mark “${item.title}” as done`}
         onClick={onToggle}
-        className={`grid h-7 w-7 shrink-0 place-items-center rounded-full border-2 transition-all duration-300 ${
-          done ? 'border-leaf bg-leaf text-white' : 'border-line-strong hover:border-sun hover:bg-sun-soft'
+        className={`relative grid h-7 w-7 shrink-0 place-items-center rounded-full border-2 transition-[background-color,border-color,transform] duration-300 active:scale-90 ${
+          done ? 'border-leaf bg-leaf text-white' : 'border-line-strong hover:scale-110 hover:border-sun hover:bg-sun-soft'
         }`}
       >
-        {done ? <Check size={15} strokeWidth={3} className="pop-in" aria-hidden="true" /> : null}
+        {done ? (
+          <>
+            <span className="ripple !border-leaf" aria-hidden="true" />
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="M5 12.5l4.5 4.5L19 7.5" className="check-path" />
+            </svg>
+          </>
+        ) : null}
       </button>
       {item.photoId ? (
         // eslint-disable-next-line @next/next/no-img-element
@@ -251,7 +298,7 @@ function Row({ item, onToggle, editing, setEditing }: { item: BucketItemView; on
       <button type="button" onClick={() => setEditing(item.id)} className="grid h-8 w-8 shrink-0 place-items-center rounded-full text-ink-3 opacity-60 hover:bg-sand hover:opacity-100 focus:opacity-100" aria-label={`Edit ${item.title}`}>
         <Pencil size={14} aria-hidden="true" />
       </button>
-    </li>
+    </m.li>
   );
 }
 

@@ -9,9 +9,10 @@ export function Badge({ a, earnedAt, progress, index = 0 }: { a: AchievementDef;
   const earned = !!earnedAt;
   const pct = Math.min(1, progress / a.target);
   return (
-    <li className={`card flex flex-col items-center p-5 text-center ${earned ? '' : 'bg-transparent shadow-none'}`} style={{ ['--i' as string]: Math.min(index, 10) }}>
+    <li data-reveal="" style={{ ['--i' as string]: index % 4 }}>
+      <div className={`group card flex h-full flex-col items-center p-5 text-center ${earned ? 'card-hover' : 'bg-transparent shadow-none'}`}>
       <span
-        className={`grid h-16 w-16 place-items-center rounded-full transition-transform ${earned ? 'pop-in text-white' : 'border border-dashed border-line-strong text-ink-3'}`}
+        className={`grid h-16 w-16 place-items-center rounded-full transition-[rotate,scale] duration-500 ease-[var(--ease-spring)] ${earned ? 'text-white group-hover:-rotate-12 group-hover:scale-110' : 'border border-dashed border-line-strong text-ink-3'}`}
         style={earned ? { background: 'radial-gradient(circle at 30% 30%, #f0a06b, #a44e27)' } : undefined}
         aria-hidden="true"
       >
@@ -31,6 +32,7 @@ export function Badge({ a, earnedAt, progress, index = 0 }: { a: AchievementDef;
           </p>
         </div>
       )}
+      </div>
     </li>
   );
 }

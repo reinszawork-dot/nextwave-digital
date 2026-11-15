@@ -86,7 +86,7 @@ export default async function WhatsOnPage({ searchParams }: PageProps<'/whats-on
         current={{ city, when: day ? '' : when, cats, price, near, view, day }}
       />
 
-      <div className="mt-8">
+      <div className="event-results mt-8">
         {view === 'map' ? (
           <EventsMap
             center={cityObj ? { lat: cityObj.lat, lng: cityObj.lng } : { lat: loc.lat, lng: loc.lng }}
@@ -144,9 +144,9 @@ export default async function WhatsOnPage({ searchParams }: PageProps<'/whats-on
                       <span className="display text-[1.8rem]">{formatLongDate(d)}</span>
                     )}
                   </h2>
-                  <div className="stagger space-y-3">
+                  <div className="space-y-3">
                     {list.map((e, i) => (
-                      <div key={e.id} style={{ ['--i' as string]: Math.min(i, 8) }}>
+                      <div key={e.id} data-reveal="" style={{ ['--i' as string]: Math.min(i, 5) }}>
                         <EventRowItem event={e} category={categoryLite(catMap.get(e.category_slug))} showDistance={!!near} />
                       </div>
                     ))}

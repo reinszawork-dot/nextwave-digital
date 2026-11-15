@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { ViewTransition } from 'react';
 import { MapPin } from 'lucide-react';
 import { CategoryIcon } from '@/components/ui/Icon';
 import { SaveButton } from '@/components/common/SaveButton';
@@ -38,6 +39,7 @@ export function EventCard({ event, category, className = '' }: { event: EventRow
   const city = getCity(event.city_slug);
   return (
     <article className={`card card-hover group relative flex flex-col overflow-hidden ${className}`}>
+      <ViewTransition name={`event-media-${event.id}`} share="morph" default="none">
       <div className="relative aspect-[16/10] overflow-hidden bg-sand">
         {event.image_url ? (
           // Provider images (Ticketmaster, Quicket, organisers) are shown as published by the source.
@@ -51,10 +53,11 @@ export function EventCard({ event, category, className = '' }: { event: EventRow
         </div>
         {event.featured ? <span className="tag tag-sun absolute left-3 top-3 !bg-paper/95">Editor’s pick</span> : null}
       </div>
+      </ViewTransition>
       <div className="flex flex-1 flex-col p-4">
         <p className="text-[0.8rem] font-semibold text-sun-deep">{eventWhen(event)}</p>
         <h3 className="mt-1 line-clamp-2 text-[1.02rem] font-semibold leading-snug">
-          <Link href={`/events/${event.id}`} className="after:absolute after:inset-0">
+          <Link href={`/events/${event.id}`} transitionTypes={['nav-forward']} className="after:absolute after:inset-0">
             {event.title}
           </Link>
         </h3>
@@ -79,7 +82,7 @@ export function EventRowItem({ event, category, showDistance }: { event: EventRo
   const city = getCity(event.city_slug);
   return (
     <article className="card card-hover group relative flex items-stretch gap-4 overflow-hidden p-3 sm:p-4">
-      <div className="flex w-16 shrink-0 flex-col items-center justify-center rounded-2xl bg-sand py-2 text-center sm:w-[4.5rem]">
+      <div className="flex w-16 shrink-0 flex-col items-center justify-center rounded-2xl bg-sand py-2 text-center transition-colors duration-500 group-hover:bg-sun-soft sm:w-[4.5rem]">
         <span className="text-[0.68rem] font-semibold tracking-[0.12em] text-ink-3">{formatWeekday(event.starts_at).toUpperCase()}</span>
         <span className="display text-[2rem] leading-none">{formatDayNumber(event.starts_at)}</span>
         <span className="text-[0.68rem] font-semibold tracking-[0.12em] text-sun-deep">{formatMonthShort(event.starts_at)}</span>
@@ -90,7 +93,7 @@ export function EventRowItem({ event, category, showDistance }: { event: EventRo
           {event.ends_at && !event.all_day && formatDayNumber(event.ends_at) === formatDayNumber(event.starts_at) ? ` – ${formatTime(event.ends_at)}` : ''}
         </p>
         <h3 className="mt-0.5 line-clamp-2 font-semibold leading-snug">
-          <Link href={`/events/${event.id}`} className="after:absolute after:inset-0">
+          <Link href={`/events/${event.id}`} transitionTypes={['nav-forward']} className="after:absolute after:inset-0">
             {event.title}
           </Link>
         </h3>
@@ -106,7 +109,7 @@ export function EventRowItem({ event, category, showDistance }: { event: EventRo
       </div>
       {event.image_url ? (
         // eslint-disable-next-line @next/next/no-img-element
-        <img src={event.image_url} alt="" loading="lazy" className="hidden h-auto w-36 shrink-0 rounded-2xl object-cover sm:block" />
+        <img src={event.image_url} alt="" loading="lazy" className="hidden h-auto w-36 shrink-0 rounded-2xl object-cover transition-[scale] duration-700 ease-[var(--ease-soft)] group-hover:scale-[1.03] sm:block" />
       ) : null}
       <div className="relative z-10 self-start">
         <SaveButton saved={event.saved} onToggle={saveEventAction.bind(null, event.id)} label={event.title} size="sm" />

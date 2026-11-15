@@ -4,6 +4,7 @@ import { Page, PageHeader } from '@/components/shell/AppShell';
 import { Badge } from '@/components/challenges/Badge';
 import { ChallengeCard } from '@/components/challenges/ChallengeCard';
 import { Counter } from '@/components/ui/Counter';
+import { WordReveal } from '@/components/motion/WordReveal';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { ACHIEVEMENTS } from '@/lib/achievements';
 import { daysLeftInWeek, formatShortDate } from '@/lib/time';
@@ -36,19 +37,19 @@ export default async function ChallengesPage() {
       </PageHeader>
 
 
-      <div className="grid gap-4 lg:grid-cols-[1.4fr_1fr]">
+      <div className="stagger grid gap-4 lg:grid-cols-[1.4fr_1fr]" style={{ ['--stagger' as string]: '110ms' }}>
         {daily ? <ChallengeCard c={toChallengeView(daily, categories)} /> : null}
         {weekly ? <ChallengeCard c={toChallengeView(weekly, categories)} variant="compact" daysLeft={daysLeftInWeek(now)} /> : null}
       </div>
 
-      <dl className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-4">
+      <dl className="stagger mt-8 grid grid-cols-2 gap-3 sm:grid-cols-4" style={{ ['--stagger' as string]: '80ms' }}>
         {[
           { label: 'Points', value: stats.points },
           { label: 'Day streak', value: streak.current, icon: streak.current >= 3 },
           { label: 'Best streak', value: streak.best },
           { label: 'Completed', value: stats.challengesDone },
-        ].map((s) => (
-          <div key={s.label} className="card px-5 py-4">
+        ].map((s, i) => (
+          <div key={s.label} className="card px-5 py-4" style={{ ['--i' as string]: i + 3 }}>
             <dt className="eyebrow">{s.label}</dt>
             <dd className="mt-1 flex items-center gap-2">
               <span className="display text-[2.6rem] leading-none">
@@ -63,13 +64,13 @@ export default async function ChallengesPage() {
       <section className="mt-14" aria-labelledby="badges-heading">
         <div className="mb-5 flex items-end justify-between">
           <h2 id="badges-heading" className="display text-[2.1rem]">
-            Badges
+            <WordReveal trigger="scroll">Badges</WordReveal>
           </h2>
           <p className="text-sm text-ink-3">
             {earnedCount} of {ACHIEVEMENTS.length} earned
           </p>
         </div>
-        <ul className="stagger grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+        <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
           {ACHIEVEMENTS.map((a, i) => (
             <Badge key={a.slug} a={a} earnedAt={earned.get(a.slug)} progress={stats[a.stat]} index={i} />
           ))}
@@ -78,7 +79,7 @@ export default async function ChallengesPage() {
 
       <section className="mt-14" aria-labelledby="history-heading">
         <h2 id="history-heading" className="display mb-5 text-[2.1rem]">
-          History
+          <WordReveal trigger="scroll">History</WordReveal>
         </h2>
         {history.length === 0 ? (
           <div className="card">
@@ -88,8 +89,8 @@ export default async function ChallengesPage() {
           </div>
         ) : (
           <ul className="card divide-y divide-line">
-            {history.map((h) => (
-              <li key={h.id} className="flex items-center gap-4 px-5 py-4">
+            {history.map((h, i) => (
+              <li key={h.id} data-reveal="fade" style={{ ['--i' as string]: Math.min(i, 6) }} className="flex items-center gap-4 px-5 py-4">
                 <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-leaf-soft text-leaf">
                   <History size={17} aria-hidden="true" />
                 </span>

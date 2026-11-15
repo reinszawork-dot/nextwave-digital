@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { Plus } from 'lucide-react';
 import { Page, PageHeader } from '@/components/shell/AppShell';
 import { SummerTabs } from '@/components/summer/SummerTabs';
+import { KeyedTransition } from '@/components/motion/KeyedTransition';
 import { Counter } from '@/components/ui/Counter';
 import { getCurrentUser } from '@/server/auth';
 import { summerStats } from '@/server/services/memories';
@@ -43,7 +44,7 @@ export default async function MySummerLayout({ children }: { children: React.Rea
       <div className="mb-8">
         <SummerTabs />
       </div>
-      {children}
+      <KeyedTransition kind="tab">{children}</KeyedTransition>
     </Page>
   );
 }

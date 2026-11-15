@@ -1,5 +1,7 @@
 import type { Metadata } from 'next';
+import { ViewTransition } from 'react';
 import { ExploreMap } from '@/components/explore/ExploreMap';
+import { PAGE_TRANSITION } from '@/components/shell/AppShell';
 import { requireUser } from '@/server/auth';
 import { getPlace } from '@/server/places/service';
 import { getCategories } from '@/server/services/categories';
@@ -21,12 +23,14 @@ export default async function ExplorePage({ searchParams }: PageProps<'/explore'
   return (
     <>
       <h1 className="sr-only">Explore places</h1>
+      <ViewTransition enter={PAGE_TRANSITION.enter} exit={PAGE_TRANSITION.exit} default="none">
       <ExploreMap
         categories={categories.map((c) => ({ slug: c.slug, label: c.label, icon: c.icon, color: c.color, events: c.event_categories.length > 0 }))}
         center={center}
         initialCategory={category}
         initialPlaceId={place?.id ?? null}
       />
+      </ViewTransition>
     </>
   );
 }

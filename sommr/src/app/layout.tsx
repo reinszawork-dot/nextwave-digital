@@ -1,5 +1,10 @@
 import type { Metadata, Viewport } from 'next';
 import { Geist, Instrument_Serif } from 'next/font/google';
+import { Suspense } from 'react';
+import { MOTION_BOOT_SCRIPT, MotionEffects } from '@/components/motion/MotionEffects';
+import { MotionProvider } from '@/components/motion/MotionProvider';
+import { NavProgress } from '@/components/motion/NavProgress';
+import { ConfirmProvider } from '@/components/ui/Confirm';
 import { ToastProvider } from '@/components/ui/Toast';
 import './globals.css';
 
@@ -30,9 +35,21 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en-ZA" className={`${geist.variable} ${instrument.variable}`}>
+    // The boot script adds data-motion before React hydrates, hence suppressHydrationWarning.
+    <html lang="en-ZA" className={`${geist.variable} ${instrument.variable}`} suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: MOTION_BOOT_SCRIPT }} />
+      </head>
       <body className="min-h-dvh">
-        <ToastProvider>{children}</ToastProvider>
+        <MotionProvider>
+          <ToastProvider>
+            <ConfirmProvider>{children}</ConfirmProvider>
+          </ToastProvider>
+        </MotionProvider>
+        <MotionEffects />
+        <Suspense fallback={null}>
+          <NavProgress />
+        </Suspense>
       </body>
     </html>
   );

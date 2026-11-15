@@ -15,7 +15,9 @@ export function PlaceCard({ place, category }: { place: PlaceRow; category?: Cat
   return (
     <article className="card card-hover group relative flex h-full flex-col p-4">
       <div className="flex items-start justify-between gap-3">
-        <CategoryGlyph category={category} size={42} />
+        <span className="transition-[rotate,scale] duration-500 ease-[var(--ease-spring)] group-hover:-rotate-6 group-hover:scale-110">
+          <CategoryGlyph category={category} size={42} />
+        </span>
         <div className="flex items-center gap-1.5">
           {place.featured ? (
             <span className="tag tag-sun">
@@ -26,7 +28,7 @@ export function PlaceCard({ place, category }: { place: PlaceRow; category?: Cat
         </div>
       </div>
       <h3 className="mt-4 line-clamp-2 text-[1.02rem] font-semibold leading-snug">
-        <Link href={`/places/${place.id}`} className="after:absolute after:inset-0">
+        <Link href={`/places/${place.id}`} transitionTypes={['nav-forward']} className="after:absolute after:inset-0">
           {place.name}
         </Link>
       </h3>

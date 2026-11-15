@@ -97,11 +97,25 @@ Photos can stay in the database (simplest). To use Supabase Storage instead, cre
 
 ## How it's built
 
-- **Next.js 16** (App Router, React 19, Server Components and Server Actions) with **TypeScript** and **Tailwind CSS 4**.
+- **Next.js 16** (App Router, React 19, Server Components and Server Actions) with **TypeScript** and **Tailwind CSS 4**; **Framer Motion** (`motion`) for layout animations.
 - **PostgreSQL** through `pg`, with a tiny injection-safe SQL builder (`src/server/sql.ts`) and plain SQL migrations (`migrations/`). PGlite for zero-setup development and tests.
 - **MapLibre GL** with **OpenFreeMap** vector tiles, restyled to SOMMR's cream and soft-blue palette.
 - **Fonts:** Instrument Serif (display) and Geist (text), self-hosted via `next/font`.
 - **Photography:** curated, verified photos from Unsplash under the Unsplash License, bundled in `public/photos` (see `src/lib/photos.ts`). Photos of Camps Bay, Cape Town, Johannesburg and Blyde River Canyon are labelled with their real locations; the rest are used as generic summer imagery.
+
+### Motion
+
+Motion follows one vocabulary (tokens in `src/app/globals.css`): entrances ease out, ambient motion eases in-out, interactive returns use a gentle spring, and only `transform`/`opacity`/`filter` animate. Everything respects *prefers-reduced-motion*.
+
+| Effect | How to use it |
+| --- | --- |
+| Page transitions | Automatic via React `<ViewTransition>` in `Page` (`src/components/shell/AppShell.tsx`). Add `transitionTypes={['nav-forward']}` / `['nav-back']` to links into and out of detail pages. Shared elements morph with `<ViewTransition name=… share="morph">`. |
+| Navigation feedback | `NavProgress` (slim top bar) — the current page stays visible while the next one loads. |
+| Scroll reveals | Add `data-reveal` (or `="fade"`, `"scale"`, `"image"`) and stagger with `style={{ '--i': n }}`. Handled by one IntersectionObserver in `MotionEffects`. Put it on a wrapper, not on an element that also lifts on hover. |
+| Headlines | `<WordReveal>` (word-by-word, on load) or `<WordReveal trigger="scroll">`. |
+| Floating | `<Float>` — gentle drift with a breathing shadow. Use one or two per screen. |
+| Hover | `data-tilt` (+ `data-tilt-glare`) for photo cards, `data-magnetic` for primary buttons, `icon-wiggle` / `icon-spin` / `icon-nudge` on icons inside a `.group`. Fine pointers only. |
+| Layout & presence | Framer Motion (`motion`, lazily loaded `m` components) for sliding indicators (`Segmented`, navigation), toasts, the confirm dialog (`useConfirm()`), dropdowns and the bucket list. |
 
 ### Security and privacy
 

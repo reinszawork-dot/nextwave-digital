@@ -4,6 +4,7 @@ import { useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { Spinner } from '@/components/ui/Spinner';
 import { useToast } from '@/components/ui/Toast';
+import { useConfirm } from '@/components/ui/Confirm';
 
 /** Runs a bound server action, shows a spinner and a toast with any returned message. */
 export function ActionButton({
@@ -22,13 +23,14 @@ export function ActionButton({
   const [pending, start] = useTransition();
   const toast = useToast();
   const router = useRouter();
+  const ask = useConfirm();
   return (
     <button
       type="button"
       className={className}
       disabled={pending}
-      onClick={() => {
-        if (confirm && !window.confirm(confirm)) return;
+      onClick={async () => {
+        if (confirm && !(await ask({ title: confirm, confirmLabel: 'Yes, continue' }))) return;
         start(async () => {
           try {
             const r = (await action()) as { message?: string; status?: string } | undefined;

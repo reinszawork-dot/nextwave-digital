@@ -1,6 +1,8 @@
 import Link from 'next/link';
+import { ViewTransition } from 'react';
 import { Shield } from 'lucide-react';
 import { Avatar } from '@/components/ui/Avatar';
+import { WordReveal } from '@/components/motion/WordReveal';
 import { Logo } from '@/components/ui/Logo';
 import { getCity } from '@/lib/cities';
 import { seasonState } from '@/lib/season';
@@ -82,15 +84,27 @@ export function AppShell({ user, children }: { user: SessionUser; children: Reac
   );
 }
 
+/**
+ * Page transitions: content fades and rises in as the old page fades up and out.
+ * Links into a detail view can pass transitionTypes={['nav-forward']} (and back
+ * links ['nav-back']) for a directional slide instead.
+ */
+export const PAGE_TRANSITION = {
+  enter: { 'nav-forward': 'nav-forward', 'nav-back': 'nav-back', default: 'page' },
+  exit: { 'nav-forward': 'nav-forward', 'nav-back': 'nav-back', default: 'page' },
+} as const;
+
 /** Standard page container with generous, responsive spacing. */
 export function Page({ children, className = '', wide = false }: { children: React.ReactNode; className?: string; wide?: boolean }) {
   return (
-    <main
-      id="main"
-      className={`page-enter mx-auto w-full ${wide ? 'max-w-[1320px]' : 'max-w-[1160px]'} px-4 pb-[calc(var(--bottom-nav-h)+40px)] pt-6 sm:px-6 lg:px-10 lg:pb-16 lg:pt-10 ${className}`}
-    >
-      {children}
-    </main>
+    <ViewTransition enter={PAGE_TRANSITION.enter} exit={PAGE_TRANSITION.exit} default="none">
+      <main
+        id="main"
+        className={`mx-auto w-full ${wide ? 'max-w-[1320px]' : 'max-w-[1160px]'} px-4 pb-[calc(var(--bottom-nav-h)+40px)] pt-6 sm:px-6 lg:px-10 lg:pb-16 lg:pt-10 ${className}`}
+      >
+        {children}
+      </main>
+    </ViewTransition>
   );
 }
 
@@ -108,11 +122,25 @@ export function PageHeader({
   return (
     <header className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between lg:mb-10">
       <div className="min-w-0">
-        {eyebrow ? <p className="eyebrow">{eyebrow}</p> : null}
-        <h1 className="display mt-2 text-[2.6rem] sm:text-5xl lg:text-[3.6rem]">{title}</h1>
-        {children ? <div className="mt-3 max-w-2xl text-[1.02rem] leading-relaxed text-ink-3">{children}</div> : null}
+        {eyebrow ? (
+          <p className="eyebrow fade-in" style={{ animationDuration: '700ms' }}>
+            {eyebrow}
+          </p>
+        ) : null}
+        <h1 className="display mt-2 text-[2.6rem] sm:text-5xl lg:text-[3.6rem]">
+          <WordReveal>{title}</WordReveal>
+        </h1>
+        {children ? (
+          <div className="page-enter mt-3 max-w-2xl text-[1.02rem] leading-relaxed text-ink-3" style={{ animationDelay: '260ms' }}>
+            {children}
+          </div>
+        ) : null}
       </div>
-      {actions ? <div className="flex shrink-0 flex-wrap gap-2">{actions}</div> : null}
+      {actions ? (
+        <div className="page-enter flex shrink-0 flex-wrap gap-2" style={{ animationDelay: '340ms' }}>
+          {actions}
+        </div>
+      ) : null}
     </header>
   );
 }
@@ -121,12 +149,23 @@ export function SectionHeader({ title, href, linkLabel = 'See all', children }: 
   return (
     <div className="mb-4 flex items-end justify-between gap-4">
       <div>
-        <h2 className="display text-[1.9rem] leading-none sm:text-[2.1rem]">{title}</h2>
-        {children ? <p className="mt-1.5 text-sm text-ink-3">{children}</p> : null}
+        <h2 className="display text-[1.9rem] leading-none sm:text-[2.1rem]">
+          <WordReveal trigger="scroll">{title}</WordReveal>
+        </h2>
+        {children ? (
+          <p data-reveal="fade" className="mt-1.5 text-sm text-ink-3" style={{ ['--i' as string]: 3 }}>
+            {children}
+          </p>
+        ) : null}
       </div>
       {href ? (
-        <Link href={href} className="shrink-0 text-sm font-medium text-sea-deep hover:underline">
-          {linkLabel}
+        <Link href={href} className="group inline-flex shrink-0 items-center gap-1 text-sm font-medium text-sea-deep">
+          <span className="bg-[linear-gradient(currentColor,currentColor)] bg-[length:0%_1px] bg-left-bottom bg-no-repeat pb-0.5 transition-[background-size] duration-500 ease-[var(--ease-soft)] group-hover:bg-[length:100%_1px]">
+            {linkLabel}
+          </span>
+          <span className="transition-transform duration-500 ease-[var(--ease-spring)] group-hover:translate-x-1" aria-hidden="true">
+            →
+          </span>
         </Link>
       ) : null}
     </div>

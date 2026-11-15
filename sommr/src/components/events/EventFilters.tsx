@@ -1,7 +1,8 @@
 'use client';
 
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { useTransition } from 'react';
+import { useEffect, useState, useTransition } from 'react';
+import { Segmented } from '@/components/ui/Segmented';
 import { List, Map as MapIcon, SlidersHorizontal, X } from 'lucide-react';
 import { CategoryIcon } from '@/components/ui/Icon';
 import { Spinner } from '@/components/ui/Spinner';
@@ -45,6 +46,18 @@ export function EventFilters({
   const params = useSearchParams();
   const [pending, start] = useTransition();
 
+  // Selections change instantly; results follow when the server responds.
+  const [optimistic, setOptimistic] = useState<{ city?: string; view?: string }>({});
+  useEffect(() => setOptimistic({}), [current.city, current.view]);
+  const city = optimistic.city ?? current.city;
+  const view = optimistic.view ?? current.view;
+
+  // Let the results area dim softly while new ones load (see .event-results in globals.css).
+  useEffect(() => {
+    document.body.toggleAttribute('data-filtering', pending);
+    return () => document.body.removeAttribute('data-filtering');
+  }, [pending]);
+
   const set = (patch: Record<string, string | null>) => {
     const next = new URLSearchParams(params.toString());
     for (const [k, v] of Object.entries(patch)) {
@@ -62,24 +75,42 @@ export function EventFilters({
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="segmented max-w-full overflow-x-auto" role="group" aria-label="City">
-          {cities.map((c) => (
-            <button key={c.slug} type="button" aria-pressed={current.city === c.slug} onClick={() => set({ city: c.slug, near: null })}>
-              {c.name}
-              {c.count ? <span className="text-xs text-ink-3">{c.count}</span> : null}
-            </button>
-          ))}
-        </div>
+        <Segmented
+          id="city"
+          label="City"
+          className="max-w-full overflow-x-auto"
+          value={city}
+          onChange={(v) => {
+            setOptimistic((o) => ({ ...o, city: v }));
+            set({ city: v, near: null });
+          }}
+          items={cities.map((c) => ({
+            value: c.slug,
+            label: (
+              <>
+                {c.name}
+                {c.count ? <span className="text-xs text-ink-3">{c.count}</span> : null}
+              </>
+            ),
+          }))}
+        />
         <div className="flex items-center gap-2">
-          {pending ? <Spinner className="text-ink-3" /> : null}
-          <div className="segmented" role="group" aria-label="View">
-            <button type="button" aria-pressed={current.view !== 'map'} onClick={() => set({ view: null })}>
-              <List size={15} aria-hidden="true" /> List
-            </button>
-            <button type="button" aria-pressed={current.view === 'map'} onClick={() => set({ view: 'map' })}>
-              <MapIcon size={15} aria-hidden="true" /> Map
-            </button>
-          </div>
+          <span className={`transition-opacity duration-300 ${pending ? 'opacity-100' : 'opacity-0'}`} aria-hidden={!pending}>
+            <Spinner className="text-ink-3" />
+          </span>
+          <Segmented
+            id="view"
+            label="View"
+            value={view === 'map' ? 'map' : 'list'}
+            onChange={(v) => {
+              setOptimistic((o) => ({ ...o, view: v }));
+              set({ view: v === 'map' ? 'map' : null });
+            }}
+            items={[
+              { value: 'list', label: (<><List size={15} aria-hidden="true" /> List</>) },
+              { value: 'map', label: (<><MapIcon size={15} aria-hidden="true" /> Map</>) },
+            ]}
+          />
         </div>
       </div>
 

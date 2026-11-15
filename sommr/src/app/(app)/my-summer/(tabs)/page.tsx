@@ -1,5 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import { ViewTransition } from 'react';
+import { WordReveal } from '@/components/motion/WordReveal';
 import { Camera, Check, ListChecks, MapPin, Trophy } from 'lucide-react';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { formatShortDate, saParts } from '@/lib/time';
@@ -10,22 +12,32 @@ export const metadata: Metadata = { title: 'My Summer' };
 
 const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
-function Photos({ ids }: { ids: string[] }) {
+function Photos({ ids, memoryId }: { ids: string[]; memoryId: string }) {
   if (!ids.length) return null;
   const shown = ids.slice(0, 4);
   return (
     <div className={`grid gap-1.5 overflow-hidden rounded-2xl ${shown.length === 1 ? '' : 'grid-cols-2'}`}>
-      {shown.map((id, i) => (
+      {shown.map((id, i) => {
         // Private photos are served by our own authenticated endpoint.
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
-          key={id}
-          src={`/api/media/${id}?size=thumb`}
-          alt=""
-          loading="lazy"
-          className={`w-full object-cover ${shown.length === 1 ? 'aspect-[4/3]' : shown.length === 3 && i === 0 ? 'row-span-2 h-full' : 'aspect-square'}`}
-        />
-      ))}
+        const img = (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            key={id}
+            src={`/api/media/${id}?size=thumb`}
+            alt=""
+            loading="lazy"
+            className={`w-full object-cover transition-[scale] duration-1000 ease-[var(--ease-soft)] group-hover:scale-[1.03] ${shown.length === 1 ? 'aspect-[4/3]' : shown.length === 3 && i === 0 ? 'row-span-2 h-full' : 'aspect-square'}`}
+          />
+        );
+        // The first photo morphs into the memory page when opened.
+        return i === 0 ? (
+          <ViewTransition key={id} name={`memory-photo-${memoryId}`} share="morph" default="none">
+            {img}
+          </ViewTransition>
+        ) : (
+          img
+        );
+      })}
     </div>
   );
 }
@@ -34,8 +46,8 @@ function Entry({ item }: { item: TimelineItem }) {
   if (item.type === 'memory') {
     const m = item.memory;
     return (
-      <Link href={`/my-summer/memories/${m.id}`} className="card card-hover block overflow-hidden p-3 sm:p-4">
-        <Photos ids={m.photo_ids} />
+      <Link href={`/my-summer/memories/${m.id}`} transitionTypes={['nav-forward']} className="card card-hover group block overflow-hidden p-3 sm:p-4">
+        <Photos ids={m.photo_ids} memoryId={m.id} />
         <div className={m.photo_ids.length ? 'px-1 pb-1 pt-3' : 'p-1'}>
           <div className="flex flex-wrap items-center gap-1.5 text-xs text-ink-3">
             <span>{formatShortDate(new Date(`${m.happened_on}T12:00:00+02:00`))}</span>
@@ -116,19 +128,19 @@ export default async function MySummerPage() {
         return (
           <section key={month} aria-labelledby={`m-${month}`}>
             <h2 id={`m-${month}`} className="display mb-5 text-[2.2rem]">
-              {month}
+              <WordReveal trigger="scroll">{month}</WordReveal>
             </h2>
             <div className="grid gap-6 lg:grid-cols-[1.6fr_1fr]">
-              <div className="stagger columns-1 gap-4 sm:columns-2 [&>*]:mb-4 [&>*]:break-inside-avoid">
+              <div className="columns-1 gap-4 sm:columns-2 [&>*]:mb-4 [&>*]:break-inside-avoid">
                 {memories.map((it, i) => (
-                  <div key={i} style={{ ['--i' as string]: Math.min(i, 8) }}>
+                  <div key={i} data-reveal="image" style={{ ['--i' as string]: Math.min(i, 4) }}>
                     <Entry item={it} />
                   </div>
                 ))}
                 {memories.length === 0 ? <p className="text-sm text-ink-3">No photo memories this month yet.</p> : null}
               </div>
               {moments.length ? (
-                <div className="card h-fit p-3">
+                <div className="card h-fit p-3" data-reveal="" style={{ ['--i' as string]: 1 }}>
                   <p className="eyebrow px-2 pb-1 pt-2">Moments</p>
                   {moments.map((it, i) => (
                     <Entry key={i} item={it} />

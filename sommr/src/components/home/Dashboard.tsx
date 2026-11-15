@@ -2,6 +2,8 @@ import Link from 'next/link';
 import { Suspense } from 'react';
 import { ArrowUpRight, CalendarDays, Compass, Flame, Sun, Sunset, Trophy } from 'lucide-react';
 import { Page, SectionHeader } from '@/components/shell/AppShell';
+import { Float } from '@/components/motion/Float';
+import { WordReveal } from '@/components/motion/WordReveal';
 import { ChallengeCard } from '@/components/challenges/ChallengeCard';
 import { Counter } from '@/components/ui/Counter';
 import { Photo } from '@/components/ui/Photo';
@@ -47,14 +49,16 @@ export async function Dashboard({ user, welcome }: { user: SessionUser; welcome:
       {/* ── Greeting & countdown ── */}
       <section className="grid gap-6 lg:grid-cols-[1.25fr_1fr] lg:items-stretch">
         <div className="flex flex-col justify-center py-2">
-          <p className="eyebrow">{formatLongDate(now)}</p>
+          <p className="eyebrow fade-in">{formatLongDate(now)}</p>
           <h1 className="display mt-3 text-[3rem] sm:text-6xl lg:text-[4.4rem]">
-            {welcome ? 'Welcome' : greeting(now)}, <em className="text-sun-deep">{firstName}</em>.
+            <WordReveal delay={80}>
+              {welcome ? 'Welcome' : greeting(now)}, <em className="text-sun-deep">{firstName}</em>.
+            </WordReveal>
           </h1>
-          <div className="mt-5 space-y-2 text-[1.05rem] text-ink-2">
+          <div className="stagger mt-5 space-y-2 text-[1.05rem] text-ink-2" style={{ ['--stagger' as string]: '90ms' }}>
             {weather && w ? (
-              <p className="flex flex-wrap items-center gap-x-2">
-                <Sun size={18} className="text-sun" aria-hidden="true" />
+              <p className="flex flex-wrap items-center gap-x-2" style={{ ['--i' as string]: 4 }}>
+                <Sun size={18} className="spin-slow text-sun" aria-hidden="true" />
                 <span>
                   <strong className="font-semibold text-ink">{weather.temperature}°</strong> and {w.label} in{' '}
                   {loc.precise ? 'your area' : loc.city.name}
@@ -62,7 +66,7 @@ export async function Dashboard({ user, welcome }: { user: SessionUser; welcome:
                 </span>
               </p>
             ) : null}
-            <p className="flex items-center gap-2">
+            <p className="flex items-center gap-2" style={{ ['--i' as string]: 5 }}>
               <Sunset size={18} className="text-sun-deep" aria-hidden="true" />
               {sunsetPassed ? (
                 <span>Tomorrow’s sunrise is at {formatTime(sunTimes(dateKey(new Date(now.getTime() + 86_400_000)), loc.lat, loc.lng).sunrise)}.</span>
@@ -73,11 +77,16 @@ export async function Dashboard({ user, welcome }: { user: SessionUser; welcome:
                 </span>
               )}
             </p>
-            {nudge ? <p className="text-ink-3">{nudge}</p> : null}
+            {nudge ? (
+              <p className="text-ink-3" style={{ ['--i' as string]: 6 }}>
+                {nudge}
+              </p>
+            ) : null}
           </div>
         </div>
 
-        <div className="relative min-h-[260px] overflow-hidden rounded-[26px] text-cream shadow-[var(--shadow-lift)] lg:min-h-[300px]">
+        <Float duration={9} className="page-enter h-full" >
+        <div className="photo-settle relative h-full min-h-[260px] overflow-hidden rounded-[26px] text-cream shadow-[var(--shadow-card)] lg:min-h-[300px]">
           <Photo name={cityPhoto(user.citySlug)} priority sizes="(min-width: 1024px) 40vw, 100vw" />
           <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/25 to-black/5" />
           <div className="absolute inset-x-0 bottom-0 p-6">
@@ -108,11 +117,12 @@ export async function Dashboard({ user, welcome }: { user: SessionUser; welcome:
             ) : null}
           </div>
         </div>
+        </Float>
       </section>
 
       {/* ── Challenge & your summer ── */}
-      <section className="mt-10 grid gap-6 lg:grid-cols-[1.45fr_1fr]">
-        <div className="space-y-4">
+      <section className="stagger mt-10 grid gap-6 lg:grid-cols-[1.45fr_1fr]" style={{ ['--stagger' as string]: '110ms' }}>
+        <div className="space-y-4" style={{ ['--i' as string]: 3 }}>
           {daily ? (
             <ChallengeCard c={toChallengeView(daily, categories)} />
           ) : (
@@ -121,7 +131,7 @@ export async function Dashboard({ user, welcome }: { user: SessionUser; welcome:
           {weekly ? <ChallengeCard c={toChallengeView(weekly, categories)} variant="compact" daysLeft={daysLeftInWeek(now)} /> : null}
         </div>
 
-        <aside className="card flex flex-col p-6" aria-label="Your summer so far">
+        <aside className="card flex flex-col p-6" aria-label="Your summer so far" style={{ ['--i' as string]: 4 }}>
           <div className="flex items-center justify-between">
             <h2 className="display text-[1.9rem]">Your summer</h2>
             <Link href="/challenges" className="text-sm font-medium text-sea-deep hover:underline">
@@ -174,17 +184,19 @@ export async function Dashboard({ user, welcome }: { user: SessionUser; welcome:
           { href: '/whats-on', label: 'What’s On?', text: `Events in ${loc.city.name}`, icon: CalendarDays },
           { href: '/challenges', label: 'Challenges', text: 'Badges & history', icon: Trophy },
           { href: '/my-summer', label: 'My Summer', text: 'Memories & bucket list', icon: Sun },
-        ].map(({ href, label, text, icon: Icon }) => (
-          <Link key={href} href={href} className="card card-hover group flex items-center gap-3 p-4">
-            <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-sand text-ink-2 transition-colors group-hover:bg-sun-soft group-hover:text-sun-deep">
-              <Icon size={19} aria-hidden="true" />
+        ].map(({ href, label, text, icon: Icon }, i) => (
+          <div key={href} data-reveal="" style={{ ['--i' as string]: i }}>
+          <Link href={href} className="card card-hover group flex h-full items-center gap-3 p-4">
+            <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-sand text-ink-2 transition-colors duration-300 group-hover:bg-sun-soft group-hover:text-sun-deep">
+              <Icon size={19} className="icon-wiggle" aria-hidden="true" />
             </span>
             <span className="min-w-0 flex-1">
               <span className="block font-semibold">{label}</span>
               <span className="block truncate text-xs text-ink-3">{text}</span>
             </span>
-            <ArrowUpRight size={16} className="hidden shrink-0 text-ink-3 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 sm:block" aria-hidden="true" />
+            <ArrowUpRight size={16} className="hidden shrink-0 text-ink-3 transition-transform duration-500 ease-[var(--ease-spring)] group-hover:-translate-y-0.5 group-hover:translate-x-0.5 sm:block" aria-hidden="true" />
           </Link>
+          </div>
         ))}
       </nav>
 

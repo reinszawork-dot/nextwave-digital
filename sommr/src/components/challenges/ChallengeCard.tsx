@@ -61,11 +61,13 @@ export function ChallengeCard({ c, variant = 'hero', daysLeft }: { c: ChallengeV
     >
       <Celebrate show={!!celebrate} label={celebrate ?? undefined} />
       {hero ? (
-        <svg className="pointer-events-none absolute -right-10 -top-10 h-48 w-48 text-sun opacity-[0.13]" viewBox="0 0 100 100" aria-hidden="true">
-          <circle cx="50" cy="50" r="22" fill="currentColor" />
-          {Array.from({ length: 12 }, (_, i) => (
-            <rect key={i} x="48.5" y="8" width="3" height="14" rx="1.5" fill="currentColor" transform={`rotate(${i * 30} 50 50)`} />
-          ))}
+        <svg className="pointer-events-none absolute -right-10 -top-10 h-48 w-48 text-sun opacity-[0.14]" viewBox="0 0 100 100" aria-hidden="true">
+          <circle cx="50" cy="50" r="22" fill="currentColor" className="breathe" style={{ transformBox: 'view-box', transformOrigin: '50% 50%' }} />
+          <g className="spin-slow" style={{ transformBox: 'view-box', transformOrigin: '50% 50%' }}>
+            {Array.from({ length: 12 }, (_, i) => (
+              <rect key={i} x="48.5" y="8" width="3" height="14" rx="1.5" fill="currentColor" transform={`rotate(${i * 30} 50 50)`} />
+            ))}
+          </g>
         </svg>
       ) : null}
 
@@ -105,23 +107,23 @@ export function ChallengeCard({ c, variant = 'hero', daysLeft }: { c: ChallengeV
           </>
         ) : (
           <>
-            <button type="button" className="btn btn-primary" onClick={() => run('complete')} disabled={pending}>
+            <button type="button" className="btn btn-primary" data-magnetic={hero ? '' : undefined} onClick={() => run('complete')} disabled={pending}>
               {pending && action === 'complete' ? <Spinner /> : <Check size={18} strokeWidth={2.4} aria-hidden="true" />}
               Mark as done
             </button>
             {c.placeCategory ? (
-              <Link href={`/explore?category=${c.placeCategory}`} className="btn btn-ghost">
-                <Compass size={17} aria-hidden="true" /> Find {c.placeCategoryLabel?.toLowerCase() ?? 'a spot'}
+              <Link href={`/explore?category=${c.placeCategory}`} className="btn btn-ghost group">
+                <Compass size={17} className="icon-spin" aria-hidden="true" /> Find {c.placeCategoryLabel?.toLowerCase() ?? 'a spot'}
               </Link>
             ) : null}
             <button
               type="button"
-              className="btn btn-sm text-ink-3 hover:text-ink"
+              className="group btn btn-sm text-ink-3 hover:text-ink"
               onClick={() => run('swap')}
               disabled={pending || c.swapsLeft <= 0}
               title={c.swapsLeft <= 0 ? 'No swaps left' : `${c.swapsLeft} swap${c.swapsLeft === 1 ? '' : 's'} left`}
             >
-              {pending && action === 'swap' ? <Spinner /> : <Shuffle size={15} aria-hidden="true" />}
+              {pending && action === 'swap' ? <Spinner /> : <Shuffle size={15} className="icon-wiggle" aria-hidden="true" />}
               {c.swapsLeft > 0 ? 'Swap' : 'No swaps left'}
             </button>
           </>

@@ -2,6 +2,7 @@
 
 import { useEffect, useId, useRef, useState } from 'react';
 import { MapPin, Search, X } from 'lucide-react';
+import { AnimatePresence, m } from 'motion/react';
 import { Spinner } from '@/components/ui/Spinner';
 
 export interface GeoResult {
@@ -106,11 +107,22 @@ export function LocationSearch({ onPick, className = '' }: { onPick: (r: GeoResu
           ) : null}
         </span>
       </div>
+      <AnimatePresence>
       {open && (results.length > 0 || message) ? (
-        <ul id={`${id}-list`} role="listbox" className="absolute inset-x-0 top-[calc(100%+6px)] z-30 overflow-hidden rounded-2xl border border-line bg-paper py-1.5 shadow-[var(--shadow-float)] fade-in">
+        <m.ul
+          id={`${id}-list`}
+          role="listbox"
+          initial={{ opacity: 0, y: -6, scale: 0.98 }}
+          animate={{ opacity: 1, y: 0, scale: 1, transition: { type: 'spring', stiffness: 520, damping: 38 } }}
+          exit={{ opacity: 0, y: -4, scale: 0.99, transition: { duration: 0.14 } }}
+          style={{ transformOrigin: '50% 0%' }}
+          className="absolute inset-x-0 top-[calc(100%+6px)] z-30 overflow-hidden rounded-2xl border border-line bg-paper py-1.5 shadow-[var(--shadow-float)]"
+        >
           {results.map((r, i) => (
-            <li
+            <m.li
               key={`${r.lat},${r.lng},${i}`}
+              initial={{ opacity: 0, x: -6 }}
+              animate={{ opacity: 1, x: 0, transition: { delay: i * 0.035, duration: 0.3, ease: [0.22, 1, 0.36, 1] } }}
               id={`${id}-${i}`}
               role="option"
               aria-selected={i === active}
@@ -118,18 +130,19 @@ export function LocationSearch({ onPick, className = '' }: { onPick: (r: GeoResu
                 e.preventDefault();
                 pick(r);
               }}
-              className={`flex cursor-pointer items-start gap-3 px-4 py-2.5 text-sm ${i === active ? 'bg-sand' : 'hover:bg-sand'}`}
+              className={`flex cursor-pointer items-start gap-3 px-4 py-2.5 text-sm transition-colors duration-200 ${i === active ? 'bg-sand' : 'hover:bg-sand'}`}
             >
               <MapPin size={16} className="mt-0.5 shrink-0 text-sun-deep" aria-hidden="true" />
               <span className="min-w-0">
                 <span className="block truncate font-medium">{r.label.split(',')[0]}</span>
                 <span className="block truncate text-xs text-ink-3">{r.label.split(',').slice(1).join(',').trim() || r.type}</span>
               </span>
-            </li>
+            </m.li>
           ))}
           {message ? <li className="px-4 py-3 text-sm text-ink-3">{message}</li> : null}
-        </ul>
+        </m.ul>
       ) : null}
+      </AnimatePresence>
     </div>
   );
 }

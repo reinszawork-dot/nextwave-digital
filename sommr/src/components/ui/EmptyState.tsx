@@ -15,7 +15,7 @@ export function EmptyState({
 }) {
   return (
     <div className={`flex flex-col items-center text-center ${compact ? 'px-4 py-8' : 'px-6 py-14'}`}>
-      <div className="mb-4 grid h-14 w-14 place-items-center rounded-full bg-sun-soft text-sun-deep">
+      <div className="float-body mb-4 grid h-14 w-14 place-items-center rounded-full bg-sun-soft text-sun-deep" style={{ ['--float-dur' as string]: '6s' }}>
         <Icon size={24} strokeWidth={1.7} aria-hidden="true" />
       </div>
       <h3 className="display text-2xl">{title}</h3>

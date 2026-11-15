@@ -21,7 +21,7 @@ export async function EventsSection({ user }: { user: SessionUser }) {
   ]);
   if (events.length === 0) {
     return (
-      <div className="card">
+      <div className="card" data-reveal="">
         <EmptyState
           icon={CalendarDays}
           title="Nothing listed yet"
@@ -38,8 +38,10 @@ export async function EventsSection({ user }: { user: SessionUser }) {
   }
   return (
     <div className="scroller -mx-4 px-4 pb-2 sm:-mx-6 sm:px-6 lg:mx-0 lg:px-0">
-      {events.map((e) => (
-        <EventCard key={e.id} event={e} category={categoryLite(categories.get(e.category_slug))} className="w-[78vw] max-w-[300px] sm:w-[280px]" />
+      {events.map((e, i) => (
+        <div key={e.id} data-reveal="" style={{ ['--i' as string]: Math.min(i, 5) }} className="w-[78vw] max-w-[300px] sm:w-[280px]">
+          <EventCard event={e} category={categoryLite(categories.get(e.category_slug))} className="h-full" />
+        </div>
       ))}
     </div>
   );

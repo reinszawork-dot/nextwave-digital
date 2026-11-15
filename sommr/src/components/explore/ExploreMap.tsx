@@ -4,6 +4,7 @@ import 'maplibre-gl/dist/maplibre-gl.css';
 import Link from 'next/link';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { GeoJSONSource, Map as MlMap, Marker } from 'maplibre-gl';
+import { AnimatePresence, m } from 'motion/react';
 import { CalendarDays, ChevronUp, Info, LocateFixed, Search } from 'lucide-react';
 import { CategoryGlyph, type CategoryLite } from '@/components/common/CategoryGlyph';
 import { distanceLabel } from '@/components/places/PlaceCard';
@@ -402,8 +403,19 @@ export function ExploreMap({
         ? error
         : `${places.length} place${places.length === 1 ? '' : 's'}${events.length ? ` · ${events.length} event${events.length === 1 ? '' : 's'}` : ''} in view`;
 
+  const panelKey =
+    selection?.kind === 'place' ? (detailLoading || !detail ? 'loading' : `place-${detail.id}`) : selectedEvent ? `event-${selectedEvent.id}` : 'list';
+  const goingDeeper = panelKey !== 'list';
+
   const panel = (
-    <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-5 pb-8">
+    <div className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden overscroll-contain px-5 pb-8">
+      <AnimatePresence mode="wait" initial={false}>
+      <m.div
+        key={panelKey}
+        initial={{ opacity: 0, x: goingDeeper ? 18 : -18 }}
+        animate={{ opacity: 1, x: 0, transition: { duration: 0.38, ease: [0.22, 1, 0.36, 1] } }}
+        exit={{ opacity: 0, x: goingDeeper ? -12 : 12, transition: { duration: 0.14, ease: [0.4, 0, 1, 1] } }}
+      >
       {selection?.kind === 'place' ? (
         detailLoading || !detail ? (
           <SunLoader label="Opening place" />
@@ -483,6 +495,8 @@ export function ExploreMap({
           </p>
         </>
       )}
+      </m.div>
+      </AnimatePresence>
     </div>
   );
 
