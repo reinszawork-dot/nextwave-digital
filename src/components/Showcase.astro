@@ -102,7 +102,7 @@ import { showcase } from '../data/showcase';
     cursor: pointer;
     transition: background-color 0.3s, color 0.3s, box-shadow 0.3s, transform 0.15s;
   }
-  .tab:hover { color: var(--text); background: rgba(41, 37, 30, 0.04); }
+  .tab:hover { color: var(--text); background: var(--hover); }
   .tab:active { transform: scale(0.97); }
   .tab[aria-selected='true'] {
     color: var(--text);
@@ -122,8 +122,8 @@ import { showcase } from '../data/showcase';
     transition: background 0.6s;
   }
   .panel:focus-visible { outline-offset: 8px; border-radius: var(--radius-lg); }
-  .panel:global(.panel-in) { animation: panel-in 0.6s var(--ease-out); }
-  @keyframes panel-in { from { opacity: 0; transform: translateY(10px); } }
+  .panel:global(.panel-in) { animation: panel-in 0.25s var(--ease-out); }
+  @keyframes panel-in { from { opacity: 0; transform: translateY(6px); } }
   .panel-head {
     display: flex;
     flex-wrap: wrap;

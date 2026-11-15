@@ -200,6 +200,7 @@
 
 html {
   -webkit-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
   scroll-behavior: smooth;
   scroll-padding-top: calc(var(--header-h) + 16px);
 }
@@ -239,7 +240,7 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
   width: 100%;
   max-width: var(--container);
   margin-inline: auto;
-  padding-inline: var(--gutter);
+  padding-inline: max(var(--gutter), env(safe-area-inset-left)) max(var(--gutter), env(safe-area-inset-right));
 }
 
 .section { padding-block: var(--section-y); position: relative; }

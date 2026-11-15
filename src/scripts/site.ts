@@ -312,10 +312,15 @@ document.querySelectorAll<HTMLButtonElement>('[data-look-toggle]').forEach((btn)
   sync();
   btn.addEventListener('click', () => {
     const next = LOOKS[(LOOKS.indexOf(current()) + 1) % LOOKS.length];
-    if (next === 'dusk') delete root.dataset.look;
-    else root.dataset.look = next;
-    try { localStorage.setItem('nw-look', next); } catch {}
-    sync();
+    const apply = () => {
+      if (next === 'dusk') delete root.dataset.look;
+      else root.dataset.look = next;
+      try { localStorage.setItem('nw-look', next); } catch {}
+      sync();
+    };
+    // Crossfade the whole page between looks instead of snapping (rare action, worth the motion).
+    if (document.startViewTransition && !reduceMotion) document.startViewTransition(apply);
+    else apply();
   });
 });
 

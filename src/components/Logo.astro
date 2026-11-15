@@ -80,9 +80,6 @@ const uid = `nw${Math.random().toString(36).slice(2, 8)}`;
   }
   .logo-wave-2 { animation-delay: 0.55s; }
   @keyframes logo-draw { from { stroke-dashoffset: 1; } }
-  :global(a:hover) > .logo .logo-sun { animation: sun-rise 0.9s var(--ease-out); }
-  :global(a:hover) > .logo .logo-wave { animation: logo-draw 1s var(--ease-out); }
-  :global(a:hover) > .logo .logo-wave-2 { animation-delay: 0.15s; animation-fill-mode: both; }
   .logo-text { display: inline-flex; align-items: baseline; gap: 0.32rem; font-size: 1.12rem; }
   .logo-name { font-weight: 600; letter-spacing: -0.03em; }
   .logo-name em {

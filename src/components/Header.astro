@@ -119,11 +119,12 @@ import { nav } from '../data/site';
     margin-left: -2px;
     border-radius: 50%;
     background: var(--accent);
-    transform: scale(0);
-    transition: transform 0.35s var(--ease-out);
+    opacity: 0;
+    transform: scale(0.4);
+    transition: transform 0.25s var(--ease-out), opacity 0.2s;
   }
   .nav-link[aria-current='true'] { color: var(--text); }
-  .nav-link[aria-current='true']::after { transform: scale(1); }
+  .nav-link[aria-current='true']::after { opacity: 1; transform: scale(1); }
 
   .look-toggle {
     display: inline-grid;
@@ -171,13 +172,13 @@ import { nav } from '../data/site';
     background: var(--bg);
     padding: 1rem var(--gutter) 2rem;
     overflow-y: auto;
-    animation: menu-in 0.4s var(--ease-out);
+    animation: menu-in 0.2s var(--ease-out);
   }
   .mobile-menu[hidden] { display: none; }
   .mobile-menu li {
     border-bottom: 1px solid var(--border);
-    animation: item-in 0.5s var(--ease-out) both;
-    animation-delay: calc(var(--i) * 45ms + 60ms);
+    animation: item-in 0.3s var(--ease-out) both;
+    animation-delay: calc(var(--i) * 30ms + 30ms);
   }
   .mobile-link {
     display: flex;
