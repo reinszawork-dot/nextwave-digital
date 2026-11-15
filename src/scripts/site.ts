@@ -198,13 +198,20 @@ document.querySelectorAll<HTMLElement>('[data-tabs]').forEach((tabs) => {
 /* ------------------------------------------------------------------ */
 /* Cursor spotlight on cards                                           */
 /* ------------------------------------------------------------------ */
-if (!reduceMotion && window.matchMedia('(hover: hover)').matches) {
+if (!reduceMotion && window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
   document.querySelectorAll<HTMLElement>('[data-spotlight]').forEach((card) => {
+    const preview = card.querySelector<HTMLElement>('.preview');
     card.addEventListener('pointermove', (e) => {
       const r = card.getBoundingClientRect();
       card.style.setProperty('--mx', `${e.clientX - r.left}px`);
       card.style.setProperty('--my', `${e.clientY - r.top}px`);
+      // Studio look: preview tilts up to 4deg toward the pointer
+      if (preview && document.documentElement.dataset.look === 'studio') {
+        preview.style.setProperty('--tx', `${(((e.clientX - r.left) / r.width - 0.5) * 8).toFixed(2)}deg`);
+        preview.style.setProperty('--ty', `${(-((e.clientY - r.top) / r.height - 0.5) * 8).toFixed(2)}deg`);
+      }
     });
+    card.addEventListener('pointerleave', () => { preview?.style.removeProperty('--tx'); preview?.style.removeProperty('--ty'); });
   });
 }
 
@@ -287,21 +294,27 @@ document.querySelectorAll<HTMLElement>('[data-demo]').forEach((demo) => {
 });
 
 /* ------------------------------------------------------------------ */
-/* Look toggle: Dusk (default) <-> Day, remembered on this device       */
+/* Look toggle: Studio -> Dusk (default) -> Day -> Studio, remembered   */
 /* ------------------------------------------------------------------ */
+const LOOKS = ['studio', 'dusk', 'day'] as const;
+const LOOK_NAME = { studio: 'Studio', dusk: 'Dusk', day: 'Day' };
+const LOOK_COLOR = { studio: '#000000', dusk: '#171d3c', day: '#f6f3ec' };
 document.querySelectorAll<HTMLButtonElement>('[data-look-toggle]').forEach((btn) => {
   const root = document.documentElement;
+  const current = () => (root.dataset.look === 'studio' || root.dataset.look === 'day' ? root.dataset.look : 'dusk');
   const sync = () => {
-    const isDay = root.dataset.look === 'day';
-    btn.setAttribute('aria-label', isDay ? 'Switch to the Dusk look' : 'Switch to the Day look');
-    document.querySelector('meta[name=theme-color]')?.setAttribute('content', isDay ? '#f6f3ec' : '#171d3c');
+    const now = current();
+    const next = LOOKS[(LOOKS.indexOf(now) + 1) % LOOKS.length];
+    btn.dataset.next = next;
+    btn.setAttribute('aria-label', `Switch to the ${LOOK_NAME[next]} look`);
+    document.querySelector('meta[name=theme-color]')?.setAttribute('content', LOOK_COLOR[now]);
   };
   sync();
   btn.addEventListener('click', () => {
-    const toDay = root.dataset.look !== 'day';
-    if (toDay) root.dataset.look = 'day';
-    else delete root.dataset.look;
-    try { localStorage.setItem('nw-look', toDay ? 'day' : 'dusk'); } catch {}
+    const next = LOOKS[(LOOKS.indexOf(current()) + 1) % LOOKS.length];
+    if (next === 'dusk') delete root.dataset.look;
+    else root.dataset.look = next;
+    try { localStorage.setItem('nw-look', next); } catch {}
     sync();
   });
 });

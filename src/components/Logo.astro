@@ -99,6 +99,11 @@ const uid = `nw${Math.random().toString(36).slice(2, 8)}`;
     background-clip: text;
     -webkit-text-fill-color: transparent;
   }
+  :global([data-look='studio']) .logo-name em {
+    background: linear-gradient(100deg, #ffffff 0%, #c7c7cc 50%, #2997ff 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+  }
   :global([data-look='day']) .logo-name em {
     background: linear-gradient(100deg, #7b6bd6 0%, #c2557f 55%, #c26a48 100%);
     -webkit-background-clip: text;

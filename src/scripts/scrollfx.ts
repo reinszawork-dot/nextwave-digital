@@ -65,7 +65,9 @@ function splitWords(root: HTMLElement, cls: string): HTMLElement[] {
 function setup() {
   // Hero depth layers
   document.querySelectorAll<HTMLElement>('.hero .pill, .hero h1, .hero .lede, .hero .actions').forEach((el) => add(el, 'depth', { speed: 0.32 }));
-  const floats: [string, number][] = [['.hero .f-main', -0.08], ['.hero .f-ring', -0.2], ['.hero .f-bars', -0.16], ['.hero .f-stat', -0.26]];
+  const floats: [string, number][] = document.documentElement.dataset.look !== 'day'
+    ? [['.hero .stage', -0.1]] // one glass dashboard: cards move with their panel
+    : [['.hero .f-main', -0.08], ['.hero .f-ring', -0.2], ['.hero .f-bars', -0.16], ['.hero .f-stat', -0.26]];
   floats.forEach(([sel, speed]) => document.querySelectorAll<HTMLElement>(sel).forEach((el) => add(el, 'depth', { speed })));
 
   // Hero app tiles: one wave that rolls across all six, in order

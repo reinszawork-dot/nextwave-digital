@@ -59,13 +59,14 @@ const orgJsonLd = {
 
     <script is:inline>
       document.documentElement.classList.remove('no-js');
-      // Look: Dusk (default) or Day, remembered on this device.
-      try {
-        if (localStorage.getItem('nw-look') === 'day') {
-          document.documentElement.dataset.look = 'day';
-          document.querySelector('meta[name=theme-color]')?.setAttribute('content', '#f6f3ec');
-        }
-      } catch (e) {}
+      // Look: Dusk (default), Studio or Day, remembered on this device. Dusk is the bare :root look.
+      (function () {
+        var look = 'dusk';
+        try { look = localStorage.getItem('nw-look') || 'dusk'; } catch (e) {}
+        if (look === 'studio' || look === 'day') document.documentElement.dataset.look = look;
+        var tc = { studio: '#000000', day: '#f6f3ec', dusk: '#171d3c' }[look];
+        if (tc) document.querySelector('meta[name=theme-color]')?.setAttribute('content', tc);
+      })();
     </script>
     <script type="application/ld+json" set:html={JSON.stringify(orgJsonLd)} />
   </head>

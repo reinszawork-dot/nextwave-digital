@@ -68,25 +68,30 @@ function helpers(page) {
 /* The demos — each ~12–18 seconds                                     */
 /* ------------------------------------------------------------------ */
 const demos = {
+  // Wisely 3.0 in its dark Dusk look: dashboard, card wallet, bills calendar, insights.
   wisely: {
     url: 'https://wisely-phi.vercel.app',
+    scheme: 'dark',
     async run({ page, wait, tap, scroll, poster }) {
       await wait(1300);
-      await tap(page.getByText('Explore with demo data').first(), 1700);
-      await tap(page.getByRole('button', { name: 'Later' }).first(), 700).catch(() => {});
-      await scroll(520, 1500);
-      await wait(700);
-      await tap('[data-nav=budgets]', 1700);
-      await scroll(360, 1100);
-      await wait(500);
-      await tap('[data-nav=reports]', 2600);
+      await tap(page.getByText('Explore with demo data').first(), 1600);
+      await tap(page.getByRole('button', { name: 'Later' }).first(), 600).catch(() => {});
       poster();
-      await scroll(420, 1300);
-      await wait(1200);
+      await scroll(560, 1500);
+      await wait(400);
+      await tap('[data-nav=cards]', 1700);
+      await tap('[data-nav=more]', 600);
+      await tap(page.getByRole('link', { name: /Bills & subscriptions/ }), 1900);
+      await scroll(360, 1000);
+      await tap('[data-nav=more]', 600);
+      await tap(page.getByRole('link', { name: /Insights/ }), 2000);
+      await scroll(420, 1200);
+      await wait(700);
     },
   },
+  // Lull at night: moonlit sky with fireflies that follow each tap, a mood check-in, the breathing moon, the sleep dial.
   lull: {
-    url: 'https://lull-weld.vercel.app',
+    url: 'https://lull-weld.vercel.app/?phase=night',
     async run({ page, wait, tap, type, scroll, poster }) {
       await wait(1600);
       await tap('#ob [data-n]', 700);
@@ -94,57 +99,70 @@ const demos = {
       await tap('#ob [data-g="sleep"]', 500);
       await tap('#ob [data-n]', 600);
       await type('#obN', 'Sam');
-      await tap('#ob [data-n]', 1600);
-      await scroll(320, 900);
-      await tap('[data-tab="breathe"]', 2400);
+      await tap('#ob [data-n]', 1800);
       poster();
-      await tap('[data-tab="sleep"]', 1800);
+      await scroll(300, 900);
+      await tap(page.locator('.mood').nth(3), 900);
+      await tap(page.locator('#sheet .chip').first(), 300).catch(() => {});
+      await tap('#ciSave', 1200);
+      await tap('[data-tab="breathe"]', 1200);
+      await tap(page.getByRole('button', { name: '1 min' }).first(), 4200);
+      await tap('#overlay [data-close]', 900);
+      await tap('[data-tab="sleep"]', 2000);
     },
   },
+  // Kindling: tick off a habit, browse the (now free) habit packs, then analytics.
   kindling: {
     url: 'https://kindling-inky.vercel.app',
     async run({ page, wait, tap, scroll, poster }) {
       await wait(1400);
       await tap(page.getByRole('button', { name: /Drink water/ }).first(), 1300);
       const counter = page.locator('button').filter({ hasText: /^\s*\d\/8\s*$/ }).first();
-      for (let i = 0; i < 8; i++) await tap(counter, i === 7 ? 1400 : 120);
+      for (let i = 0; i < 8; i++) await tap(counter, i === 7 ? 1500 : 120);
       poster();
-      await scroll(380, 1200);
+      await scroll(380, 1100);
+      await tap(page.getByRole('link', { name: 'Habits' }).last(), 1200);
+      await tap(page.getByRole('button', { name: /Habit packs/ }).first(), 1800);
+      await scroll(300, 900);
+      await page.keyboard.press('Escape');
       await wait(500);
-      await tap(page.getByRole('link', { name: 'Analytics' }).last(), 2400);
-      await scroll(420, 1300);
-      await wait(1000);
+      await tap(page.getByRole('link', { name: 'Analytics' }).last(), 2200);
+      await scroll(420, 1200);
     },
   },
+  // StudyHub: the glass dashboard, the (now free) exam planner, the focus timer.
   studyhub: {
     url: 'https://studyhub-tau-eight.vercel.app',
     async run({ page, wait, tap, type, scroll, poster }) {
       await wait(1400);
       await type(page.getByPlaceholder('Your first name'), 'Alex');
       await tap(page.getByRole('button', { name: 'Get started' }), 1700);
+      poster();
       await scroll(520, 1300);
       await tap('#menu-btn', 600);
-      await tap(page.getByRole('link', { name: 'Analytics', exact: true }).first(), 2600);
-      poster();
-      await scroll(420, 1100);
+      await tap(page.getByRole('link', { name: 'Exam planner', exact: true }).first(), 2200);
+      await scroll(380, 1000);
       await tap('#menu-btn', 600);
       await tap(page.getByRole('link', { name: 'Timer', exact: true }).first(), 900);
       await tap('[aria-label="Start timer"]', 2400);
     },
   },
+  // Forge: set a goal, start a workout and log a set (the rest timer kicks in), then food and progress.
   forge: {
     url: 'https://reinszawork-dot.github.io/forge/',
-    async run({ page, wait, tap, scroll, poster }) {
+    async run({ page, wait, tap, type, poster }) {
       await wait(1400);
       await tap(page.getByRole('button', { name: 'Build muscle' }), 500);
-      await tap('#pGo', 1600);
-      await tap(page.getByRole('button', { name: '5 glasses' }), 900).catch(() => {});
+      await tap('#pGo', 1500);
+      await tap(page.getByRole('button', { name: '5 glasses' }), 800).catch(() => {});
       poster();
-      await scroll(380, 1100);
-      await wait(400);
-      await tap('[data-tab="train"]', 1800);
+      await tap('[data-tab="train"]', 1200);
+      await tap(page.getByRole('button', { name: 'Start', exact: true }).first(), 1300);
+      await type('input[data-f="w"][data-j="0"]', '60');
+      await type('input[data-f="r"][data-j="0"]', '8');
+      await tap('[data-check="0-0"]', 1700);
       await tap('[data-tab="eat"]', 1600);
-      await tap('[data-tab="today"]', 1600);
+      await tap('[data-tab="progress"]', 1600);
     },
   },
   cashbook: {
@@ -182,7 +200,7 @@ async function record(id) {
     hasTouch: true,
     locale: 'en-ZA',
     timezoneId: 'Africa/Johannesburg',
-    colorScheme: 'light',
+    colorScheme: demo.scheme || 'light',
     reducedMotion: 'no-preference',
   });
   await context.addInitScript(TAP_SCRIPT);

@@ -75,10 +75,25 @@ const headingId = `product-${product.id}-title`;
       linear-gradient(180deg, transparent 55%, color-mix(in srgb, var(--p-soft) 60%, transparent));
     transition: opacity 0.4s;
   }
-  .card.is-visible:hover {
-    transform: translateY(-4px);
-    border-color: color-mix(in srgb, var(--p-accent) 28%, var(--border));
-    box-shadow: var(--shadow-lg);
+  @media (hover: hover) and (pointer: fine) {
+    .card.is-visible:hover {
+      transform: translateY(-4px);
+      border-color: color-mix(in srgb, var(--p-accent) 28%, var(--border));
+      box-shadow: var(--shadow-lg);
+    }
+  }
+  /* Studio look: cards float gently when idle (transform; scroll motion uses translate/scale, so they stack),
+     and the preview tilts toward the pointer (--tx/--ty from site.ts, mouse only). */
+  :global([data-look='studio']) .card.is-visible { animation: card-float 7s ease-in-out infinite alternate; }
+  :global([data-look='studio']) .card:nth-child(2n) { animation-delay: -2.3s; }
+  :global([data-look='studio']) .card:nth-child(3n) { animation-delay: -4.6s; }
+  @keyframes card-float { from { transform: translateY(0); } to { transform: translateY(-8px); } }
+  :global([data-look='studio']) .preview {
+    transform: perspective(900px) rotateX(var(--ty, 0deg)) rotateY(var(--tx, 0deg));
+    transition: transform 0.5s var(--ease-out);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    :global([data-look='studio']) .card.is-visible { animation: none; }
   }
   .card-head { display: flex; align-items: center; gap: 0.6rem; margin-bottom: 1.4rem; }
   .tag {

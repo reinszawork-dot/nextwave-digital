@@ -19,9 +19,10 @@ import { nav } from '../data/site';
         </ul>
       </nav>
 
-      <button class="look-toggle" type="button" data-look-toggle aria-label="Switch to the Day look">
+      <button class="look-toggle" type="button" data-look-toggle aria-label="Switch look">
         <Icon name="sun" size={18} class="look-sun" />
         <Icon name="moon" size={18} class="look-moon" />
+        <Icon name="spark" size={18} class="look-spark" />
       </button>
 
       <a href="/#products" class="btn btn-primary header-cta">
@@ -139,9 +140,12 @@ import { nav } from '../data/site';
   }
   .look-toggle:hover { color: var(--text); background: var(--hover); }
   .look-toggle:active { transform: scale(0.94); }
-  .look-toggle :global(.look-moon) { display: none; }
-  :global([data-look='day']) .look-toggle :global(.look-sun) { display: none; }
-  :global([data-look='day']) .look-toggle :global(.look-moon) { display: block; }
+  /* The icon shows the look you switch to next (data-next set in site.ts) */
+  .look-toggle :global(svg) { display: none; }
+  .look-toggle[data-next='day'] :global(.look-sun),
+  .look-toggle[data-next='dusk'] :global(.look-moon),
+  .look-toggle[data-next='studio'] :global(.look-spark),
+  .look-toggle:not([data-next]) :global(.look-moon) { display: block; }
 
   .header-cta { display: none; min-height: 42px; padding: 0.5rem 1.1rem; }
 

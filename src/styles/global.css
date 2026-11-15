@@ -143,6 +143,52 @@
 
 
 
+/* "Studio" (default since 2026-11-14): Apple-like black, white and silver with one blue accent,
+   sans-serif display type, and a 3D hero (HeroScene.tsx). Dusk and Day stay selectable. */
+:root[data-look='studio'] {
+  --font-serif: var(--font-sans); /* display type is sans in this look */
+  --bg: #000000;
+  --bg-2: rgba(255, 255, 255, 0.02);
+  --surface: rgba(24, 24, 27, 0.78);
+  --surface-2: #1c1c1e;
+  --border: rgba(255, 255, 255, 0.08);
+  --border-strong: rgba(255, 255, 255, 0.16);
+  --text: #f5f5f7;
+  --text-muted: #a1a1a6;
+  --text-faint: #8e8e93;
+  --ink: #f5f5f7;
+  --on-ink: #000000;
+  --accent: #2997ff;
+  --accent-soft: rgba(41, 151, 255, 0.14);
+  --accent-2: #c7c7cc;
+  --accent-2-soft: rgba(199, 199, 204, 0.12);
+  --brand-gradient: linear-gradient(120deg, #ffffff 0%, #c7c7cc 38%, #8e8e93 62%, #2997ff 100%);
+  --glass: rgba(24, 24, 27, 0.72);
+  --glass-strong: rgba(18, 18, 20, 0.86);
+  --glass-border: rgba(255, 255, 255, 0.10);
+  --glass-blur: blur(20px) saturate(160%);
+  --glass-shine: inset 0 1px 0 rgba(255, 255, 255, 0.10);
+  --hover: rgba(255, 255, 255, 0.06);
+  --ghost-bg: rgba(255, 255, 255, 0.06);
+  --glow-1: rgba(41, 151, 255, 0.16);
+  --glow-2: rgba(199, 199, 204, 0.08);
+  --glow-3: rgba(41, 151, 255, 0.06);
+  --dot: rgba(255, 255, 255, 0.05);
+  --wordmark-top: rgba(255, 255, 255, 0.2);
+  --wordmark-bottom: rgba(255, 255, 255, 0.01);
+  --logo-tile: rgba(255, 255, 255, 0.06);
+  --logo-edge: rgba(255, 255, 255, 0.2);
+  --logo-wave: #2997ff;
+  --vision-bg: #0b0b0d;
+  --em: #2997ff;
+  color-scheme: dark;
+}
+[data-look='studio'] .site-bg { display: none; }
+[data-look='studio'] body {
+  background: radial-gradient(110% 55% at 50% -12%, rgba(41, 151, 255, 0.12), transparent 62%), #000;
+}
+[data-look='studio'] :is(h1, h2) { font-weight: 600; letter-spacing: -0.035em; }
+
 /* Cross-document page transitions (supported browsers fade between pages). */
 @view-transition { navigation: auto; }
 ::view-transition-old(root),
@@ -308,7 +354,8 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
   :root { --glass-blur: blur(14px) saturate(140%); }
 }
 @media (prefers-reduced-transparency: reduce) {
-  :root:not([data-look='day']) { --surface: #161b36; --surface-2: #1e2446; --glass: #161b36; --glass-strong: #141934; }
+  :root:not([data-look]) { --surface: #161b36; --surface-2: #1e2446; --glass: #161b36; --glass-strong: #141934; }
+  :root[data-look='studio'] { --surface: #18181b; --surface-2: #1c1c1e; --glass: #18181b; --glass-strong: #121214; }
 }
 
 /* Generic card surface. */
@@ -461,6 +508,12 @@ main { overflow-x: clip; }
   transition: translate 0.95s var(--ease-out) calc(var(--w, 0) * 55ms + 80ms);
 }
 .sfx-heading.sfx-in .sfx-hw > span { translate: 0 0; }
+/* Studio look: heading words also go from a soft blur to sharp as they rise */
+[data-look='studio'] .sfx-heading .sfx-hw > span {
+  filter: blur(8px);
+  transition: translate 0.95s var(--ease-out) calc(var(--w, 0) * 55ms + 80ms), filter 0.8s var(--ease-out) calc(var(--w, 0) * 55ms + 80ms);
+}
+[data-look='studio'] .sfx-heading.sfx-in .sfx-hw > span { filter: blur(0); }
 .sfx-word { transition: opacity 0.25s linear; }
 .wordmark.sfx-assemble { background: none; }
 .wordmark .sfx-letter {
@@ -509,4 +562,46 @@ main { overflow-x: clip; }
   opacity: var(--land, 0);
   pointer-events: none;
   will-change: opacity;
+}
+
+/* ==========================================================================
+   Dark-look signature (Dusk + Studio): glass dashboards lit purple → orange,
+   one gradient "pill" bar among hatched ones, lilac/peach lines, glowing tiles.
+   ========================================================================== */
+:root:not([data-look='day']) {
+  --sig-lilac: #9d8cff;
+  --sig-peach: #f6ab7d;
+  --sig-orange: #f39a52;
+}
+/* Bars: pill-shaped; when a chart highlights its best value, the rest are hatched */
+:root:not([data-look='day']) .bc-bar { border-radius: 999px; }
+:root:not([data-look='day']) .bc:has(.bc-item.top) .bc-bar {
+  opacity: 1;
+  background: repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.09) 0 2px, rgba(255, 255, 255, 0.025) 2px 7px);
+}
+:root:not([data-look='day']) .bc .bc-item.top .bc-bar {
+  background: linear-gradient(180deg, var(--sig-lilac), var(--sig-orange));
+  box-shadow: 0 0 28px rgba(243, 154, 82, 0.45), 0 0 0 1px rgba(255, 255, 255, 0.25) inset;
+}
+:root:not([data-look='day']) .bc-grid span { background: rgba(255, 255, 255, 0.06); }
+/* Lines: lilac for the main series, peach for the comparison (legend + dots follow) */
+:root:not([data-look='day']) .lc-draw path[fill='none']:not([stroke-dasharray]) { stroke: var(--sig-lilac); }
+:root:not([data-look='day']) .lc-draw path[stroke-dasharray] { stroke: var(--sig-peach); }
+:root:not([data-look='day']) .lc-draw stop { stop-color: var(--sig-lilac); }
+:root:not([data-look='day']) :is(.lc-legend li:nth-child(1) .sw, .lc-draw .lc-end:nth-child(2), .lc-hover .lc-dot:nth-child(2)) { --c: var(--sig-lilac) !important; }
+:root:not([data-look='day']) :is(.lc-legend li:nth-child(2) .sw, .lc-draw .lc-end:nth-child(3), .lc-hover .lc-dot:nth-child(3)) { --c: var(--sig-peach) !important; }
+:root:not([data-look='day']) .dash .arc { stroke: var(--sig-lilac); }
+/* The first stat tile in each row glows like the highlighted card */
+:root:not([data-look='day']) :is(.kpis, .kpi-row) > .kpi:first-child {
+  background:
+    radial-gradient(120% 140% at 100% 100%, rgba(243, 154, 82, 0.5), transparent 60%),
+    radial-gradient(120% 140% at 0% 0%, rgba(157, 140, 255, 0.45), transparent 60%),
+    rgba(40, 36, 52, 0.55);
+}
+/* Dashboard panels sit in purple → orange light */
+:root:not([data-look='day']) :is(.panels, .insight-board, .board-card) {
+  background:
+    radial-gradient(600px 360px at 18% 0%, rgba(157, 140, 255, 0.2), transparent 70%),
+    radial-gradient(520px 340px at 92% 100%, rgba(243, 154, 82, 0.16), transparent 70%),
+    var(--surface);
 }
