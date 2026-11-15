@@ -2,6 +2,8 @@
 
 The official website of **NextWave Digital**, home of Wisely (budgeting), Lull (sleep & stress), Kindling (habits) and StudyHub (study).
 
+> **SOMMR**, the South African summer lifestyle app, lives in [`sommr/`](sommr/README.md) — a separate Next.js app with its own setup and deployment (Vercel root directory: `sommr`). It isn't part of this static site's build.
+
 Built with [Astro](https://astro.build) as a fully static site: no client framework, one small script, fast to load and easy for search engines to read. Icons are [Lucide](https://lucide.dev); charts are hand-built SVG components (no chart library).
 
 ## Run it locally
