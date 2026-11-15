@@ -10,9 +10,13 @@ function str(name: string): string | undefined {
 }
 
 export const env = {
-  DATABASE_URL: str('DATABASE_URL'),
+  // DATABASE_URL, or POSTGRES_URL as set by Vercel's Neon / Supabase integrations.
+  DATABASE_URL: str('DATABASE_URL') || str('POSTGRES_URL'),
   /** Public URL of the app, e.g. https://sommr.vercel.app — used in emails and as the Nominatim referer. */
-  APP_URL: str('APP_URL') || (str('VERCEL_URL') ? `https://${str('VERCEL_URL')}` : 'http://localhost:3000'),
+  APP_URL:
+    str('APP_URL') ||
+    (str('VERCEL_PROJECT_PRODUCTION_URL') ? `https://${str('VERCEL_PROJECT_PRODUCTION_URL')}` : undefined) ||
+    (str('VERCEL_URL') ? `https://${str('VERCEL_URL')}` : 'http://localhost:3000'),
   /** Comma separated emails that become admins when they register. */
   ADMIN_EMAILS: (str('ADMIN_EMAILS') || '')
     .split(',')

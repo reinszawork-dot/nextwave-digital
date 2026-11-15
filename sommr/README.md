@@ -77,21 +77,28 @@ To use a real PostgreSQL locally instead, set `DATABASE_URL` and run `npm run db
 
 ---
 
-## Deploy (Supabase + Vercel, both have free tiers)
+## Deploy on Vercel (free to start)
 
-1. **Database — Supabase.** Create a project at [supabase.com](https://supabase.com). In *Project Settings → Database*, copy the **Transaction pooler** connection string (port 6543) and put your database password in it.
-2. **Create the tables** from your computer, once:
-   ```bash
-   cd sommr
-   DATABASE_URL="postgres://…pooler.supabase.com:6543/postgres" npm run db:setup
-   ```
-   Run `npm run db:migrate` again whenever a new file appears in `migrations/`.
-3. **App — Vercel.** *Add New → Project*, import this repository and set **Root Directory** to `sommr`. Vercel detects Next.js.
-4. **Environment variables** (Vercel → Settings → Environment Variables): at least `DATABASE_URL`, `APP_URL` (your Vercel URL), `ADMIN_EMAILS` and `CRON_SECRET`; then the optional keys from `.env.example`.
-5. **Deploy.** The daily import runs at 03:17 UTC (05:17 SAST) via Vercel Cron — on the free Hobby plan crons run once a day. Admins can run imports any time from **Admin → Imports**.
-6. Sign up with an email from `ADMIN_EMAILS` and open **Admin** to check the *Configuration* panel.
+Production deploys set up the database themselves: before each build, `scripts/predeploy.ts` applies migrations and seeds default data (safe to repeat). No command line needed.
 
-Photos can stay in the database (simplest). To use Supabase Storage instead, create a **private** bucket named `sommr-media`, then set `STORAGE_DRIVER=supabase`, `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY`.
+1. **Merge SOMMR into `main`** (or set the Vercel project's production branch to the SOMMR branch).
+2. **Vercel → Add New → Project →** import `nextwave-digital` and set **Root Directory** to `sommr`. Vercel detects Next.js. Leave the build command as is.
+3. **Database:** in the new project open **Storage → Connect Database** and add **Neon** (recommended — free, doesn't pause) or **Supabase**. Vercel adds the connection string (`DATABASE_URL` or `POSTGRES_URL`) automatically. Prefer your own? Paste any Postgres URL as `DATABASE_URL`.
+4. **Environment variables** (Settings → Environment Variables):
+   - `ADMIN_EMAILS` — your email, so your account becomes admin when you sign up
+   - `CRON_SECRET` — any long random string (e.g. PowerShell: `[guid]::NewGuid().ToString('N') + [guid]::NewGuid().ToString('N')`)
+   - optional: `QUICKET_API_KEY`, `TICKETMASTER_API_KEY`, `RESEND_API_KEY`, `EMAIL_FROM`, `NOMINATIM_EMAIL`
+   - `APP_URL` is optional — Vercel's production URL is used automatically.
+5. **Deploy** (or *Redeploy* after adding the database). The build log shows `predeploy: database ready`.
+6. Sign up with your admin email and check **Admin → Overview → Configuration**.
+
+The daily event import runs at 03:17 UTC (05:17 SAST) via Vercel Cron (`vercel.json`); admins can also run it from **Admin → Imports**. Every push to the production branch redeploys.
+
+> **Plans:** Vercel's free Hobby plan is for personal, non-commercial projects; a commercial launch needs Vercel Pro. Open-Meteo's free weather tier is also non-commercial.
+
+To run migrations by hand instead (for example against Supabase from your computer): `DATABASE_URL="postgres://…" npm run db:setup`.
+
+Photos stay in the database by default. To use Supabase Storage instead, create a **private** bucket named `sommr-media`, then set `STORAGE_DRIVER=supabase`, `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY`.
 
 ---
 

@@ -2,14 +2,14 @@
   "name": "sommr",
   "version": "0.1.0",
   "private": true,
-  "description": "SOMMR — a South African summer lifestyle and discovery platform. Make this summer count.",
+  "description": "SOMMR \u2014 a South African summer lifestyle and discovery platform. Make this summer count.",
   "type": "module",
   "engines": {
     "node": ">=20.9.0"
   },
   "scripts": {
     "dev": "next dev --port 3000",
-    "build": "next build",
+    "build": "tsx --conditions=react-server scripts/predeploy.ts && next build",
     "start": "next start --port 3000",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
