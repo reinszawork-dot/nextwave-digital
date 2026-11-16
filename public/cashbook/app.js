@@ -35,7 +35,7 @@
 
   /* ---------- constants ---------- */
   const INCOME_CATS = ['Sales', 'Services', 'Customer payment', 'Commission', 'Affiliate payout', 'Ad & sponsor revenue', 'Tips', 'Other income'];
-  const EXPENSE_CATS = ['Stock & materials', 'Packaging', 'Transport & fuel', 'Data & airtime', 'Software & tools', 'Advertising', 'Fees & bank charges', 'Equipment', 'Other expense'];
+  const EXPENSE_CATS = ['Stock & materials', 'Packaging', 'Transport & fuel', 'Data & airtime', 'Software & tools', 'Advertising', 'Fees & bank charges', 'Equipment', 'Food', 'Rent', 'Shopping', 'Entertainment', 'Bills', 'Health', 'Other expense'];
   const METHODS = ['Cash', 'EFT', 'Card', 'SnapScan', 'Zapper', 'PayPal', 'Other'];
   const TYPES = {
     affiliate: { label: 'Affiliate marketing', icon: 'link' },
@@ -46,9 +46,10 @@
     business: { label: 'Small business', icon: 'store' },
     other: { label: 'Other side hustle', icon: 'spark' },
   };
-  const COLORS = ['#A78BFA', '#F472B6', '#FB923C', '#38BDF8', '#34D399', '#FBBF24', '#F87171', '#2DD4BF'];
+  const COLORS = ['#39FF70', '#00E5FF', '#FF368B', '#8F6BFF', '#FFD23F', '#FF9A3C', '#7DA2FF', '#2DE2C2'];
+  const NEON_COLORS = ['#A78BFA', '#F472B6', '#FB923C', '#38BDF8', '#34D399', '#FBBF24', '#F87171', '#2DD4BF']; // Neon Dusk palette, remapped on load
   const OLD_COLORS = ['#176B45', '#4FA36E', '#C9A24A', '#6F8F9C', '#A87C5C', '#7C6FA8', '#9BC9A7', '#B5524C']; // pre-redesign palette, remapped on load
-  const C_IN = '#34D399', C_OUT = '#FB7185', C_PROFIT = '#FBBF24';
+  const C_IN = '#39FF70', C_OUT = '#FF368B', C_PROFIT = '#00E5FF';
 
   /* ---------- icons ---------- */
   const IC = {
@@ -101,7 +102,7 @@
   const hydrateIcons = (root = document) => $$('i[data-i]:empty', root).forEach((el) => { el.innerHTML = svgIc(el.dataset.i); });
 
   /* ---------- state ---------- */
-  const blank = () => ({ v: 1, profile: { name: '', business: '' }, settings: { taxRate: 18 }, streams: [], tx: [], owed: [], goals: [], taxSaved: [] });
+  const blank = () => ({ v: 1, profile: { name: '', business: '' }, settings: { taxRate: 18 }, streams: [], tx: [], owed: [], goals: [], taxSaved: [], badges: [] });
   let S;
   let loadError = false, storageBlocked = false;
 
@@ -129,11 +130,13 @@
     const out = blank();
     out.profile = { name: str(d.profile?.name, 40), business: str(d.profile?.business, 60) };
     out.settings = { taxRate: Math.min(45, Math.max(0, num(d.settings?.taxRate ?? 18))) };
-    out.streams = arr(d.streams).filter((s) => s && s.id).map((s) => ({ id: str(s.id, 40), name: str(s.name, 40) || 'Untitled', type: TYPES[s.type] ? s.type : 'other', color: COLORS[OLD_COLORS.indexOf(String(s.color).toUpperCase())] || (/^#[0-9a-f]{6}$/i.test(s.color) ? s.color : COLORS[0]), sample: !!s.sample }));
-    out.tx = arr(d.tx).filter((t) => t && t.id && date(t.date) && num(t.amount) > 0).map((t) => ({ id: str(t.id, 40), type: t.type === 'out' ? 'out' : 'in', amount: num(t.amount), date: t.date, streamId: str(t.streamId, 40), category: str(t.category, 40), method: str(t.method, 20), desc: str(t.desc), owedId: str(t.owedId, 40), sample: !!t.sample }));
+    out.streams = arr(d.streams).filter((s) => s && s.id).map((s) => ({ id: str(s.id, 40), name: str(s.name, 40) || 'Untitled', type: TYPES[s.type] ? s.type : 'other', color: COLORS[OLD_COLORS.indexOf(String(s.color).toUpperCase())] || COLORS[NEON_COLORS.indexOf(String(s.color).toUpperCase())] || (/^#[0-9a-f]{6}$/i.test(s.color) ? s.color : COLORS[0]), sample: !!s.sample }));
+    out.tx = arr(d.tx).filter((t) => t && t.id && date(t.date) && num(t.amount) > 0).map((t) => ({ id: str(t.id, 40), type: t.type === 'out' ? 'out' : 'in', amount: num(t.amount), date: t.date, streamId: str(t.streamId, 40), category: str(t.category, 40), method: str(t.method, 20), desc: str(t.desc), note: str(t.note, 300), owedId: str(t.owedId, 40), sample: !!t.sample }));
     out.owed = arr(d.owed).filter((o) => o && o.id && num(o.amount) > 0).map((o) => ({ id: str(o.id, 40), customer: str(o.customer, 60), desc: str(o.desc), amount: num(o.amount), due: date(o.due) || today(), streamId: str(o.streamId, 40), status: o.status === 'paid' ? 'paid' : 'open', paidDate: date(o.paidDate), txId: str(o.txId, 40), sample: !!o.sample }));
-    out.goals = arr(d.goals).filter((g) => g && g.id && num(g.target) > 0).map((g) => ({ id: str(g.id, 40), name: str(g.name, 50), target: num(g.target), saved: Math.max(0, num(g.saved)), deadline: date(g.deadline), sample: !!g.sample }));
+    out.goals = arr(d.goals).filter((g) => g && g.id && num(g.target) > 0).map((g) => ({ id: str(g.id, 40), name: str(g.name, 50), target: num(g.target), saved: Math.max(0, num(g.saved)), deadline: date(g.deadline), log: arr(g.log).filter((l) => l && date(l.date)).map((l) => ({ date: l.date, amount: num(l.amount) })).slice(-500), sample: !!g.sample }));
     out.taxSaved = arr(d.taxSaved).filter((t) => t && t.id && date(t.date) && num(t.amount) > 0).map((t) => ({ id: str(t.id, 40), date: t.date, amount: num(t.amount), note: str(t.note, 80), sample: !!t.sample }));
+    // badges already celebrated; null = data from before rewards existed, so today's unlocks are marked quietly
+    out.badges = Array.isArray(d.badges) ? d.badges.filter((b) => typeof b === 'string').slice(0, 100) : null;
     return out;
   }
 
@@ -239,6 +242,76 @@
     return { key: 'due', label: `Due in ${d} day${d === 1 ? '' : 's'}`, cls: d <= 7 ? 'amber' : 'grey', days: -d };
   };
 
+  /* ---------- rewards: worked out from your own entries (sample data never counts) ---------- */
+  const mine = (a) => a.filter((x) => !x.sample);
+  const weekStart = (d) => addDays(d, -((parse(d).getDay() + 6) % 7));
+  const inOut = (list) => list.reduce((a, t) => { a[t.type] += t.amount; return a; }, { in: 0, out: 0 });
+  function playerStats() {
+    const tx = mine(S.tx), goals = mine(S.goals);
+    const days = [...new Set(tx.map((t) => t.date))].sort();
+    const has = new Set(days);
+    let streak = 0, d = has.has(today()) ? today() : addDays(today(), -1);
+    while (has.has(d)) { streak++; d = addDays(d, -1); }
+    let best = 0, run = 0, prev = '';
+    days.forEach((x) => { run = prev && addDays(prev, 1) === x ? run + 1 : 1; best = Math.max(best, run); prev = x; });
+    const byMonth = {};
+    tx.forEach((t) => { const k = t.date.slice(0, 7); (byMonth[k] = byMonth[k] || []).push(t); });
+    const greenMonths = Object.entries(byMonth).filter(([m, l]) => { const v = inOut(l); return m < thisMonth() && v.in > v.out; }).length; // finished months only
+    return { tx, txCount: tx.length, days: has, streak, best, income: inOut(tx).in, saved: goals.reduce((a, g) => a + g.saved, 0),
+      reached: goals.filter((g) => g.saved >= g.target).length, greenMonths, streams: mine(S.streams).length,
+      collected: mine(S.owed).filter((o) => o.status === 'paid').length, taxSets: mine(S.taxSaved).length, deposits: goals.flatMap((g) => g.log || []) };
+  }
+  const BADGES = [
+    { id: 'first-tx', name: 'Player One', desc: 'Log your first entry', sprite: 'star', xp: 50, test: (s) => s.txCount >= 1 },
+    { id: 'tx-25', name: 'On a Roll', desc: 'Log 25 entries', sprite: 'coin', xp: 100, test: (s) => s.txCount >= 25 },
+    { id: 'saved-1k', name: 'First R1 000 Saved', desc: 'Have R1 000 in your savings goals', sprite: 'moneybag', xp: 150, test: (s) => s.saved >= 1000 },
+    { id: 'streak-7', name: 'Seven-Day Streak', desc: 'Log something 7 days in a row', sprite: 'flame', xp: 200, test: (s) => s.best >= 7 },
+    { id: 'green-month', name: 'In the Green', desc: 'Finish a month with more in than out', sprite: 'cash', xp: 150, test: (s) => s.greenMonths >= 1 },
+    { id: 'goal-hit', name: 'Goal Getter', desc: 'Reach a savings goal', sprite: 'trophy', xp: 300, test: (s) => s.reached >= 1 },
+    { id: 'earn-10k', name: 'Big Earner', desc: 'Earn R10 000 in total', sprite: 'wallet', xp: 250, test: (s) => s.income >= 10000 },
+    { id: 'streams-3', name: 'Multi-Hustler', desc: 'Run 3 income streams', sprite: 'rocket', xp: 150, test: (s) => s.streams >= 3 },
+    { id: 'collector', name: 'Debt Collector', desc: 'Get paid by someone who owed you', sprite: 'shield', xp: 100, test: (s) => s.collected >= 1 },
+    { id: 'tax-ready', name: 'Tax Ready', desc: 'Set money aside for tax', sprite: 'bank', xp: 100, test: (s) => s.taxSets >= 1 },
+    { id: 'streak-30', name: 'Unstoppable', desc: 'A 30-day logging streak', sprite: 'crown', xp: 500, test: (s) => s.best >= 30 },
+  ];
+  const CHALLENGES = [
+    { id: 'log5', name: 'Log 5 entries', sprite: 'coin', xp: 60, goal: 5, val: (w) => w.tx.length },
+    { id: 'days4', name: 'Log on 4 different days', sprite: 'flame', xp: 60, goal: 4, val: (w) => new Set(w.tx.map((t) => t.date)).size },
+    { id: 'save1', name: 'Put money into a savings goal', sprite: 'target', xp: 80, goal: 1, val: (w) => w.deposits.length },
+    { id: 'green', name: 'Earn more than you spend', sprite: 'cash', xp: 100, goal: 1, val: (w) => (w.in > 0 && w.in > w.out ? 1 : 0) },
+  ];
+  function weekData(st, from) {
+    const to = addDays(from, 6), tx = st.tx.filter((t) => t.date >= from && t.date <= to);
+    return { from, to, tx, deposits: st.deposits.filter((d) => d.date >= from && d.date <= to), ...inOut(tx) };
+  }
+  const LEVELS = ['Rookie', 'Hustler', 'Grinder', 'Pro', 'Boss', 'Tycoon', 'Legend'];
+  function player() {
+    const st = playerStats();
+    const unlocked = BADGES.filter((b) => b.test(st));
+    let chXp = 0; // each past week can earn its challenges once
+    const first = [...st.tx.map((t) => t.date), ...st.deposits.map((d) => d.date)].sort()[0];
+    if (first) for (let w = weekStart(first); w <= today(); w = addDays(w, 7)) { const wd = weekData(st, w); CHALLENGES.forEach((c) => { if (c.val(wd) >= c.goal) chXp += c.xp; }); }
+    const xp = st.txCount * 10 + Math.floor(st.saved / 100) + unlocked.reduce((a, b) => a + b.xp, 0) + chXp;
+    const level = Math.floor(Math.sqrt(xp / 100)) + 1, lo = (level - 1) ** 2 * 100, hi = level ** 2 * 100;
+    const week = weekData(st, weekStart(today()));
+    return { st, unlocked, xp, level, title: LEVELS[Math.min(LEVELS.length - 1, Math.floor((level - 1) / 2))], lvlPct: ((xp - lo) / (hi - lo)) * 100, toNext: hi - xp,
+      week, weekDone: CHALLENGES.filter((c) => c.val(week) >= c.goal).length };
+  }
+  // Celebrate each newly unlocked badge once.
+  function checkRewards() {
+    const P = player(), ids = P.unlocked.map((b) => b.id);
+    if (S.badges === null || S.badges === undefined) { S.badges = ids; save(); return; }
+    const fresh = P.unlocked.filter((b) => !S.badges.includes(b.id));
+    if (!fresh.length) return;
+    S.badges.push(...fresh.map((b) => b.id));
+    save();
+    fresh.forEach((b, i) => setTimeout(() => toast(`Achievement unlocked: ${b.name} · +${b.xp} XP`, { action: 'See rewards', onAction: () => { location.hash = '#/rewards'; } }), i * 900));
+    confetti();
+    PX.Cat.cheer(`${fresh[0].name}!`);
+  }
+  const xpBar = (pct) => `<div class="xp-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${Math.round(pct)}"><i data-w="${Math.max(0, Math.min(100, pct))}"></i></div>`;
+  const pxIc = (name, cls = '') => `<span class="px-ic ${cls}">${PX.sprite(name)}</span>`;
+
   /* ---------- UI helpers ---------- */
   function toast(msg, { err = false, action, onAction, ms = 4500 } = {}) {
     const el = document.createElement('div');
@@ -250,6 +323,39 @@
   }
 
   let modalClose = null;
+  /** Phone bottom sheet: drag its header down to close. Follows the finger 1:1, closes on a flick
+   *  (> 0.11 px/ms) or when pulled past 30% of its height, otherwise slides back. */
+  function sheetDrag(panel, close) {
+    if (!matchMedia('(max-width: 640px)').matches) return;
+    let y0 = 0, t0 = 0, dy = 0, on = false;
+    panel.addEventListener('pointerdown', (e) => {
+      if (!e.target.closest('.modal-h') || e.target.closest('button')) return;
+      on = true; y0 = e.clientY; t0 = e.timeStamp; dy = 0;
+      panel.setPointerCapture(e.pointerId);
+      panel.style.animation = 'none'; panel.style.transition = 'none';
+    });
+    panel.addEventListener('pointermove', (e) => {
+      if (!on) return;
+      dy = e.clientY - y0;
+      panel.style.transform = `translateY(${dy > 0 ? dy : -Math.sqrt(-dy) * 2}px)`; // pulling up meets rising friction
+    });
+    const end = (e) => {
+      if (!on) return;
+      on = false;
+      const v = dy / Math.max(1, e.timeStamp - t0);
+      if (dy > panel.offsetHeight * 0.3 || (dy > 12 && v > 0.11)) {
+        panel.style.transition = 'transform .25s ease-in';
+        panel.style.transform = 'translateY(100%)';
+        close();
+      } else {
+        panel.style.transition = 'transform .3s cubic-bezier(.32, .72, 0, 1)';
+        panel.style.transform = '';
+      }
+    };
+    panel.addEventListener('pointerup', end);
+    panel.addEventListener('pointercancel', end);
+  }
+
   function openModal(html, { size = '', onMount } = {}) {
     const root = $('#modalRoot');
     const prevFocus = document.activeElement;
@@ -268,6 +374,7 @@
     $('.modal-bg', root).onclick = close;
     $$('[data-close]', root).forEach((b) => (b.onclick = close));
     modalClose = close;
+    sheetDrag($('.modal', root), close);
     onMount?.($('.modal', root), close);
     setTimeout(() => $('.modal input:not([type=hidden]), .modal select, .modal button.btn-primary', root)?.focus(), 60);
     return close;
@@ -318,8 +425,8 @@
     setTimeout(() => URL.revokeObjectURL(a.href), 1000);
   }
   const csv = (rows) => '﻿' + rows.map((r) => r.map((c) => { const s = String(c ?? ''); return /[",\n;]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s; }).join(',')).join('\r\n');
-  const txCsvRows = (list) => [['Date', 'Type', 'Amount (R)', 'Income stream', 'Category', 'Payment method', 'Description']]
-    .concat(list.map((t) => [t.date, t.type === 'in' ? 'Money in' : 'Money out', t.amount.toFixed(2), streamName(t.streamId), t.category, t.method, t.desc]));
+  const txCsvRows = (list) => [['Date', 'Type', 'Amount (R)', 'Income stream', 'Category', 'Payment method', 'Description', 'Notes']]
+    .concat(list.map((t) => [t.date, t.type === 'in' ? 'Money in' : 'Money out', t.amount.toFixed(2), streamName(t.streamId), t.category, t.method, t.desc, t.note || '']));
 
   /* count-up numbers */
   function countUp(root) {
@@ -350,6 +457,7 @@
   /* ---------- UI state ---------- */
   const UI = {
     dashPeriod: 'month',
+    bal: '3M',
     flow: 'monthly',
     flowOff: {},
     cb: { q: '', from: '', to: '', type: '', stream: '', cat: '', method: '' },
@@ -365,7 +473,9 @@
     const isEdit = !!t;
     const d = t || { type: preset.type || 'in', amount: '', date: today(), streamId: preset.streamId || (S.streams.length === 1 ? S.streams[0].id : ''), category: '', method: 'Cash', desc: '' };
     let type = d.type;
-    const catOpts = (ty, sel) => opts(ty === 'in' ? INCOME_CATS : EXPENSE_CATS, sel);
+    const catList = (ty) => (ty === 'in' ? INCOME_CATS : EXPENSE_CATS);
+    const catGrid = (ty, sel) => catList(ty).map((c) => `<button type="button" class="cat-btn${c === sel ? ' on' : ''}" data-cat="${esc(c)}" role="radio" aria-checked="${c === sel}">${PX.sprite(PX.catSprite(c, ty))}<span>${esc(c)}</span></button>`).join('');
+    const firstCat = (ty, sel) => (catList(ty).includes(sel) ? sel : catList(ty)[0]);
     openModal(`${modalHead(isEdit ? 'Edit transaction' : 'Add transaction', 'book')}
       <form id="txForm" novalidate>
         <div class="type-toggle" role="radiogroup" aria-label="Type" style="margin-bottom:16px">
@@ -377,8 +487,9 @@
           ${field('Date', `<input class="input" type="date" name="date" value="${d.date}">`)}
           ${field('Description', `<input class="input" name="desc" maxlength="120" value="${esc(d.desc)}" placeholder="e.g. Cupcake order for Thandi">`, 'full')}
           ${field('Income stream', `<select class="input" name="streamId">${streamOpts(d.streamId)}</select>`)}
-          ${field('Category', `<select class="input" name="category">${catOpts(type, d.category)}</select>`)}
-          ${field('Payment method', `<select class="input" name="method">${opts(METHODS, d.method)}</select>`, 'full')}
+          ${field('Payment method', `<select class="input" name="method">${opts(METHODS, d.method)}</select>`)}
+          ${field('Category', `<input type="hidden" name="category" value="${esc(firstCat(type, d.category))}"><div class="cat-grid" role="radiogroup" aria-label="Category">${catGrid(type, firstCat(type, d.category))}</div>`, 'full')}
+          ${field('Notes (optional)', `<textarea class="input" name="note" rows="2" maxlength="300" placeholder="Anything to remember about this one">${esc(d.note || '')}</textarea>`, 'full')}
         </div>
         ${S.streams.length ? '' : `<p class="small muted" style="margin:12px 0 0">Tip: <a href="#/streams" data-close>create an income stream</a> to see which hustle earns the most.</p>`}
         <div class="modal-f">
@@ -392,13 +503,20 @@
         $$('[data-ty]', m).forEach((b) => (b.onclick = () => {
           type = b.dataset.ty;
           $$('[data-ty]', m).forEach((x) => x.classList.toggle('on', x === b));
-          f.elements.category.innerHTML = catOpts(type);
+          f.elements.category.value = catList(type)[0];
+          $('.cat-grid', m).innerHTML = catGrid(type, catList(type)[0]);
         }));
+        $('.cat-grid', m).addEventListener('click', (e) => {
+          const b = e.target.closest('[data-cat]');
+          if (!b) return;
+          f.elements.category.value = b.dataset.cat;
+          $$('[data-cat]', m).forEach((x) => { x.classList.toggle('on', x === b); x.setAttribute('aria-checked', x === b); });
+        });
         if (isEdit) $('#txDel', m).onclick = () => { close(); deleteTx(t.id); };
         f.onsubmit = (e) => {
           e.preventDefault();
           if (!validate(f, { amount: vAmount, date: vDate, desc: (v) => (v.length > 120 ? 'Keep it under 120 characters' : '') })) return;
-          const rec = { type, amount: r2(+f.elements.amount.value), date: f.elements.date.value, streamId: f.elements.streamId.value, category: f.elements.category.value, method: f.elements.method.value, desc: f.elements.desc.value.trim() || f.elements.category.value };
+          const rec = { type, amount: r2(+f.elements.amount.value), date: f.elements.date.value, streamId: f.elements.streamId.value, category: f.elements.category.value, method: f.elements.method.value, desc: f.elements.desc.value.trim() || f.elements.category.value, note: f.elements.note.value.trim() };
           if (isEdit) Object.assign(t, rec); else S.tx.push({ id: uid(), owedId: '', ...rec });
           if (save()) { close(); toast(isEdit ? 'Transaction updated' : `${type === 'in' ? 'Money in' : 'Money out'} of ${money(rec.amount)} added`); render(); }
         };
@@ -554,7 +672,8 @@
           if (!validate(f, { amount: (v) => vAmount(v) || (dir < 0 && +v > g.saved ? `You only have ${money(g.saved)} saved` : '') })) return;
           const amt = r2(+f.elements.amount.value);
           g.saved = r2(g.saved + dir * amt);
-          if (g.saved >= g.target && dir > 0) confetti();
+          if (dir > 0) (g.log = g.log || []).push({ date: today(), amount: amt });
+          if (g.saved >= g.target && dir > 0) { confetti(); PX.Cat.cheer('Goal reached!'); }
           if (save()) { close(); toast(g.saved >= g.target ? `🎉 You reached “${g.name}”!` : `${dir > 0 ? 'Added' : 'Took out'} ${money(amt)}`); render(); }
         };
       },
@@ -617,8 +736,8 @@
      ================================================================ */
   const NAV = [
     ['Overview', [['dashboard', 'Dashboard', 'grid'], ['cashbook', 'Cash Book', 'book'], ['streams', 'My Income Streams', 'layers'], ['monthly', 'Monthly Summary', 'calendar']]],
-    ['Money management', [['owed', 'Who Owes Me', 'users'], ['tax', 'Tax Set-Aside', 'percent'], ['goals', 'Savings Goals', 'target']]],
-    ['Insights', [['reports', 'Reports', 'chart'], ['settings', 'Settings', 'settings']]],
+    ['Money management', [['owed', 'Who Owes Me', 'users'], ['tax', 'Tax Set-Aside', 'percent'], ['goals', 'Savings Goals', 'target'], ['rewards', 'Rewards', 'spark']]],
+    ['Insights', [['reports', 'Insights', 'chart'], ['settings', 'Settings', 'settings']]],
   ];
   let charts = []; // re-render callbacks for resize
 
@@ -669,6 +788,13 @@
     open.forEach((o) => { const st = owedState(o); aged.total += o.amount; if (st.key !== 'overdue') aged.notDue += o.amount; else if (st.days <= 30) aged.d30 += o.amount; else if (st.days <= 60) aged.d60 += o.amount; else aged.d60p += o.amount; });
     const goal = [...S.goals].filter((g) => g.saved < g.target).sort((a, b) => b.saved / b.target - a.saved / a.target)[0];
     const periodCount = txRange(P.from, P.to).length;
+    const bal = sums(S.tx).profit; // everything in minus everything out
+    const PL = player();
+    const spendMap = {};
+    txRange(P.from, P.to).filter((t) => t.type === 'out').forEach((t) => (spendMap[t.category] = (spendMap[t.category] || 0) + t.amount));
+    const spend = Object.entries(spendMap).sort((a, b) => b[1] - a[1]).map(([label, value], i) => ({ label, value: r2(value), color: COLORS[i % COLORS.length] }));
+    const goalsTop = [...S.goals].sort((a, b) => (a.saved >= a.target) - (b.saved >= b.target) || b.saved / b.target - a.saved / a.target).slice(0, 3);
+    const goalMini = (g) => { const pc = Math.min(100, (g.saved / g.target) * 100); return `<a class="goal-mini" href="#/goals">${pxIc(PX.goalSprite(g.name))}<div><div class="goal-fig"><b>${esc(g.name)}</b><span class="num">${Math.floor(pc)}%</span></div>${progress(pc)}<small class="muted num">${money(g.saved)} / ${money(g.target)}</small></div></a>`; };
     const hc = prev ? change(cur.profit, prev.profit) : 0;
     const heroChg = !prev || hc === null || Math.abs(hc) < 0.5 ? '' : `<span class="hero-chip ${hc > 0 ? 'up' : 'down'}">${ic(hc > 0 ? 'up' : 'down')}${hc > 0 ? '+' : ''}${Math.round(hc)}% ${P.label}</span>`;
 
@@ -677,17 +803,22 @@
       html: `
       ${sampleBanner()}
       <section class="hero">
-        <span class="hero-orb o1"></span><span class="hero-orb o2"></span><span class="hero-orb o3"></span>
-        <div>
+        <div class="hero-main">
           <span class="hero-date">${ic('calendar')}${fmtD(today(), { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}</span>
-          <h2>${hello}${name} <span class="wave" aria-hidden="true">👋</span></h2>
-          <p class="hero-sub">${cur.profit >= 0 ? 'Your side hustles made you' : 'Your side hustles are down'} · ${P.name.toLowerCase()}</p>
-          <div class="hero-fig">${bigMoney(cur.profit)}</div>
+          <h2>Hey, ${S.profile.name ? esc(S.profile.name) : 'Boss'}! <span class="wave" aria-hidden="true">👋</span></h2>
+          <p class="hero-sub">Let’s make your money work harder.</p>
+          <div class="hero-label">Available balance</div>
+          <div class="hero-fig">${bigMoney(bal)}</div>
           <div class="hero-chips">
             ${heroChg}
+            <span class="hero-chip">${ic('trend')}${money(cur.profit)} kept · ${P.name.toLowerCase()}</span>
             <span class="hero-chip">${ic('book')}${periodCount} transaction${periodCount === 1 ? '' : 's'}</span>
-            <span class="hero-chip">${ic('layers')}${S.streams.length} income stream${S.streams.length === 1 ? '' : 's'}</span>
           </div>
+        </div>
+        <div class="hero-cat" id="heroCat"></div>
+        <div class="hero-chart">
+          <div class="seg" role="tablist" aria-label="Balance range">${['1M', '3M', '6M', '1Y'].map((r) => `<button role="tab" data-bal="${r}" class="${UI.bal === r ? 'on' : ''}" aria-selected="${UI.bal === r}">${r}</button>`).join('')}</div>
+          <div class="chart-box" id="balChart"></div>
         </div>
         <div class="hero-side">
           <div class="row">
@@ -704,7 +835,30 @@
         ${kpi('Total Money In', 'wallet', 'Cash Book', '#/cashbook', cur.in, prev?.in, C_IN, months.map((m) => m.in))}
         ${kpi('Total Money Out', 'card', 'Expenses', '#/cashbook', cur.out, prev?.out, C_OUT, months.map((m) => m.out), { invert: true })}
         ${kpi('Net Profit', 'trend', 'Reports', '#/reports', cur.profit, prev?.profit, C_PROFIT, months.map((m) => m.profit), { cls: cur.profit >= 0 ? 'green' : 'red' })}
-        ${kpi('Tax Set-Aside', 'percent', `${S.settings.taxRate}%`, '#/tax', taxOn(cur.profit), prev ? taxOn(prev.profit) : 0, '#A78BFA', months.map((m) => taxOn(m.profit)))}
+        ${kpi('Tax Set-Aside', 'percent', `${S.settings.taxRate}%`, '#/tax', taxOn(cur.profit), prev ? taxOn(prev.profit) : 0, '#FFD23F', months.map((m) => taxOn(m.profit)))}
+      </div>
+
+      <div class="grid dash-row3">
+        <div class="card player lift">
+          <div class="card-h">${pxIc('crown')}<h3>Level ${PL.level} · ${PL.title}</h3><div class="right"><a class="kpi-link" href="#/rewards">Rewards${ic('ext')}</a></div></div>
+          <div class="xp-row"><b class="num">${PL.xp.toLocaleString('en-ZA')} XP</b><span class="muted small">${PL.toNext} XP to level ${PL.level + 1}</span></div>
+          ${xpBar(PL.lvlPct)}
+          <div class="player-stats">
+            <a href="#/rewards">${pxIc('flame')}<b class="num">${PL.st.streak}</b><small>day streak</small></a>
+            <a href="#/rewards">${pxIc('trophy')}<b class="num">${PL.unlocked.length}/${BADGES.length}</b><small>badges</small></a>
+            <a href="#/rewards">${pxIc('star')}<b class="num">${PL.weekDone}/${CHALLENGES.length}</b><small>this week</small></a>
+          </div>
+          ${!PL.st.txCount ? '<p class="small muted" style="margin:12px 0 0">Sample data doesn’t earn XP. Add your own entries to start levelling up.</p>' : ''}
+        </div>
+        <div class="card lift">
+          <div class="card-h">${pxIc('cart')}<h3>Spending Breakdown</h3><div class="right"><a class="kpi-link" href="#/reports">Insights${ic('ext')}</a></div></div>
+          ${spend.length ? `<div class="spend"><div id="spendDonut"></div><ul class="spend-list">${spend.slice(0, 5).map((c) => `<li><span class="sw" style="background:${c.color}"></span>${pxIc(PX.catSprite(c.label, 'out'), 'sm')}<span class="sl">${esc(c.label)}</span><b class="num">${Math.round((c.value / cur.out) * 100)}%</b></li>`).join('')}</ul></div>`
+            : emptyState('chart', 'Nothing spent yet', `No money out during “${P.name.toLowerCase()}”.`)}
+        </div>
+        <div class="card lift">
+          <div class="card-h">${pxIc('target')}<h3>Savings Goals</h3><div class="right"><a class="kpi-link" href="#/goals">All goals${ic('ext')}</a></div></div>
+          ${goalsTop.length ? `<div class="goal-list">${goalsTop.map(goalMini).join('')}</div>` : `<p class="muted" style="margin:0 0 12px">Set a goal and watch it fill up like a power bar.</p><button class="btn btn-sm" data-action="add-goal">${ic('plus')}New goal</button>`}
+        </div>
       </div>
 
       <div class="grid dash-row">
@@ -727,7 +881,7 @@
         <div class="card">
           <div class="card-h"><span class="card-ic">${ic('book')}</span><h3>Recent Transactions</h3><div class="right"><a class="kpi-link" href="#/cashbook">View all${ic('ext')}</a></div></div>
           ${recent.length ? `<div class="table-wrap"><table class="t t-first-pad"><thead><tr><th>Description</th><th class="hide-sm">Stream</th><th class="hide-sm">Date</th><th class="r">Amount</th></tr></thead><tbody>
-            ${recent.map((t) => `<tr><td class="desc">${esc(t.desc)}<small>${esc(t.category)} · ${esc(t.method)}</small></td><td class="hide-sm">${streamTag(t.streamId)}</td><td class="hide-sm muted">${fmtD(t.date)}</td><td class="r num ${t.type === 'in' ? 'pos' : 'neg'}"><b>${t.type === 'in' ? '+' : '−'}${money(t.amount)}</b></td></tr>`).join('')}
+            ${recent.map((t) => `<tr><td class="desc"><div class="tx-cell"><span class="tx-px">${PX.sprite(PX.catSprite(t.category, t.type))}</span><span>${esc(t.desc)}<small>${esc(t.category)} · ${esc(t.method)}</small></span></div></td><td class="hide-sm">${streamTag(t.streamId)}</td><td class="hide-sm muted">${fmtD(t.date)}</td><td class="r num ${t.type === 'in' ? 'pos' : 'neg'}"><b>${t.type === 'in' ? '+' : '−'}${money(t.amount)}</b></td></tr>`).join('')}
           </tbody></table></div>` : emptyState('book', 'Your Cash Book is empty', 'Every rand in or out goes here. Start with your last sale.', `<button class="btn btn-primary btn-sm" data-action="add-tx">${ic('plus')}Add your first transaction</button>`)}
         </div>
         <div class="grid" style="align-content:start">
@@ -740,15 +894,27 @@
               <div class="kv"><span>60+ days overdue</span><b class="num ${aged.d60p ? 'neg' : ''}">${money(aged.d60p)}</b></div>`
             : `<p class="muted" style="margin:0">Nobody owes you anything right now. 🎉</p>`}
           </div>
-          <div class="card">
-            <div class="card-h"><span class="card-ic">${ic('target')}</span><h3>Savings Goal</h3><div class="right"><a class="kpi-link" href="#/goals">All goals${ic('ext')}</a></div></div>
-            ${goal ? `<div class="goal"><div class="goal-fig"><b>${esc(goal.name)}</b><span class="muted num">${Math.round((goal.saved / goal.target) * 100)}%</span></div>${progress((goal.saved / goal.target) * 100)}<div class="goal-fig small"><span class="num">${money(goal.saved)}</span><span class="muted num">of ${money(goal.target)}</span></div></div>`
-            : `<p class="muted" style="margin:0 0 12px">Set a goal to put your side-hustle money to work.</p><button class="btn btn-sm" data-action="add-goal">${ic('plus')}New goal</button>`}
-          </div>
         </div>
       </div>`,
       after(root) {
         $('#dashPeriod', root).onchange = (e) => { UI.dashPeriod = e.target.value; render(); };
+        const drawBal = (anim) => {
+          const n = { '1M': 30, '3M': 13, '6M': 26, '1Y': 12 }[UI.bal], unit = UI.bal === '1M' ? 'd' : UI.bal === '1Y' ? 'm' : 'w';
+          const ends = Array.from({ length: n }, (_, k) => { const i = n - 1 - k; return unit === 'd' ? addDays(today(), -i) : unit === 'w' ? addDays(today(), -7 * i) : i === 0 ? today() : monthEnd(addMonths(thisMonth(), -i)); });
+          const sorted = [...S.tx].sort((a, b) => a.date.localeCompare(b.date));
+          let j = 0, run = 0;
+          const values = ends.map((e) => { while (j < sorted.length && sorted[j].date <= e) { run += sorted[j].type === 'in' ? sorted[j].amount : -sorted[j].amount; j++; } return r2(run); });
+          const el = $('#balChart', root);
+          Charts.area(el, { labels: ends.map((e) => (unit === 'm' ? mLabel(e.slice(0, 7)) : fmtD(e, { day: 'numeric', month: 'short' }))), tipLabels: ends.map((e) => fmtD(e)), height: 170, fmt: money, fmtAxis: axisMoney, aria: 'Balance over time',
+            series: [{ name: 'Balance', color: C_IN, values, fill: true }] });
+          if (anim) Charts.animate(el);
+        };
+        drawBal(false);
+        charts.push(() => drawBal(false));
+        $$('[data-bal]', root).forEach((b) => (b.onclick = () => { UI.bal = b.dataset.bal; $$('[data-bal]', root).forEach((x) => { x.classList.toggle('on', x === b); x.setAttribute('aria-selected', x === b); }); drawBal(true); }));
+        const sd = $('#spendDonut', root);
+        if (sd) Charts.donut(sd, { items: spend, fmt: money, size: 150, thickness: 20, centerLabel: 'Spent' });
+        PX.Cat.mount($('#heroCat', root), { onClick: (woke) => PX.Cat.say(woke ? 'Oh hey, Boss! Back to the grind?' : catLine(PL)) });
         $$('[data-flow]', root).forEach((b) => (b.onclick = () => { UI.flow = b.dataset.flow; $$('[data-flow]', root).forEach((x) => x.classList.toggle('on', x === b)); drawFlow(true); }));
         const drawFlow = (anim) => {
           const B = buckets(UI.flow);
@@ -783,6 +949,15 @@
       },
     };
   }
+  function catLine(PL) {
+    const lines = [
+      PL.st.streak ? `${PL.st.streak}-day streak! Log today to keep it alive.` : 'Log one entry today to start a streak.',
+      `${PL.toNext} XP to level ${PL.level + 1}. You’ve got this.`,
+      PL.weekDone < CHALLENGES.length ? `${CHALLENGES.length - PL.weekDone} weekly challenge${CHALLENGES.length - PL.weekDone === 1 ? '' : 's'} left this week.` : 'All weekly challenges done. Legend.',
+      'Small steps… big dreams.',
+    ];
+    return lines[Math.floor(Math.random() * lines.length)];
+  }
   const streamTag = (id) => { const s = streamById(id); return s ? `<span class="tag grey"><i class="sw" style="background:${s.color}"></i>${esc(s.name)}</span>` : '<span class="muted small">Unassigned</span>'; };
 
   // Time buckets for the cash flow chart. shift = how many buckets back to start (for "previous period").
@@ -803,7 +978,7 @@
   function filteredTx(f = UI.cb) {
     const q = f.q.toLowerCase();
     return S.tx.filter((t) => (!f.from || t.date >= f.from) && (!f.to || t.date <= f.to) && (!f.type || t.type === f.type) && (!f.stream || (f.stream === '_none' ? !streamById(t.streamId) : t.streamId === f.stream)) && (!f.cat || t.category === f.cat) && (!f.method || t.method === f.method)
-      && (!q || `${t.desc} ${t.category} ${streamName(t.streamId)} ${t.amount}`.toLowerCase().includes(q)))
+      && (!q || `${t.desc} ${t.note || ''} ${t.category} ${streamName(t.streamId)} ${t.amount}`.toLowerCase().includes(q)))
       .sort((a, b) => b.date.localeCompare(a.date));
   }
   function txTable(list, limit, { showStream = true } = {}) {
@@ -811,7 +986,7 @@
     const shown = list.slice(0, limit);
     return `<div class="table-wrap"><table class="t t-first-pad"><thead><tr><th>Date</th><th>Description</th>${showStream ? '<th class="hide-sm">Stream</th>' : ''}<th class="hide-sm">Method</th><th class="r">Amount</th><th class="acts"><span class="sr" style="position:absolute;left:-9999px">Actions</span></th></tr></thead><tbody>
       ${shown.map((t) => `<tr><td class="muted" style="white-space:nowrap">${fmtD(t.date, { day: 'numeric', month: 'short' })}<small style="display:block;font-size:11.5px">${t.date.slice(0, 4)}</small></td>
-        <td class="desc">${esc(t.desc)}<small>${esc(t.category)}${t.owedId ? ' · from Who Owes Me' : ''}</small></td>
+        <td class="desc"><div class="tx-cell"><span class="tx-px">${PX.sprite(PX.catSprite(t.category, t.type))}</span><span>${esc(t.desc)}<small>${esc(t.category)}${t.owedId ? ' · from Who Owes Me' : ''}${t.note ? ` · ${esc(t.note)}` : ''}</small></span></div></td>
         ${showStream ? `<td class="hide-sm">${streamTag(t.streamId)}</td>` : ''}<td class="hide-sm muted">${esc(t.method)}</td>
         <td class="r num ${t.type === 'in' ? 'pos' : 'neg'}" style="white-space:nowrap"><b>${t.type === 'in' ? '+' : '−'}${money(t.amount)}</b></td>
         <td class="acts"><button class="icon-btn sm" data-action="edit-tx" data-id="${t.id}" aria-label="Edit">${ic('edit')}</button><button class="icon-btn sm" data-action="del-tx" data-id="${t.id}" aria-label="Delete">${ic('trash')}</button></td></tr>`).join('')}
@@ -1098,14 +1273,48 @@
         const p = (g.saved / g.target) * 100, done = g.saved >= g.target;
         const monthsLeft = g.deadline ? Math.max(0, (parse(g.deadline).getFullYear() - parse(T).getFullYear()) * 12 + parse(g.deadline).getMonth() - parse(T).getMonth()) : null;
         const need = !done && monthsLeft != null ? (g.target - g.saved) / Math.max(1, monthsLeft) : null;
-        return `<div class="card lift goal">
-          <div class="goal-top"><span class="card-ic">${ic('target')}</span><div style="min-width:0;flex:1"><b style="display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(g.name)}</b><small class="muted">${g.deadline ? `By ${fmtD(g.deadline)}` : 'No deadline'}</small></div>${done ? '<span class="tag green">Reached ✓</span>' : `<span class="pill-badge">${Math.floor(p)}%</span>`}</div>
+        return `<div class="card lift goal${done ? ' done' : ''}">
+          <div class="goal-top">${pxIc(done ? 'trophy' : PX.goalSprite(g.name), done ? 'bob' : '')}<div style="min-width:0;flex:1"><b style="display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(g.name)}</b><small class="muted">${g.deadline ? `By ${fmtD(g.deadline)}` : 'No deadline'}</small></div>${done ? '<span class="tag green">Reward unlocked</span>' : `<span class="pill-badge">${Math.floor(p)}%</span>`}</div>
           <div class="goal-fig"><b class="num">${money(g.saved)}</b><span class="muted num small">of ${money(g.target)}</span></div>
           ${progress(p)}
           <div class="small muted">${done ? 'Well done — you hit your target.' : g.deadline && g.deadline < T ? `<span class="neg">Target date passed</span> · ${money(g.target - g.saved)} to go` : need != null ? `Save about <b class="num" style="color:var(--text)">${money(need)}</b> a month to get there` : `${money(g.target - g.saved)} to go`}</div>
           <div style="display:flex;gap:6px;margin-top:4px"><button class="btn btn-sm btn-primary" data-action="fund-goal" data-id="${g.id}">${ic('plus')}Add money</button><button class="icon-btn sm" data-action="edit-goal" data-id="${g.id}" aria-label="Edit">${ic('edit')}</button><button class="icon-btn sm" data-action="del-goal" data-id="${g.id}" aria-label="Delete">${ic('trash')}</button></div>
         </div>`; }).join('')}</div>`
       : `<div class="card">${emptyState('target', 'No savings goals yet', 'A new oven, a laptop, an emergency fund — set a target and watch it fill up.', `<button class="btn btn-primary" data-action="add-goal">${ic('plus')}Create a goal</button>`)}</div>`}`,
+    };
+  }
+
+  /* ---------- Rewards ---------- */
+  function pageRewards() {
+    const PL = player(), W = PL.week, st = PL.st;
+    const days14 = Array.from({ length: 14 }, (_, i) => addDays(today(), i - 13));
+    return {
+      title: 'Rewards',
+      html: `
+      <div class="greet"><div><h2>Rewards</h2><p>Every entry you log earns XP. Keep your streak alive and fill the trophy cabinet.</p></div></div>
+      ${hasSample() ? `<div class="banner">${ic('info')}<p><b>Sample data doesn’t count here.</b> Only entries you add yourself earn XP, streaks and badges.</p></div>` : ''}
+      <div class="grid two stagger">
+        <div class="card level-card">
+          <div class="level-top">${pxIc('trophy', 'xl bob')}<div><small class="eyebrow">Level</small><b class="level-n">${PL.level}</b><span class="level-t">${PL.title}</span></div></div>
+          <div class="xp-row"><b class="num">${PL.xp.toLocaleString('en-ZA')} XP</b><span class="muted small">${PL.toNext} XP to level ${PL.level + 1}</span></div>
+          ${xpBar(PL.lvlPct)}
+          <p class="small muted" style="margin:14px 0 0">10 XP for each entry you log, 1 XP for every R100 in your savings goals, plus badge and weekly-challenge bonuses.</p>
+        </div>
+        <div class="card">
+          <div class="card-h">${pxIc('flame')}<h3>Logging streak</h3></div>
+          <div class="streak"><b class="num streak-n">${st.streak}</b><span>day${st.streak === 1 ? '' : 's'} in a row<small class="muted">Best ever: ${st.best}</small></span></div>
+          <div class="streak-days" aria-label="Last 14 days">${days14.map((d) => `<i class="${st.days.has(d) ? 'on' : ''}${d === today() ? ' today' : ''}" title="${fmtD(d)}${st.days.has(d) ? ' · logged' : ''}"></i>`).join('')}</div>
+          <p class="small muted" style="margin:12px 0 0">Log at least one entry a day. Logging counts, not spending.</p>
+        </div>
+      </div>
+      <div class="card" style="margin-top:18px">
+        <div class="card-h">${pxIc('star')}<h3>Weekly challenges</h3><div class="right"><span class="muted small">${fmtD(W.from, { day: 'numeric', month: 'short' })} – ${fmtD(W.to, { day: 'numeric', month: 'short' })} · resets Monday</span></div></div>
+        <div class="challenges">${CHALLENGES.map((c) => { const v = Math.min(c.goal, c.val(W)), done = v >= c.goal; return `<div class="challenge${done ? ' done' : ''}">${pxIc(c.sprite)}<div class="ch-main"><b>${c.name}</b>${xpBar((v / c.goal) * 100)}<small class="muted num">${v} / ${c.goal}${done ? ' · complete' : ''}</small></div><span class="xp-tag">${done ? '✓ ' : ''}+${c.xp} XP</span></div>`; }).join('')}</div>
+      </div>
+      <div class="card" style="margin-top:18px">
+        <div class="card-h">${pxIc('trophy')}<h3>Trophy cabinet</h3><div class="right"><span class="pill-badge">${PL.unlocked.length} / ${BADGES.length}</span></div></div>
+        <div class="badges stagger">${BADGES.map((b) => { const on = PL.unlocked.includes(b); return `<div class="badge${on ? ' on' : ''}"><span class="badge-px">${PX.sprite(on ? b.sprite : 'lock')}</span><b>${b.name}</b><small>${b.desc}</small><span class="xp-tag">${on ? 'Unlocked' : `+${b.xp} XP`}</span></div>`; }).join('')}</div>
+      </div>`,
     };
   }
 
@@ -1137,9 +1346,9 @@
     const vs = mtd ? 'vs same days last month' : isM ? 'vs previous month' : 'vs previous tax year';
     UI._report = { name, from, to, cur, streamRows, catRows, months, mdata, list };
     return {
-      title: 'Reports',
+      title: 'Insights',
       html: `${sampleBanner()}
-      <div class="greet"><div><h2>Reports</h2><p>${name} · ${fmtD(from)} – ${fmtD(to)}</p></div>
+      <div class="greet"><div><h2>Insights</h2><p>${name} · ${fmtD(from)} – ${fmtD(to)}</p></div>
         <div class="right">
           <div class="seg">${[['month', 'Monthly'], ['year', 'Tax year']].map(([k, l]) => `<button data-rm="${k}" class="${UI.rep.mode === k ? 'on' : ''}">${l}</button>`).join('')}</div>
           ${isM ? `<select class="input" id="repMonth" style="width:auto" aria-label="Month">${opts(monthsWithData.map((m) => [m, mLabel(m, true)]), UI.rep.month)}</select>`
@@ -1174,7 +1383,7 @@
           Charts.bars($('#repBars', root), { labels: months.map((m) => mLabel(m)), tipLabels: months.map((m) => mLabel(m, true)), height: 230, fmt: money, fmtAxis: axisMoney, active,
             series: [{ name: 'Income', color: C_IN, values: mdata.map((d) => d.in) }, { name: 'Expenses', color: C_OUT, values: mdata.map((d) => d.out) }] });
           Charts.area($('#repTrend', root), { labels: months.map((m) => mLabel(m)), tipLabels: months.map((m) => mLabel(m, true)), height: 230, fmt: money, fmtAxis: axisMoney, aria: 'Profit trend',
-            series: [{ name: 'Profit', color: '#A78BFA', values: mdata.map((d) => d.profit) }] });
+            series: [{ name: 'Profit', color: '#00E5FF', values: mdata.map((d) => d.profit) }] });
         };
         draw(); charts.push(draw);
       },
@@ -1201,7 +1410,7 @@
       <div class="grid two">
         <div class="card"><div class="card-h"><span class="card-ic">${ic('user')}</span><h3>Profile</h3></div>
           <form id="profForm" novalidate><div class="form-grid">
-            ${field('Your first name', `<input class="input" name="name" maxlength="40" value="${esc(S.profile.name)}" placeholder="Used in your greeting">`, 'full')}
+            ${field('Your first name', `<input class="input" name="name" maxlength="40" value="${esc(S.profile.name)}" placeholder="Used in your greeting (blank = Boss)">`, 'full')}
             ${field('Business or brand name (optional)', `<input class="input" name="business" maxlength="60" value="${esc(S.profile.business)}">`, 'full')}
           </div><div class="modal-f"><button class="btn btn-primary" type="submit">${ic('check')}Save profile</button></div></form></div>
         <div class="card"><div class="card-h"><span class="card-ic">${ic('percent')}</span><h3>Tax set-aside</h3></div>
@@ -1255,7 +1464,7 @@
   function closePops() { $$('.popover').forEach((p) => (p.hidden = true)); $$('[aria-expanded="true"]').forEach((b) => b.setAttribute('aria-expanded', 'false')); }
 
   /* ---------- router ---------- */
-  const ROUTES = { dashboard: pageDashboard, cashbook: pageCashbook, streams: pageStreams, monthly: pageMonthly, owed: pageOwed, tax: pageTax, goals: pageGoals, reports: pageReports, settings: pageSettings };
+  const ROUTES = { dashboard: pageDashboard, cashbook: pageCashbook, streams: pageStreams, monthly: pageMonthly, owed: pageOwed, tax: pageTax, goals: pageGoals, rewards: pageRewards, reports: pageReports, settings: pageSettings };
   let lastRoute = '';
   function render() {
     const [r0, sub] = location.hash.replace(/^#\/?/, '').split('/');
@@ -1277,12 +1486,15 @@
     $('#pageTitle').textContent = page.title;
     document.title = `${page.title} · Side Hustle CashBook`;
     renderNav(route === 'streams' ? 'streams' : route);
+    $$('#tabbar [data-tab]').forEach((a) => { const on = a.dataset.tab === route; a.classList.toggle('on', on); on ? a.setAttribute('aria-current', 'page') : a.removeAttribute('aria-current'); });
     renderChrome();
     try { page.after?.(view); } catch (e) { console.error(e); toast('A chart failed to draw.', { err: true }); }
     hydrateIcons(view);
     Charts.animate(view);
     countUp(view);
+    $$('.xp-bar i[data-w]', view).forEach((i) => requestAnimationFrame(() => requestAnimationFrame(() => (i.style.width = i.dataset.w + '%'))));
     closeNav();
+    checkRewards();
   }
 
   function skeleton() {
@@ -1364,7 +1576,7 @@
   const setTheme = (light) => {
     if (light) document.documentElement.dataset.theme = 'light'; else delete document.documentElement.dataset.theme;
     $('#themeBtn').innerHTML = ic(light ? 'moon' : 'sun');
-    $('meta[name=theme-color]').content = light ? '#F6F3FF' : '#0B0914';
+    $('meta[name=theme-color]').content = light ? '#EEF0FF' : '#080B25';
   };
   setTheme(document.documentElement.dataset.theme === 'light');
   $('#themeBtn').onclick = () => {
@@ -1374,6 +1586,8 @@
   };
 
   $('#navOpen').onclick = openNav;
+  $('#tabMore').onclick = openNav;
+  $('#brandMark').innerHTML = PX.sprite('wallet');
   $('#navClose').onclick = closeNav;
   $('#scrim').onclick = closeNav;
   $('#bellBtn').onclick = (e) => {

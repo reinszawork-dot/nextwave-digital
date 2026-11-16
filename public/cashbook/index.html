@@ -5,24 +5,23 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Side Hustle CashBook</title>
   <meta name="description" content="Track every rand your side hustles make: cash book, income streams, who owes you, tax set-aside and savings goals.">
-  <meta name="theme-color" content="#0B0914">
+  <meta name="theme-color" content="#080B25">
   <link rel="icon" href="icon.svg" type="image/svg+xml">
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Pixelify+Sans:wght@500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
   <script>/* /cashbook without the slash would break relative files */ if (location.protocol !== 'file:' && !location.pathname.endsWith('/') && !location.pathname.endsWith('.html')) location.replace(location.pathname + '/' + location.hash);</script>
   <script>try { if (localStorage.getItem('shcb.theme') === 'light') document.documentElement.dataset.theme = 'light'; } catch (e) {}</script>
 </head>
 <body>
+  <div class="arcade-bg" aria-hidden="true"><i style="--x:6%;--d:-3s;--t:26s;--c:#39FF70"></i><i style="--x:14%;--d:-17s;--t:31s;--c:#00E5FF"></i><i style="--x:23%;--d:-9s;--t:24s;--c:#FF368B"></i><i style="--x:35%;--d:-21s;--t:33s;--c:#FFD23F"></i><i style="--x:44%;--d:-5s;--t:28s;--c:#39FF70"></i><i style="--x:52%;--d:-14s;--t:35s;--c:#8F6BFF"></i><i style="--x:61%;--d:-26s;--t:27s;--c:#00E5FF"></i><i style="--x:70%;--d:-8s;--t:30s;--c:#39FF70"></i><i style="--x:78%;--d:-19s;--t:25s;--c:#FF368B"></i><i style="--x:86%;--d:-12s;--t:34s;--c:#00E5FF"></i><i style="--x:93%;--d:-2s;--t:29s;--c:#FFD23F"></i><i style="--x:30%;--d:-29s;--t:37s;--c:#39FF70"></i></div>
   <div class="app">
     <aside class="sidebar" id="sidebar" aria-label="Main navigation">
       <div class="brand">
-        <span class="brand-mark" aria-hidden="true">
-          <svg viewBox="0 0 32 32" width="36" height="36"><defs><linearGradient id="lg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8B5CF6"/><stop offset=".55" stop-color="#EC4899"/><stop offset="1" stop-color="#FB923C"/></linearGradient></defs><rect width="32" height="32" rx="10" fill="url(#lg)"/><path d="M17.5 5 9 17.5h6L13.5 27 23 14h-6.2z" fill="#fff"/></svg>
-        </span>
-        <span class="brand-name">Side Hustle<br><b>CashBook</b></span>
+        <span class="brand-mark" aria-hidden="true" id="brandMark"></span>
+        <span class="brand-name"><b>HUSTLE</b><b class="g">CASHBOOK</b><small>Track. Save. Grow.</small></span>
         <button class="icon-btn only-mobile" id="navClose" aria-label="Close menu"><i data-i="x"></i></button>
       </div>
       <nav id="nav"></nav>
@@ -56,10 +55,18 @@
   </div>
 
   <button class="fab" data-action="add-tx" aria-label="Add transaction"><i data-i="plus"></i></button>
+  <nav class="tabbar" id="tabbar" aria-label="Main">
+    <a href="#/dashboard" data-tab="dashboard"><i data-i="grid"></i><span>Home</span></a>
+    <a href="#/cashbook" data-tab="cashbook"><i data-i="book"></i><span>Transactions</span></a>
+    <button type="button" class="tab-add" data-action="add-tx" aria-label="Add transaction"><i data-i="plus"></i></button>
+    <a href="#/goals" data-tab="goals"><i data-i="target"></i><span>Goals</span></a>
+    <button type="button" id="tabMore" aria-label="More pages"><i data-i="menu"></i><span>More</span></button>
+  </nav>
   <div class="modal-root" id="modalRoot" hidden></div>
   <div class="toasts" id="toasts" aria-live="polite"></div>
 
   <script src="charts.js"></script>
+  <script src="pixels.js"></script>
   <script src="app.js"></script>
 </body>
 </html>
